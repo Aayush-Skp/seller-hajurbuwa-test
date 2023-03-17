@@ -26,8 +26,8 @@ export default function Category({
     <div className="flex flex-col justify-center py-1 cursor-pointer rounded text-gray-100 space-y-1">
       <div
         className={`flex items-center justify-between ${
-          isSelected ? 'text-orange-400' : 'text-gray-400'
-        }  px-2 py-1 rounded hover:text-orange-400`}
+          isSelected ? 'text-blue-700' : 'text-gray-400'
+        }  px-2 py-1 rounded hover:text-blue-700`}
         onClick={() => setIsExpanded((prev) => !prev)}
       >
         <div className="flex space-x-2 items-center">
@@ -96,7 +96,7 @@ export default function Category({
                     selectedSubCategory === subCategory.id
                       ? 'text-orange-400 font-semibold'
                       : 'text-gray-400'
-                  } hover:text-orange-400`}
+                  } hover:text-blue-700`}
                 >
                   {subCategory.title}
                 </a>

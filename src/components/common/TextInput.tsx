@@ -1,5 +1,20 @@
 import React from 'react';
 
-export default function TextInput() {
-  return <div>TextInput</div>;
-}
+type TextInputFieldProps = React.DetailedHTMLProps<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  HTMLInputElement
+>;
+
+const TextInput = React.forwardRef<HTMLInputElement, TextInputFieldProps>(
+  function InputField({ className, ...additionalProps }, ref) {
+    return (
+      <input
+        className={`w-full h-10 px-3 border-[1px] border-gray-600 focus:border-PrimaryLight outline-none rounded focus:shadow-[1px_-1px_8px_rgba(0,0,0,0.30)] transition-shadow duration-300 ${className}`}
+        ref={ref}
+        {...additionalProps}
+      />
+    );
+  }
+);
+
+export default TextInput;
