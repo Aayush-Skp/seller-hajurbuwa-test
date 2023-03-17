@@ -20,17 +20,15 @@ export default function PriceAndStock() {
       <div className="space-y-10">
         <div className="flex items-center space-x-2">
           <p>Price*</p>
-          <div>
-            <TextInput
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="w-16 rounded-none"
-            />
+          <div className="flex items-center">
+            <span className="h-10 w-10 flex items-center justify-center border border-gray-500">
+              NPR
+            </span>
             <TextInput
               value={price}
               type="number"
               onChange={(e) => setPrice(e.target.value)}
-              className="w-24 rounded-none"
+              className="w-[7.5rem] rounded-none"
             />
           </div>
         </div>

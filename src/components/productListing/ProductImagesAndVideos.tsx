@@ -2,7 +2,7 @@ import Image from 'next/image';
 import React from 'react';
 import Info from '../../../public/icons/info.svg';
 import AddIcon from '../../../public/icons/addIcon.svg';
-import CameraIcon from '../../../public/icons/Camera_fill.png';
+import FileInput from '../common/FileInput';
 
 export default function ProductImagesAndVideos() {
   return (
@@ -36,127 +36,15 @@ export default function ProductImagesAndVideos() {
           </p>
         </div>
 
-        <div className="grid grid-cols-4 pl-24 gap-28">
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput1" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput1"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput2" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput2"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput3" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput3"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput4" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput4"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput5" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput5"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput6" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput6"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput7" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput7"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
-          <div className="flex flex-col justify-center max-w-max">
-            <div>
-              <label htmlFor="productPhotosInput8" className="cursor-pointer">
-                <input
-                  type="file"
-                  id="productPhotosInput8"
-                  className="hidden"
-                />
-                <div className="flex items-center">
-                  <Image src={CameraIcon} alt="" />
-                </div>
-              </label>
-            </div>
-            <p className="text-center">Upload</p>
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 md:pl-24 lg:pl-24 gap-y-5 md:gap-y-10 lg:gap-y-10">
+          <FileInput placeholder="Select a cover photo" />
+          <FileInput placeholder="Select a photo" />
+          <FileInput placeholder="Select a photo" />
+          <FileInput placeholder="Select a photo" />
+          <FileInput placeholder="Select a photo" />
+          <FileInput placeholder="Select a photo" />
+          <FileInput placeholder="Select a photo" />
+          <FileInput placeholder="Select a photo" />
         </div>
       </div>
     </div>
