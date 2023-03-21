@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Button from '../common/Button';
-import Sidebar from '../sidebar/Sidebar';
 import GeneralInformation from './GeneralInformation';
 import PriceAndStock from './PriceAndStock';
 import ProductDetails from './ProductDetails';

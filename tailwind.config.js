@@ -41,6 +41,7 @@ module.exports = {
         secondary: '#E77B73',
         tertiary: '#FCEFEE',
       },
+      black: '#000',
     },
   },
   plugins: [],

@@ -24,7 +24,7 @@ const Navbar = ({ pageName }: any) => {
   isOpen;
 
   return (
-    <nav className="fixed top-0 left-0 z-50 w-full bg-white text-black border-accent-primary border-2">
+    <nav className="fixed top-0 left-0 z-20 w-full h-28 bg-white text-black border-accent-primary border-2">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center justify-start">

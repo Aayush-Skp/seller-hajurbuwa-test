@@ -37,14 +37,17 @@ export default function ProductImagesAndVideos() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 md:pl-24 lg:pl-24 gap-y-5 md:gap-y-10 lg:gap-y-10">
-          <FileInput placeholder="Select a cover photo" />
-          <FileInput placeholder="Select a photo" />
-          <FileInput placeholder="Select a photo" />
-          <FileInput placeholder="Select a photo" />
-          <FileInput placeholder="Select a photo" />
-          <FileInput placeholder="Select a photo" />
-          <FileInput placeholder="Select a photo" />
-          <FileInput placeholder="Select a photo" />
+          <FileInput
+            placeholder="Select a cover photo"
+            accept=".png, .jpg, .jpeg"
+          />
+          <FileInput placeholder="Select a photo" accept=".png, .jpg, .jpeg" />
+          <FileInput placeholder="Select a photo" accept=".png,.jpg,.jpeg" />
+          <FileInput placeholder="Select a photo" accept=".png,.jpg,.jpeg" />
+          <FileInput placeholder="Select a photo" accept=".png,.jpg,.jpeg" />
+          <FileInput placeholder="Select a photo" accept=".png,.jpg,.jpeg" />
+          <FileInput placeholder="Select a photo" accept=".png,.jpg,.jpeg" />
+          <FileInput placeholder="Select a photo" accept=".png,.jpg,.jpeg" />
         </div>
       </div>
     </div>

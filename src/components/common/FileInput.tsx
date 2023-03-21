@@ -13,7 +13,7 @@ const FileInput = React.forwardRef<HTMLInputElement, TextInputFieldProps>(
     return (
       <label
         htmlFor="fileUpload"
-        className="group w-24 h-20 md:h-24 lg:h-24 md:w-36 lg:w-36 outline-dotted outline-gray-400 p-2 rounded"
+        className="group w-24 h-20 md:h-24 lg:h-24 md:w-36 lg:w-36 outline-dotted outline-gray-400 p-2 rounded cursor-pointer"
       >
         <input
           id="fileUpload"
@@ -24,7 +24,7 @@ const FileInput = React.forwardRef<HTMLInputElement, TextInputFieldProps>(
           className="hidden"
           {...additionalProps}
         />
-        <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4 lg:space-y-4 cursor-pointer">
+        <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4 lg:space-y-4">
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"

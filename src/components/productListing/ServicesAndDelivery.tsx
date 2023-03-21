@@ -16,18 +16,16 @@ export default function ServicesAndDelivery() {
       <div>
         <div className="flex items-center space-x-2">
           <p>Price*</p>
-          <div>
+          <div className="flex items-center w-36">
             <TextInput
               value={weight}
               type="number"
               onChange={(e) => setWeight(e.target.valueAsNumber)}
-              className="w-24 rounded-none"
+              className="rounded-none"
             />
-            <TextInput
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-              className="w-16 rounded-none"
-            />
+            <span className="h-10 w-10 flex items-center justify-center border border-gray-500">
+              Kg
+            </span>
           </div>
         </div>
       </div>

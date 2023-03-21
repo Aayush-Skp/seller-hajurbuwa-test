@@ -4,8 +4,16 @@ import InputLabel from '../common/InputLabel';
 import TextInputField from '../common/TextInput';
 import Info from '../../../public/icons/info.svg';
 import RightIcon from '../../../public/icons/chevron-right.svg';
+import SelectInput from '../common/SelectInput';
+import useFormValidation from '../../hooks/useFormValidation';
+import { ProductGeneralInfoSchema } from '../../validation/productListingSchema';
+import { Controller } from 'react-hook-form';
 
 export default function GeneralInformation() {
+  const { errors, register, control } = useFormValidation(
+    ProductGeneralInfoSchema
+  );
+
   return (
     <div className="px-8 py-2 space-y-5">
       <div className="flex items-center space-x-3">
@@ -24,9 +32,8 @@ export default function GeneralInformation() {
             </div>
             <TextInputField
               id="product_title"
-              onChange={(e) => {
-                console.log(e.target.value);
-              }}
+              onChange={register('product_title').onChange}
+              ref={register('product_title').ref}
             />
           </div>
 
@@ -41,9 +48,8 @@ export default function GeneralInformation() {
             <div className="w-full  space-y-3">
               <TextInputField
                 id="product_category"
-                onChange={(e) => {
-                  console.log(e.target.value);
-                }}
+                onChange={register('product_category').onChange}
+                ref={register('product_category').ref}
               />
               <p>OR</p>
               <div className="h-72 border border-gray-500 divide-y divide-gray-500">
@@ -94,28 +100,33 @@ export default function GeneralInformation() {
                 htmlFor="product_title"
               />
             </div>
-            <TextInputField
-              id="product_title"
-              onChange={(e) => {
-                console.log(e.target.value);
-              }}
-            />
+            <div className="w-full">
+              <Controller
+                render={({ field }) => {
+                  console.log(field);
+                  return (
+                    <SelectInput
+                      options={['nike', 'adidas', 'goldstar']}
+                      {...field}
+                    />
+                  );
+                }}
+                control={control}
+                name="brand_specification"
+              />
+              {/* <SelectInput
+                name="brand_specification"
+                onChange={register('brand_specification').onChange}
+                options={['nike', 'adidas', 'goldstar']}
+              /> */}
+            </div>
           </div>
 
           <div className="flex items-center space-x-5">
             <div className="w-[165px]">
-              <InputLabel
-                label="Unit Selection"
-                required
-                htmlFor="product_title"
-              />
+              <InputLabel label="Unit Selection" required />
             </div>
-            <TextInputField
-              id="product_title"
-              onChange={(e) => {
-                console.log(e.target.value);
-              }}
-            />
+            <SelectInput options={['nike', 'adidas', 'goldstar']} />
           </div>
           <div className="flex items-center space-x-5">
             <div className="w-[165px]">
