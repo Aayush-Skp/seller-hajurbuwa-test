@@ -12,16 +12,10 @@ import {
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
 import Link from 'next/link';
-import type { SetRegistrationData } from './SellerRegistration';
 import { phoneVerificationService } from '../../services/phoneVerificationService';
+import type { RegistrationProps } from './SellerRegistration';
 
-type PhoneValidationProps = {
-  setRegistrationData: SetRegistrationData;
-  incStep: () => void;
-  decStep: () => void;
-};
-
-export default function PhoneValidation(props: PhoneValidationProps) {
+export default function PhoneValidation(props: RegistrationProps) {
   const { setRegistrationData, incStep, decStep } = props;
 
   const { register, handleSubmit, errors, setError, isValid } =
@@ -30,6 +24,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
   function handleFormSubmit(data: PhoneNumberType) {
     phoneVerificationService(data)
       .then((res) => {
+        console.log(res);
         if (res === 'success') {
           setRegistrationData((prev) => {
             return {
@@ -59,7 +54,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex flex-col md:px-10 sm:px-0 pt-10 pb-5 items-around justify-center text-black h-full w-full"
+      className="flex flex-col px-10 pt-10 pb-5 items-around justify-center text-black h-full w-full"
     >
       <div className="cursor-pointer" onClick={() => router.push('/')}>
         <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
@@ -96,11 +91,11 @@ export default function PhoneValidation(props: PhoneValidationProps) {
         <p className="text-sm p-6 px-10 text-gray-850 text-center">
           By Clicking &quot;Continue&quot;, you agree to Hajurbuwa.com&apos;s
           <Link href="/terms-conditions" className="text-accent-tertiary">
-            <a className="text-accent-tertiary">{` Terms of Service `}</a>
+            <a className="text-accent-primary">{` Terms of Service `}</a>
           </Link>
           and
           <Link href="/terms-conditions" className="text-accent-tertiary">
-            <a className="text-accent-tertiary">{` Privacy Policy `}</a>
+            <a className="text-accent-primary">{` Privacy Policy `}</a>
           </Link>
           .
         </p>

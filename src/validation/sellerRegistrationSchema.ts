@@ -32,6 +32,6 @@ export const sellerDetailsSchema = z.object({
 
 export const termsAndConditionsSchema = z.object({
   confirm_business_name: z.boolean().default(true),
-  receive_updates_on_whatsapp: z.boolean().default(true),
-  agreed_terms_conditions: z.boolean().default(false),
+  receive_updates_on_whatsapp: z.boolean().default(false),
+  agreed_terms_conditions: z.boolean().default(true),
 });
