@@ -8,7 +8,7 @@ export default function AccountFinanceStatement() {
       <Header />
       <div className="flex flex-col px-4 py-2 space-y-4">
         <p className="text-xl">Account Statement</p>
-        <div className="flex items-center space-x-2 justify-start w-96">
+        <div className="flex items-center space-x-2 justify-start w-72">
           <label>Period</label>
           <SelectInput
             options={[
@@ -16,11 +16,6 @@ export default function AccountFinanceStatement() {
               '12 May 2022-19 May 2022',
               '14 May 2022-19 May 2022',
             ]}
-          />
-          <SelectInput
-            className="w-1/2"
-            options={['paid', 'unpaid']}
-            onChange={(e) => setPaymentStatus(e.target.value)}
           />
         </div>
         <div className="w-full flex items-center justify-center bg-">
@@ -31,9 +26,9 @@ export default function AccountFinanceStatement() {
                   paymentStatus === 'paid'
                     ? 'text-white bg-success-primary'
                     : 'text-red-200 bg-gray-200'
-                } px-2 py-1`}
+                } px-2 py-1 capitalize`}
               >
-                Unpaid
+                {paymentStatus}
               </span>
               {paymentStatus === 'unpaid' ? (
                 <span className="px-2 py-1 ">

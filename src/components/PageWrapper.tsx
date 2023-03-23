@@ -9,7 +9,7 @@ const PageWrapper = ({ children }: PageWrapperProps) => {
   return (
     <div className="">
       <Navbar />
-      <div className="mt-[113px]">{children}</div>
+      <div className="mt-[112px]">{children}</div>
     </div>
   );
 };

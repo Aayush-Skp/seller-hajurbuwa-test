@@ -218,12 +218,24 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                             </div>
                           )}
                           {productStatus === 'unShipped' && (
-                            <Button
-                              className="text-sm"
-                              onClick={() => handleOrderAction('requestPickUp')}
-                            >
-                              Request Pickup
-                            </Button>
+                            <div className="flex flex-col space-y-2">
+                              <Button
+                                className="text-sm"
+                                onClick={() =>
+                                  handleOrderAction('requestPickUp')
+                                }
+                              >
+                                Print Package Slip
+                              </Button>
+                              <Button
+                                className="text-sm"
+                                onClick={() =>
+                                  handleOrderAction('requestPickUp')
+                                }
+                              >
+                                Request Pickup
+                              </Button>
+                            </div>
                           )}
                           <OrderActionModal
                             isOpen={isOpen}

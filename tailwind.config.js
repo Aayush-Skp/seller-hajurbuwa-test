@@ -4,6 +4,8 @@ module.exports = {
   theme: {
     extend: {},
     colors: {
+      white: '#FFFFFF',
+      black: '#000',
       red: {
         200: '#E50131',
         600: '#C70101',
@@ -20,7 +22,6 @@ module.exports = {
         500: '#4F4F4F',
         600: '#333333',
       },
-      white: '#FFFFFF',
       success: {
         primary: '#219653',
         secondary: '#6AB482',
@@ -41,7 +42,6 @@ module.exports = {
         secondary: '#E77B73',
         tertiary: '#FCEFEE',
       },
-      black: '#000',
     },
   },
   plugins: [],

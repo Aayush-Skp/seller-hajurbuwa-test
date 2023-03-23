@@ -62,10 +62,16 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   const [pageSize, setPageSize] = useState(25);
   const [pageIndex, setPageIndex] = useState(0);
 
+  console.log('rendered');
+
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
   const [isPriceEditModalOpen, setIsPriceEditModalOpen] = useState(false);
   const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false);
   const [selectedPriceForUpdate, setSelectedPriceForUpdate] = useState(0);
+
+  const [quantityDiscountPrices, setQuantityDiscountPrices] = useState([
+    { id: '1', quantity: 3, pricePerPc: 3000 },
+  ]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -249,6 +255,10 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                             Add Quantity Discounts
                           </button>
                           <QuantityDiscountModal
+                            quantityDiscountPrices={quantityDiscountPrices}
+                            setQuantityDiscountPrices={
+                              setQuantityDiscountPrices
+                            }
                             handleDiscountModelClose={handleDiscountModelClose}
                             isDiscountModalOpen={isDiscountModalOpen}
                           />

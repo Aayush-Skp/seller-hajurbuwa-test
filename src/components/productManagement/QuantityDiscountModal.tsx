@@ -4,6 +4,7 @@ import Button from '../common/Button';
 import checkMark from '../../../public/icons/check-mark.svg';
 import { AiFillDelete } from 'react-icons/ai';
 import { ChangeEvent, useState } from 'react';
+import ErrorMessage from '../common/ErrorMessage';
 
 type ProductAttribute = {
   id: string;
@@ -11,63 +12,115 @@ type ProductAttribute = {
   pricePerPc: number;
 };
 
-type QuantityDiscountModalProps = {
+type QuantityDiscountProps = {
   productId?: string;
+  quantityDiscountPrices: ProductAttribute[];
+  setQuantityDiscountPrices: React.Dispatch<
+    React.SetStateAction<ProductAttribute[]>
+  >;
   isDiscountModalOpen: boolean;
   toggleStock?: boolean;
+
   handleDiscountModelClose: (value: boolean) => void;
 };
 
-export default function QuantityDiscountModal({
-  productId,
-  toggleStock,
-  isDiscountModalOpen,
-  handleDiscountModelClose,
-}: QuantityDiscountModalProps) {
-  const [quantityDiscounts, setQuantityDiscounts] = useState<
-    ProductAttribute[]
-  >([{ id: '1', quantity: 3, pricePerPc: 3000 }]);
+export default function QuantityDiscountModal(props: QuantityDiscountProps) {
+  const {
+    productId,
+    toggleStock,
+    quantityDiscountPrices,
+    setQuantityDiscountPrices,
+    isDiscountModalOpen,
+    handleDiscountModelClose,
+  } = props;
+
+  const [quantityValidation, setQuantityValidation] = useState({
+    isValid: true,
+    msg: '',
+  });
 
   function addQuantityDiscount() {
-    setQuantityDiscounts((prev) => {
+    if (quantityDiscountPrices.length >= 4) return;
+
+    setQuantityDiscountPrices((prev) => {
       return [
         ...prev,
         {
           id: `${prev.length + 1 + Math.random()}`,
-          quantity: prev.length + 3,
-          pricePerPc: 0,
+          quantity:
+            quantityDiscountPrices[quantityDiscountPrices.length - 1].quantity +
+            1,
+          pricePerPc:
+            quantityDiscountPrices[quantityDiscountPrices.length - 1]
+              .pricePerPc - 1,
         },
       ];
     });
   }
 
   function deleteQuantityDiscount(value: ProductAttribute) {
-    if (quantityDiscounts.length > 1) {
-      const filteredDiscounts = quantityDiscounts.filter(
+    if (quantityDiscountPrices.length > 1) {
+      const filteredDiscounts = quantityDiscountPrices.filter(
         (item) => item.id !== value.id
       );
-      setQuantityDiscounts(filteredDiscounts);
+      setQuantityDiscountPrices(filteredDiscounts);
     }
   }
 
   function updateQuantityDiscount(
     item: ProductAttribute,
+    index: number,
     e: ChangeEvent<HTMLInputElement>
   ) {
     const { name, valueAsNumber } = e.target;
 
-    console.log(item, e.target.name);
+    if (!((index === 0 && name === 'pricePerPc') || index > 0)) return;
 
-    const updatedValues = quantityDiscounts.map((val: ProductAttribute) => {
-      if (val.id === item.id) {
-        if (name === 'quantity') val.quantity = Number(valueAsNumber);
-        if (name === 'pricePerPc') val.pricePerPc = valueAsNumber;
+    const updatedQuantityDiscountPrices = quantityDiscountPrices.map(
+      (val: ProductAttribute) => {
+        if (val.id === item.id) {
+          if (name === 'quantity') val.quantity = valueAsNumber;
+          if (name === 'pricePerPc') val.pricePerPc = valueAsNumber;
+        }
         return val;
       }
-      return val;
-    });
+    );
 
-    setQuantityDiscounts(updatedValues);
+    if (!(index === 0)) {
+      if (
+        name === 'quantity' &&
+        quantityDiscountPrices[index - 1].quantity < valueAsNumber
+      ) {
+        setQuantityValidation({
+          isValid: false,
+          msg: `Quantity must be greater than ${
+            quantityDiscountPrices[index - 1].quantity
+          } and price should be less than ${
+            quantityDiscountPrices[index - 1].pricePerPc
+          } `,
+        });
+      }
+      if (
+        name === 'pricePerPc' &&
+        quantityDiscountPrices[index - 1].pricePerPc < valueAsNumber
+      ) {
+        setQuantityValidation({
+          isValid: false,
+          msg: `Quantity must be greater than ${
+            quantityDiscountPrices[index - 1].quantity
+          } and price should be less than ${
+            quantityDiscountPrices[index - 1].pricePerPc
+          } `,
+        });
+      }
+    }
+
+    // setQuantityValidation({
+    //   isValid: true,
+    //   msg: '',
+    // });
+
+    setQuantityDiscountPrices(updatedQuantityDiscountPrices);
   }
 
   return (
@@ -87,6 +140,7 @@ export default function QuantityDiscountModal({
         },
 
         overlay: {
+          zIndex: 100,
           backgroundColor: 'rgba(0, 0, 0, 0.3)',
         },
       }}
@@ -96,15 +150,15 @@ export default function QuantityDiscountModal({
           <Image src={checkMark} alt="" />
           <span>Enter Quantity Discount/s price for this product?</span>
         </div>
-        <div className="w-full">
+        <div className={'w-full'}>
           <div className="flex justify-around h-10 px-2 border-2 border-black">
             <span>Quantity</span>
             <span className="h-full w-[2px] bg-black" />
             <span>Price per pc</span>
           </div>
 
-          {quantityDiscounts.length > 0
-            ? quantityDiscounts.map((discount, i) => (
+          {quantityDiscountPrices.length > 0
+            ? quantityDiscountPrices.map((discount, i) => (
                 <div
                   key={i}
                   className="flex justify-around items-center space-x-4 p-2 border-2 border-black"
@@ -114,7 +168,7 @@ export default function QuantityDiscountModal({
                     <input
                       name="quantity"
                       type="number"
-                      onChange={(e) => updateQuantityDiscount(discount, e)}
+                      onChange={(e) => updateQuantityDiscount(discount, i, e)}
                       value={discount.quantity}
                       className="h-8 w-28 px-2 outline-none border border-black"
                     />
@@ -124,13 +178,13 @@ export default function QuantityDiscountModal({
                     <input
                       name="pricePerPc"
                       type="number"
-                      onChange={(e) => updateQuantityDiscount(discount, e)}
+                      onChange={(e) => updateQuantityDiscount(discount, i, e)}
                       value={discount.pricePerPc}
                       className="h-8 w-28 px-2 outline-none border border-black"
                     />
                     <span>NPR</span>
                   </div>
-                  {quantityDiscounts.length > 1 && (
+                  {quantityDiscountPrices.length > 1 && i > 0 && (
                     <AiFillDelete
                       className="w-5 h-5 text-error-primary cursor-pointer"
                       onClick={() => deleteQuantityDiscount(discount)}
@@ -139,15 +193,28 @@ export default function QuantityDiscountModal({
                 </div>
               ))
             : ''}
+          {!quantityValidation.isValid ? (
+            <ErrorMessage message={quantityValidation.msg} />
+          ) : null}
         </div>
         <div className="w-full flex items-center justify-between space-x-3">
           <Button
             className="w-full bg-warning-primary"
             onClick={addQuantityDiscount}
+            disabled={
+              quantityDiscountPrices.length >= 4 || !quantityValidation.isValid
+            }
           >
             Add Row
           </Button>
-          <Button className="w-full">Save</Button>
+          <Button
+            disabled={
+              !quantityValidation.isValid || quantityDiscountPrices.length <= 1
+            }
+            className="w-full"
+          >
+            Save
+          </Button>
         </div>
       </div>
     </Modal>

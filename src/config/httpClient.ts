@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseURL = process.env.SERVER_BASE_URL;
+const baseURL = 'https://dashboard.hajurbuwa.com/api';
 
 export const httpClient = axios.create({
   baseURL,
