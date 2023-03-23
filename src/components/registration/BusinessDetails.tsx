@@ -3,17 +3,46 @@ import businessSetup from '/public/images/business_setup.svg';
 import { BiArrowBack } from 'react-icons/bi';
 import Button from '../common/Button';
 import useFormValidation from '../../hooks/useFormValidation';
-import { businessDetailsSchema } from '../../validation/sellerRegistrationSchema';
+import {
+  businessDetailsSchema,
+  BusinessDetailsType,
+} from '../../validation/sellerRegistrationSchema';
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
+import {
+  SellerRegistrationDataType,
+  SetRegistrationData,
+} from './SellerRegistration';
+import { useEffect } from 'react';
 
-export default function BusinessDetails() {
-  const { register, handleSubmit, errors } = useFormValidation(
+type BusinessDetailsProps = {
+  registrationData: SellerRegistrationDataType;
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
+
+export default function BusinessDetails(props: BusinessDetailsProps) {
+  const { setRegistrationData, incStep, decStep, registrationData } = props;
+
+  const { register, handleSubmit, errors, setValue } = useFormValidation(
     businessDetailsSchema
   );
 
-  function handleFormSubmit(data: typeof businessDetailsSchema) {
-    console.log(data);
+  useEffect(() => {
+    setValue('business_name', registrationData.business_name);
+    setValue('pan_number', registrationData.pan_number);
+  }, []);
+
+  function handleFormSubmit(data: BusinessDetailsType) {
+    setRegistrationData((prev) => {
+      return {
+        ...prev,
+        ...data,
+      };
+    });
+
+    incStep();
   }
 
   return (
@@ -22,7 +51,7 @@ export default function BusinessDetails() {
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex flex-col pt-5 lg:px-10 md:px-5 xxs:px-2 pb-5 items-center justify-center text-black h-full w-full"
       >
-        <div className="cursor-pointer" onClick={() => {}}>
+        <div className="cursor-pointer" onClick={decStep}>
           <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
         </div>
         <div className="flex flex-col xxs:px-5 md:px-10 pt-0 items-center justify-center w-full">
@@ -30,7 +59,7 @@ export default function BusinessDetails() {
           <div className="justify-start">
             <div className="my-3 flex justify-start">
               <span className="font-bold text-left text-md capitalize mt-1">
-                Pratik, Let&apos;s Setup your Profile
+                {registrationData.first_name}, Let&apos;s Setup your Profile
               </span>
             </div>
             <div className="mb-5 flex items-start">

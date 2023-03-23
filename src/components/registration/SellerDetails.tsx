@@ -1,16 +1,46 @@
+import { useEffect } from 'react';
 import { BiArrowBack } from 'react-icons/bi';
 import useFormValidation from '../../hooks/useFormValidation';
-import { sellerDetailsSchema } from '../../validation/sellerRegistrationSchema';
+import {
+  sellerDetailsSchema,
+  SellerDetailsType,
+} from '../../validation/sellerRegistrationSchema';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
+import {
+  SellerRegistrationDataType,
+  SetRegistrationData,
+} from './SellerRegistration';
 
-export default function SellerDetails() {
-  const { register, handleSubmit, errors } =
+type SellerDetailsProps = {
+  registrationData: SellerRegistrationDataType;
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
+
+export default function SellerDetails(props: SellerDetailsProps) {
+  const { setRegistrationData, incStep, decStep, registrationData } = props;
+
+  const { register, handleSubmit, errors, setValue } =
     useFormValidation(sellerDetailsSchema);
 
-  function handleFormValidation(data: typeof sellerDetailsSchema) {
-    console.log(data);
+  useEffect(() => {
+    setValue('first_name', registrationData.first_name);
+    setValue('last_name', registrationData.last_name);
+    setValue('password', registrationData.password);
+    setValue('email', registrationData.email);
+  }, []);
+
+  function handleFormValidation(data: SellerDetailsType) {
+    setRegistrationData((prev) => {
+      return {
+        ...prev,
+        ...data,
+      };
+    });
+    incStep();
   }
 
   return (
@@ -19,7 +49,7 @@ export default function SellerDetails() {
         onSubmit={handleSubmit(handleFormValidation)}
         className="flex flex-col xxs:px-4 md:px-10 pt-10 pb-5 items-center justify-center text-black h-full w-full"
       >
-        <div className="cursor-pointer" onClick={() => {}}>
+        <div className="cursor-pointer" onClick={() => decStep()}>
           <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
         </div>
         <div className="absolute top-0 flex flex-col items-center justify-center translate-y-1/2">

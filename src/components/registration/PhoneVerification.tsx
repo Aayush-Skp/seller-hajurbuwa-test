@@ -3,8 +3,16 @@ import otp from '/public/images/otp.svg';
 import OtpInput from 'react-otp-input';
 import { BiArrowBack } from 'react-icons/bi';
 import { useState } from 'react';
+import { SetRegistrationData } from './SellerRegistration';
 
-export default function PhoneVerification() {
+type PhoneVerificationProps = {
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
+
+export default function PhoneVerification(props: PhoneVerificationProps) {
+  const { incStep, decStep } = props;
   const [otpCode, setOptCode] = useState();
   return (
     <div>
@@ -14,7 +22,7 @@ export default function PhoneVerification() {
             Verification
           </span>
         </div>
-        <div className="cursor-pointer" onClick={() => {}}>
+        <div className="cursor-pointer" onClick={decStep}>
           <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
         </div>
         <div className="flex flex-col px-10 pt-0 items-center justify-center w-full">

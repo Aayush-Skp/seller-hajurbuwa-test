@@ -20,6 +20,8 @@ export const businessDetailsSchema = z.object({
     .max(15, { message: 'Please enter a valid PAN' }),
 });
 
+export type BusinessDetailsType = z.infer<typeof businessDetailsSchema>;
+
 export const sellerDetailsSchema = z.object({
   first_name: z.string().min(1, { message: 'First name is required' }).max(256),
   last_name: z.string().min(1, { message: 'First name is required' }).max(256),
@@ -30,8 +32,4 @@ export const sellerDetailsSchema = z.object({
     .max(256),
 });
 
-export const termsAndConditionsSchema = z.object({
-  confirm_business_name: z.boolean().default(true),
-  receive_updates_on_whatsapp: z.boolean().default(true),
-  agreed_terms_conditions: z.boolean().default(false),
-});
+export type SellerDetailsType = z.infer<typeof sellerDetailsSchema>;

@@ -1,7 +1,28 @@
 import Image from 'next/image';
+import { ChangeEvent } from 'react';
 import { AiFillCheckSquare, AiFillCloseCircle } from 'react-icons/ai';
 import { BiArrowBack } from 'react-icons/bi';
-export default function PanOrVatUpload() {
+import { SetRegistrationData } from './SellerRegistration';
+
+type PanOrVatUploadProps = {
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
+
+export default function PanOrVatUpload(props: PanOrVatUploadProps) {
+  const { setRegistrationData, incStep, decStep } = props;
+
+  function handleFileInputChange(e: ChangeEvent<HTMLInputElement>) {
+    setRegistrationData((prev) => {
+      return {
+        ...prev,
+        pan_image: e.target.files![0],
+      };
+    });
+    incStep();
+  }
+
   return (
     <div>
       <form className="flex flex-col px-10 xxs:pb-0 md:pb-5 items-center xxs:justify-around md:justify-between text-black h-full w-full">
@@ -10,7 +31,7 @@ export default function PanOrVatUpload() {
             Upload PAN/VAT Document
           </span>
         </div>
-        <div className="cursor-pointer" onClick={() => {}}>
+        <div className="cursor-pointer" onClick={decStep}>
           <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
         </div>
         <div>
@@ -44,7 +65,7 @@ export default function PanOrVatUpload() {
               <AiFillCloseCircle />
             </div>
             <div className="flex justify-center items-center py-1 text-center text-sm row-start-3 col-start-2">
-              Shoud not be Blur.
+              Should not be Blur.
             </div>
             {/* </div> */}
             {/* <div className="col flex flex-col justify-center items-center"> */}
@@ -83,10 +104,9 @@ export default function PanOrVatUpload() {
             </label>
             <input
               id="panImage"
-              name="panImage"
               type="file"
               accept="image/*"
-              onChange={() => {}}
+              onChange={handleFileInputChange}
               className={`hidden h-full w-full`}
             />
           </div>
