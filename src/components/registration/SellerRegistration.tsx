@@ -7,6 +7,7 @@ import TermsAndConditions from './TermsAndConditions';
 import PanOrVatUpload from './PanOrVatUpload';
 import ChangePanOrVat from './ChangePanOrVat';
 import { registrationService } from '../../services/registrationService';
+import Success from './Success';
 
 export type SellerRegistrationDataType = {
   phone: string;
@@ -20,15 +21,27 @@ export type SellerRegistrationDataType = {
   confirm_terms_and_conditions: boolean;
   receive_updates_on_whatsapp: boolean;
   confirm_business_name: boolean;
+  otp: string;
 };
 
 export type SetRegistrationData = Dispatch<
   SetStateAction<SellerRegistrationDataType>
 >;
 
-export default function SellerRegistration() {
-  const [step, setStep] = useState<number>(1);
+export type RegistrationProps = {
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
 
+export type PhoneVerificationProps = {
+  registrationData: SellerRegistrationDataType;
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
+
+export default function SellerRegistration() {
   const [registrationData, setRegistrationData] =
     useState<SellerRegistrationDataType>({
       phone: '',
@@ -42,8 +55,10 @@ export default function SellerRegistration() {
       confirm_terms_and_conditions: false,
       receive_updates_on_whatsapp: true,
       confirm_business_name: false,
+      otp: '',
     });
 
+  const [step, setStep] = useState<number>(1);
   function incStep() {
     if (step >= 7) return;
     setStep((prev) => prev + 1);
@@ -80,7 +95,7 @@ export default function SellerRegistration() {
 
   return (
     <div className="bg-gray-150 h-screen w-full overflow-hidden flex justify-center items-center">
-      <div className="relative bg-white xxl:h-3/5 xxl:w-1/4 xl:h-3/5 xl:w-1/3 lg:h=3/5 lg:w-1/3 md:h-3/5 md:w-1/2 sm:h-3/5 sm:w-2/3 xs:h-full xs:w-full xxs:h-full xxs:">
+      <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:h-4/5 md:w-1/2 lg:w-1/3  2xl:h-3/5 2xl:w-1/4  bg-white">
         {step === 1 ? (
           <PhoneValidation
             setRegistrationData={setRegistrationData}
@@ -102,32 +117,33 @@ export default function SellerRegistration() {
             decStep={decStep}
           />
         ) : step === 4 ? (
-          <PhoneVerification
-            setRegistrationData={setRegistrationData}
-            incStep={incStep}
-            decStep={decStep}
-          />
-        ) : step === 5 ? (
           <PanOrVatUpload
             setRegistrationData={setRegistrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step === 6 ? (
+        ) : step === 5 ? (
           <ChangePanOrVat
-            setRegistrationData={setRegistrationData}
             registrationData={registrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step == 7 ? (
+        ) : step === 6 ? (
           <TermsAndConditions
             setRegistrationData={setRegistrationData}
             registrationData={registrationData}
-            submitRegistrationData={submitRegistrationData}
             incStep={incStep}
             decStep={decStep}
           />
+        ) : step === 7 ? (
+          <PhoneVerification
+            registrationData={registrationData}
+            setRegistrationData={setRegistrationData}
+            incStep={incStep}
+            decStep={decStep}
+          />
+        ) : step === 8 ? (
+          <Success />
         ) : null}
       </div>
     </div>
