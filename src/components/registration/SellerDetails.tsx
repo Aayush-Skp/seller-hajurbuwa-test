@@ -1,17 +1,39 @@
+import { useEffect } from 'react';
 import { BiArrowBack } from 'react-icons/bi';
 import useFormValidation from '../../hooks/useFormValidation';
-import { sellerDetailsSchema } from '../../validation/sellerRegistrationSchema';
+import {
+  sellerDetailsSchema,
+  SellerDetailsType,
+} from '../../validation/sellerRegistrationSchema';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
-import type { RegistrationProps } from './SellerRegistration';
+import {
+  SellerRegistrationDataType,
+  SetRegistrationData,
+} from './SellerRegistration';
 
-export default function SellerDetails(props: RegistrationProps) {
-  const { setRegistrationData, incStep, decStep } = props;
-  const { register, handleSubmit, errors } =
+type SellerDetailsProps = {
+  registrationData: SellerRegistrationDataType;
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
+
+export default function SellerDetails(props: SellerDetailsProps) {
+  const { setRegistrationData, incStep, decStep, registrationData } = props;
+
+  const { register, handleSubmit, errors, setValue } =
     useFormValidation(sellerDetailsSchema);
 
-  function handleFormValidation(data: typeof sellerDetailsSchema) {
+  useEffect(() => {
+    setValue('first_name', registrationData.first_name);
+    setValue('last_name', registrationData.last_name);
+    setValue('password', registrationData.password);
+    setValue('email', registrationData.email);
+  }, []);
+
+  function handleFormValidation(data: SellerDetailsType) {
     setRegistrationData((prev) => {
       return {
         ...prev,

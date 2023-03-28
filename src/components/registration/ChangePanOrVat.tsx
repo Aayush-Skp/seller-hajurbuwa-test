@@ -1,14 +1,16 @@
 import Image from 'next/image';
 import { BiArrowBack } from 'react-icons/bi';
+import { SellerRegistrationDataType } from './SellerRegistration';
 
 type ChangePanOrVatProps = {
-  panImageUrl: string;
   incStep: () => void;
+  registrationData: SellerRegistrationDataType;
   decStep: () => void;
 };
 
 export default function ChangePanOrVat(props: ChangePanOrVatProps) {
-  const { panImageUrl, incStep, decStep } = props;
+  const { registrationData, incStep, decStep } = props;
+
   return (
     <div>
       <div className="flex relative flex-col pt-14 px-10 pb-5 items-center xxs:justify-center md:justify-center text-black h-full w-full">
@@ -20,12 +22,12 @@ export default function ChangePanOrVat(props: ChangePanOrVatProps) {
             Upload PAN/VAT Document
           </span>
         </div>
-        <div className="cursor-pointer" onClick={() => {}}>
+        <div className="cursor-pointer" onClick={decStep}>
           <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
         </div>
 
         <Image
-          src={panImageUrl}
+          src={URL.createObjectURL(registrationData.pan_image!)}
           alt="PAN card preview"
           width={220}
           height={330}

@@ -1,37 +1,41 @@
 import Image from 'next/image';
 import termsConditions from '/public/images/terms_conditions.svg';
 import { BiArrowBack } from 'react-icons/bi';
-import { termsAndConditionsSchema } from '../../validation/sellerRegistrationSchema';
-import useFormValidation from '../../hooks/useFormValidation';
 import CheckboxInput from '../common/CheckboxInput';
-import InputLabel from '../common/InputLabel';
 import Button from '../common/Button';
-import type { RegistrationProps } from './SellerRegistration';
-import { ZodDefault } from 'zod';
+import {
+  SellerRegistrationDataType,
+  SetRegistrationData,
+} from './SellerRegistration';
+import { ChangeEvent } from 'react';
 
-export default function TermsAndConditions(props: RegistrationProps) {
-  const { setRegistrationData, incStep, decStep } = props;
-  const { register, handleSubmit, errors } = useFormValidation(
-    termsAndConditionsSchema
-  );
+type TermsAndConditionsProps = {
+  setRegistrationData: SetRegistrationData;
+  registrationData: SellerRegistrationDataType;
+  decStep: () => void;
+  incStep: () => void;
+};
 
-  function handleFormSubmit(data: typeof termsAndConditionsSchema) {
+export default function TermsAndConditions(props: TermsAndConditionsProps) {
+  const { decStep, incStep, registrationData, setRegistrationData } = props;
+  const {
+    confirm_terms_and_conditions,
+    confirm_business_name,
+    receive_updates_on_whatsapp,
+  } = registrationData;
+
+  function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
+    const { name, checked } = e.target;
     setRegistrationData((prev) => {
-      console.log(data);
       return {
         ...prev,
-        ...data,
+        [name]: checked,
       };
     });
-    incStep();
   }
-  errors && console.log(errors);
 
   return (
-    <form
-      onSubmit={handleSubmit(handleFormSubmit)}
-      className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center md:justify-between text-black h-full w-full"
-    >
+    <form className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center md:justify-between text-black h-full w-full">
       <div className="cursor-pointer" onClick={decStep}>
         <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
       </div>
@@ -50,8 +54,10 @@ export default function TermsAndConditions(props: RegistrationProps) {
           <div className="flex items-start justify-start w-full">
             <CheckboxInput
               id="confirm_business_name"
-              {...register('confirm_business_name')}
+              name="confirm_business_name"
+              onChange={handleOnChange}
               className="mr-2 mt-2"
+              checked={confirm_business_name}
             />
             <label className="px-2" htmlFor="confirm_business_name">
               You confirm that the Business name is same as registered in PAN
@@ -60,8 +66,10 @@ export default function TermsAndConditions(props: RegistrationProps) {
           <div className="flex items-start justify-start w-full">
             <CheckboxInput
               id="receive_updates_on_whatsapp"
-              {...register('receive_updates_on_whatsapp')}
+              name="receive_updates_on_whatsapp"
+              onChange={handleOnChange}
               className="mr-2 mt-2"
+              checked={receive_updates_on_whatsapp}
             />
             <label className="px-2" htmlFor="receive_updates_on_whatsapp">
               Receive Order and account related updates on whatsapp
@@ -69,9 +77,11 @@ export default function TermsAndConditions(props: RegistrationProps) {
           </div>
           <div className="flex items-start justify-start w-full">
             <CheckboxInput
-              id="agreed_terms_conditions"
-              {...register('agreed_terms_conditions')}
+              name="confirm_terms_and_conditions"
+              id="confirm_terms_and_conditions"
+              onChange={handleOnChange}
               className="mr-2 mt-2"
+              checked={confirm_terms_and_conditions}
             />
             <label className="px-2" htmlFor="agreed_terms_conditions">
               Click here to indicate that you have read and agree to the
@@ -82,7 +92,12 @@ export default function TermsAndConditions(props: RegistrationProps) {
           </div>
         </div>
       </div>
-      <Button type="submit">Next</Button>
+      <Button
+        disabled={!(confirm_terms_and_conditions && confirm_business_name)}
+        onClick={incStep}
+      >
+        Next
+      </Button>
     </form>
   );
 }

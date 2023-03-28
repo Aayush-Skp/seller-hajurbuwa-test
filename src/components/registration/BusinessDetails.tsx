@@ -3,18 +3,38 @@ import businessSetup from '/public/images/business_setup.svg';
 import { BiArrowBack } from 'react-icons/bi';
 import Button from '../common/Button';
 import useFormValidation from '../../hooks/useFormValidation';
-import { businessDetailsSchema } from '../../validation/sellerRegistrationSchema';
+import {
+  businessDetailsSchema,
+  BusinessDetailsType,
+} from '../../validation/sellerRegistrationSchema';
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
-import type { RegistrationProps } from './SellerRegistration';
+import {
+  SellerRegistrationDataType,
+  SetRegistrationData,
+} from './SellerRegistration';
+import { useEffect } from 'react';
 
-export default function BusinessDetails(props: RegistrationProps) {
-  const { setRegistrationData, incStep, decStep } = props;
-  const { register, handleSubmit, errors } = useFormValidation(
+type BusinessDetailsProps = {
+  registrationData: SellerRegistrationDataType;
+  setRegistrationData: SetRegistrationData;
+  incStep: () => void;
+  decStep: () => void;
+};
+
+export default function BusinessDetails(props: BusinessDetailsProps) {
+  const { setRegistrationData, incStep, decStep, registrationData } = props;
+
+  const { register, handleSubmit, errors, setValue } = useFormValidation(
     businessDetailsSchema
   );
 
-  function handleFormSubmit(data: typeof businessDetailsSchema) {
+  useEffect(() => {
+    setValue('business_name', registrationData.business_name);
+    setValue('pan_number', registrationData.pan_number);
+  }, []);
+
+  function handleFormSubmit(data: BusinessDetailsType) {
     setRegistrationData((prev) => {
       return {
         ...prev,
@@ -37,7 +57,7 @@ export default function BusinessDetails(props: RegistrationProps) {
         <div className="justify-start">
           <div className="my-3 flex justify-start">
             <span className="font-bold text-left text-md capitalize mt-1">
-              Pratik, Let&apos;s Setup your Profile
+              {registrationData.first_name}, Let&apos;s Setup your Profile
             </span>
           </div>
           <div className="mb-5 flex items-start">

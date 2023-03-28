@@ -12,14 +12,28 @@ import {
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
 import Link from 'next/link';
+import type {
+  SellerRegistrationDataType,
+  SetRegistrationData,
+} from './SellerRegistration';
 import { phoneVerificationService } from '../../services/phoneVerificationService';
-import type { RegistrationProps } from './SellerRegistration';
+import { useEffect } from 'react';
 
-export default function PhoneValidation(props: RegistrationProps) {
-  const { setRegistrationData, incStep, decStep } = props;
+type PhoneValidationProps = {
+  setRegistrationData: SetRegistrationData;
+  registrationData: SellerRegistrationDataType;
+  incStep: () => void;
+};
 
-  const { register, handleSubmit, errors, setError, isValid } =
+export default function PhoneValidation(props: PhoneValidationProps) {
+  const { setRegistrationData, incStep, registrationData } = props;
+
+  const { register, handleSubmit, errors, setError, isValid, setValue } =
     useFormValidation(phoneSchema);
+
+  useEffect(() => {
+    setValue('phone', registrationData.phone);
+  }, []);
 
   function handleFormSubmit(data: PhoneNumberType) {
     phoneVerificationService(data)
@@ -36,7 +50,7 @@ export default function PhoneValidation(props: RegistrationProps) {
           return;
         }
 
-        setError('phone_number', {
+        setError('phone', {
           type: 'custom',
           message: 'Phone number that you have entered already exists.',
         });

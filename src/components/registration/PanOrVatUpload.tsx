@@ -1,21 +1,28 @@
 import Image from 'next/image';
+import { ChangeEvent } from 'react';
 import { AiFillCheckSquare, AiFillCloseCircle } from 'react-icons/ai';
 import { BiArrowBack } from 'react-icons/bi';
+import { SetRegistrationData } from './SellerRegistration';
 
-type PanUploadProps = {
-  setPanImageUrl: (url: string) => void;
-  setPanImage: (file: File) => void;
+type PanOrVatUploadProps = {
+  setRegistrationData: SetRegistrationData;
   incStep: () => void;
   decStep: () => void;
 };
-export default function PanOrVatUpload(props: PanUploadProps) {
-  const { setPanImageUrl, setPanImage, incStep, decStep } = props;
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let file = e.target.files!;
-    setPanImage(file[0]);
-    setPanImageUrl(URL.createObjectURL(file[0]));
+
+export default function PanOrVatUpload(props: PanOrVatUploadProps) {
+  const { setRegistrationData, incStep, decStep } = props;
+
+  function handleFileInputChange(e: ChangeEvent<HTMLInputElement>) {
+    setRegistrationData((prev) => {
+      return {
+        ...prev,
+        pan_image: e.target.files![0],
+      };
+    });
     incStep();
-  };
+  }
+
   return (
     <form className="flex flex-col px-10 pb-0 md:pb-5 items-center justify-around md:justify-between text-black h-full w-full">
       <div className="absolute top-0 flex flex-col items-center justify-center translate-y-1/2">
@@ -54,7 +61,7 @@ export default function PanOrVatUpload(props: PanUploadProps) {
             <AiFillCloseCircle />
           </div>
           <div className="flex justify-center items-center py-1 text-center text-sm row-start-3 col-start-2">
-            Shoud not be Blur.
+            Should not be Blur.
           </div>
           <div className="flex justify-center items-center py-1 px-1 md:px-0 text-center row-start-1 col-start-3">
             <Image
@@ -93,7 +100,7 @@ export default function PanOrVatUpload(props: PanUploadProps) {
             name="panImage"
             type="file"
             accept="image/*"
-            onChange={(e) => handleFileChange(e)}
+            onChange={handleFileInputChange}
             className={`hidden h-full w-full`}
           />
         </div>
