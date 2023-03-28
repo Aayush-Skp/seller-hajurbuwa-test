@@ -45,7 +45,7 @@ export default function SellerRegistration() {
       otp: '',
     });
 
-  const [step, setStep] = useState<number>(8);
+  const [step, setStep] = useState<number>(1);
   const [panImageUrl, setPanImageUrl] = useState<string>('');
   const [panImage, setPanImage] = useState<File | null>(null);
   function incStep() {
