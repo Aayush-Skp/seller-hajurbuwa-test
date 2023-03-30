@@ -3,48 +3,118 @@ import React, { useState } from 'react';
 import InputLabel from '../common/InputLabel';
 import TextInputField from '../common/TextInput';
 import Info from '../../../public/icons/info.svg';
+import deleteIcon from '../../../public/icons/delete.svg';
+import Button from '../common/Button';
+import ErrorMessage from '../common/ErrorMessage';
+import useFormValidation from '../../hooks/useFormValidation';
+import { ProductDetailsSchema } from '../../validation/productListingSchema';
 
-export default function ProductDetails() {
-  const [bulletPoints, setBulletPoints] = useState([{ key: 1, value: '' }]);
+export default function ProductDetails(props: any) {
+  const { productDetails, currentStep, decStep, incStep, setProductDetails } =
+    props;
 
-  function addBulletPoints(e: React.KeyboardEvent<HTMLInputElement>) {
-    e.preventDefault();
-    if (e?.key === 'Enter' && bulletPoints.length < 5)
-      setBulletPoints([
-        ...bulletPoints,
-        { key: bulletPoints.length + 1, value: '' },
-      ]);
+  const { errors, register, control, setValue, handleSubmit, isValid } =
+    useFormValidation(ProductDetailsSchema);
+
+  const [featuredHighlights, setFeaturedHighlights] = useState(['']);
+  const [featuredHighlightValidation, setFeaturedHighlightValidation] =
+    useState({
+      isValid: true,
+      message: '',
+    });
+
+  function handleOnChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) {
+    const points = [...featuredHighlights];
+    points[index] = e.target.value;
+    setFeaturedHighlights(points);
+    setFeaturedHighlightValidation({
+      isValid: true,
+      message: '',
+    });
   }
 
-  function removeFeaturedHightLight() {}
+  function addFeaturedHightLight(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (featuredHighlights.length <= 4) {
+        setFeaturedHighlights((prev) => {
+          return [...prev, ''];
+        });
+      }
+    }
+    return;
+  }
+
+  function removeFeaturedHightLight(index: number) {
+    const filteredPoints = featuredHighlights.filter((_, i) => i !== index);
+    setFeaturedHighlights(filteredPoints);
+  }
+
+  function validateFeaturedHighlight() {
+    if (featuredHighlights.length < 3) {
+      setFeaturedHighlightValidation({
+        isValid: false,
+        message: 'Please add at least 3 featured highlights',
+      });
+
+      return false;
+    }
+    return true;
+  }
+
+  function handleFormSubmit(data: any) {
+    console.log(data);
+    if (validateFeaturedHighlight()) incStep();
+  }
 
   return (
-    <form className="px-8 py-2 space-y-5 w-full">
+    <form
+      onSubmit={handleSubmit(handleFormSubmit)}
+      className="px-8 py-2 space-y-5 w-full"
+    >
       <div className="flex items-center space-x-3">
         <Image src={Info} alt="" />
         <p>Fields with asterisks* should be filled.</p>
       </div>
       <div className="w-full space-y-10">
-        <div className="flex space-x-2">
-          <div className="w-[165px]">
-            <InputLabel label="Featured Highlights" required />
-          </div>
-          <div className="w-full border border-gray-500 p-4 rounded">
-            {bulletPoints.map((points, i) => (
-              <div key={i} className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-gray-600 rounded-full" />
-                <TextInputField
-                  onKeyDown={addBulletPoints}
-                  onChange={(e) => {
-                    console.log(e.type);
-                  }}
-                  className="outline-none border-none focus:shadow-none p-5"
-                />
-                <button className="font-semibold border-2 border-gray-600 px-2 bg-gray-600 text-white rounded-full">
-                  x
-                </button>
+        <div className="flex flex-col">
+          <div className="flex space-x-2">
+            <div className="w-[165px]">
+              <InputLabel label="Featured Highlights" required />
+            </div>
+            <div className="w-full">
+              <div className="border border-gray-500 p-4 rounded">
+                {featuredHighlights.map((point, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center space-x-2 border-b border-gray-300"
+                  >
+                    <div className="w-3 h-3 bg-success-secondary rounded-full" />
+                    <TextInputField
+                      value={point}
+                      onKeyDown={addFeaturedHightLight}
+                      onChange={(e) => handleOnChange(e, index)}
+                      className="outline-none focus:shadow-none border-none"
+                    />
+                    {index !== 0 ? (
+                      <div
+                        onClick={() => removeFeaturedHightLight(index)}
+                        className="flex items-center cursor-pointer"
+                      >
+                        <Image src={deleteIcon} alt="delete icon" />
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
               </div>
-            ))}
+
+              {!featuredHighlightValidation.isValid ? (
+                <ErrorMessage message={featuredHighlightValidation.message} />
+              ) : null}
+            </div>
           </div>
         </div>
 
@@ -53,7 +123,10 @@ export default function ProductDetails() {
             <InputLabel label="Description" required />
           </div>
           <div className="w-full h-36">
-            <textarea className="w-full h-full px-4 py-2 outline-none border border-gray-500" />
+            <textarea
+              {...register('description')}
+              className="w-full h-full px-4 py-2 outline-none border rounded border-gray-500"
+            />
           </div>
         </div>
 
@@ -62,10 +135,29 @@ export default function ProductDetails() {
             <InputLabel
               className="text-end"
               label="What’s in the Box?"
+              htmlFor="included_items"
               required
             />
           </div>
-          <TextInputField onChange={(e) => {}} />
+          <div className="flex flex-col w-full">
+            <TextInputField
+              id="included_items"
+              error={errors.hasOwnProperty('included_items')}
+              {...register('included_items')}
+            />
+            <ErrorMessage message={errors.included_items?.message as string} />
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-end pr-8 pb-10 space-x-3">
+        <div className="w-96 flex items-center justify-center space-x-4">
+          <Button className="py-3 text-sm" onClick={decStep}>
+            Back
+          </Button>
+          <Button className="py-3 text-sm">Discard</Button>
+          <Button type="submit" className="py-3 text-sm">
+            Continue
+          </Button>
         </div>
       </div>
     </form>

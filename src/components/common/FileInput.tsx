@@ -1,23 +1,24 @@
 import React from 'react';
 
-type TextInputFieldProps = React.DetailedHTMLProps<
+type FileInputFieldProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 >;
 
-const FileInput = React.forwardRef<HTMLInputElement, TextInputFieldProps>(
+const FileInput = React.forwardRef<HTMLInputElement, FileInputFieldProps>(
   function InputField(
-    { placeholder, accept, multiple, ...additionalProps },
+    { placeholder, accept, multiple, name, id, ...additionalProps },
     ref
   ) {
     return (
       <label
-        htmlFor="fileUpload"
+        htmlFor={id}
         className="group w-24 h-20 md:h-24 lg:h-24 md:w-36 lg:w-36 outline-dotted outline-gray-400 p-2 rounded cursor-pointer"
       >
         <input
-          id="fileUpload"
-          multiple
+          id={id}
+          name={name}
+          multiple={multiple}
           ref={ref}
           type="file"
           accept={accept}

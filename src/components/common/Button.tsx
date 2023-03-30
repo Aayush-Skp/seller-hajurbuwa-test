@@ -7,6 +7,7 @@ export default function Button({
   className = '',
   children,
   disabled,
+  type,
   ...additionalProps
 }: ButtonProps) {
   return (
@@ -17,6 +18,7 @@ export default function Button({
           : 'hover:opacity-80 transition-opacity'
       } ${className}`}
       disabled={disabled}
+      type={type ?? 'button'}
       {...additionalProps}
     >
       {children}

@@ -25,6 +25,7 @@ export default function useFormValidation(validationSchema: Zod.Schema) {
     setError,
     setValue,
     handleSubmit,
+    formState,
     errors,
     isValid,
   };
