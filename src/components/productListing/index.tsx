@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getBrands } from '../../services/getBrandService';
 import { getUnits } from '../../services/getUnitService';
+import { addProduct } from '../../services/productService';
 import GeneralInformation from './GeneralInformation';
 import PriceAndStock from './PriceAndStock';
 import ProductDetails from './ProductDetails';
@@ -16,28 +17,28 @@ const listingSteps = [
 ];
 
 export default function ProductListing() {
-  const [currentStep, setCurrentStep] = useState(3);
+  const [currentStep, setCurrentStep] = useState(1);
   const [defaultValues, setDefaultValues] = useState({
     brands: [],
     units: [],
   });
 
   const [productDetails, setProductDetails] = useState({
-    product_name: '',
-    product_type: '',
-    brand: '',
-    unit: '',
-    minimum_order: 1,
-    description: '',
     featured_highlights: [],
+    minimum_order: null,
     included_items: '',
     price_per_unit: '',
-    in_stock: '',
-    package_weight: '',
+    package_weight: 1,
+    category_id: null,
+    is_bulk_price: '0',
+    bulk_pricing: [],
+    product_name: '',
+    description: '',
     cover_image: '',
-    sub_images: '',
-    isBulkPrice: false,
-    bulkPrices: [],
+    sub_images: [],
+    in_stock: '1',
+    brand: null,
+    unit: null,
   });
 
   useEffect(() => {
@@ -53,6 +54,10 @@ export default function ProductListing() {
       .catch(console.log);
   }, []);
 
+  function postData() {
+    addProduct(productDetails).then(console.log).catch(console.log);
+  }
+
   function incStep() {
     setCurrentStep((prev) => prev + 1);
   }
@@ -60,6 +65,8 @@ export default function ProductListing() {
   function decStep() {
     setCurrentStep((prev) => prev - 1);
   }
+
+  console.log(productDetails);
 
   return (
     <section className="h-full w-full pb-5">
@@ -120,6 +127,7 @@ export default function ProductListing() {
               currentStep={currentStep}
               incStep={incStep}
               decStep={decStep}
+              postData={postData}
             />
           )}
           {currentStep === 5 && (
@@ -127,6 +135,7 @@ export default function ProductListing() {
               setProductDetails={setProductDetails}
               productDetails={productDetails}
               currentStep={currentStep}
+              postData={postData}
               incStep={incStep}
               decStep={decStep}
             />

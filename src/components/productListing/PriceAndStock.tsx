@@ -12,7 +12,9 @@ import RadioInput from '../common/RadioInput';
 import TextInput from '../common/TextInput';
 
 export default function PriceAndStock(props: any) {
-  const { productDetails, decStep, incStep, defaultValues } = props;
+  const { productDetails, decStep, incStep, defaultValues, setProductDetails } =
+    props;
+
   const [inStock, setInStock] = useState(true);
   const [isBulkPrice, setIsBulkPrice] = useState(false);
   const [minOrder, setMinOrder] = useState(1);
@@ -24,6 +26,20 @@ export default function PriceAndStock(props: any) {
   const [bulkPrices, setBulkPrices] = useState([
     { quantity: minOrder, pricePerPc: 0 },
   ]);
+
+  useEffect(() => {
+    if (isBulkPrice) {
+      setValue('price', '');
+      setError('price', { message: '' });
+    }
+  }, [isBulkPrice]);
+
+  useEffect(() => {
+    setValue('price', productDetails.price);
+    setMinOrder(productDetails.minimum_order);
+    setIsBulkPrice(productDetails.is_bulk_price);
+    setBulkPrices(productDetails.bulk_pricing);
+  }, []);
 
   function addBulkPrice() {
     if (bulkPrices.length <= 3)
@@ -113,15 +129,18 @@ export default function PriceAndStock(props: any) {
     useFormValidation(ProductPriceSchema(defaultValues.units, isBulkPrice));
 
   function handleFormSubmit(data: any) {
-    console.log(data);
-  }
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        ...data,
+        minimum_order: minOrder,
+        is_bulk_price: Number(isBulkPrice),
+        bulk_pricing: bulkPrices,
+      };
+    });
 
-  useEffect(() => {
-    if (isBulkPrice) {
-      setValue('price', '');
-      setError('price', { message: '' });
-    }
-  }, [isBulkPrice]);
+    incStep();
+  }
 
   return (
     <form
@@ -164,7 +183,7 @@ export default function PriceAndStock(props: any) {
               >
                 <option value="">Select Unit</option>
                 {defaultValues?.units?.map((unit: any) => (
-                  <option key={unit.id} value={unit.name}>
+                  <option key={unit.id} value={unit.id}>
                     {unit?.name}
                   </option>
                 ))}

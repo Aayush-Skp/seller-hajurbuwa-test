@@ -10,7 +10,7 @@ type PriceEditModalProps = {
   value: number;
   isPriceEditModalOpen: boolean;
   toggleStock?: boolean;
-  handlePriceEditModelClose: (value: boolean) => void;
+  handlePriceEditModelClose: () => void;
 };
 
 export default function PriceEditModal({
@@ -31,9 +31,7 @@ export default function PriceEditModal({
   return (
     <Modal
       isOpen={isPriceEditModalOpen}
-      onRequestClose={() => {
-        handlePriceEditModelClose(false);
-      }}
+      onRequestClose={handlePriceEditModelClose}
       className="w-2/3 h-1/4 bg-white rounded-md flex flex-col justify-center items-center"
       style={{
         content: {
@@ -44,6 +42,7 @@ export default function PriceEditModal({
         },
 
         overlay: {
+          zIndex: 100,
           backgroundColor: 'rgba(0, 0, 0, 0.3)',
         },
       }}
@@ -53,14 +52,17 @@ export default function PriceEditModal({
           <Image src={checkMark} alt="" />
           <span>Please Enter price for this product?</span>
         </div>
-        <div className="flex items-center justify-center space-x-2">
+        <div className="space-y-2">
           <TextInput
             defaultValue={value}
             // onChange={(e) => setPrice(e.target.valueAsNumber)}
             // value={price}
             type="number"
           />
-          <Button>Save</Button>
+          <div className="flex space-x-2">
+            <Button className="bg-error-primary">Cancel</Button>
+            <Button onClick={handlePriceEditModelClose}>Save</Button>
+          </div>
         </div>
       </div>
     </Modal>

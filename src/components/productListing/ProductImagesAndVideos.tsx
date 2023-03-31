@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Info from '../../../public/icons/info.svg';
 import AddIcon from '../../../public/icons/addIcon.svg';
@@ -22,9 +22,7 @@ type ProductImageList = {
 };
 
 export default function ProductImagesAndVideos(props: any) {
-  const { productDetails, currentStep, decStep, incStep } = props;
-
-  const firsRef = useRef<HTMLInputElement>(null);
+  const { productDetails, decStep, incStep, setProductDetails } = props;
 
   const [coverImage, setCoverImage] = useState<{ file: File | null }>({
     file: null,
@@ -76,7 +74,24 @@ export default function ProductImagesAndVideos(props: any) {
     });
   }
 
-  console.log(productImages);
+  function handleSubmit() {
+    let images: any = [];
+
+    for (const image in productImages) {
+      if (productImages[image as keyof typeof productImages].file)
+        images.push(productImages[image as keyof typeof productImages].file);
+    }
+
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        sub_images: images,
+        cover_image: coverImage.file,
+      };
+    });
+
+    incStep();
+  }
 
   return (
     <form className="px-8 py-2 space-y-5">
@@ -525,7 +540,7 @@ export default function ProductImagesAndVideos(props: any) {
           <Button type="button" className="py-3 text-sm">
             Discard
           </Button>
-          <Button onClick={incStep} className="py-3 text-sm">
+          <Button onClick={handleSubmit} className="py-3 text-sm">
             Continue
           </Button>
         </div>

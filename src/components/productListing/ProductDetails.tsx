@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '../common/InputLabel';
 import TextInputField from '../common/TextInput';
 import Info from '../../../public/icons/info.svg';
@@ -8,12 +8,12 @@ import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import useFormValidation from '../../hooks/useFormValidation';
 import { ProductDetailsSchema } from '../../validation/productListingSchema';
+import { any } from 'zod';
 
 export default function ProductDetails(props: any) {
-  const { productDetails, currentStep, decStep, incStep, setProductDetails } =
-    props;
+  const { productDetails, decStep, incStep, setProductDetails } = props;
 
-  const { errors, register, control, setValue, handleSubmit, isValid } =
+  const { errors, register, setValue, handleSubmit } =
     useFormValidation(ProductDetailsSchema);
 
   const [featuredHighlights, setFeaturedHighlights] = useState(['']);
@@ -22,6 +22,12 @@ export default function ProductDetails(props: any) {
       isValid: true,
       message: '',
     });
+
+  useEffect(() => {
+    setValue('included_items', productDetails.included_items);
+    setValue('description', productDetails.description);
+    setFeaturedHighlights(productDetails.featured_highlights);
+  }, []);
 
   function handleOnChange(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -66,7 +72,14 @@ export default function ProductDetails(props: any) {
   }
 
   function handleFormSubmit(data: any) {
-    console.log(data);
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        featured_highlights: featuredHighlights,
+        ...data,
+      };
+    });
+
     if (validateFeaturedHighlight()) incStep();
   }
 

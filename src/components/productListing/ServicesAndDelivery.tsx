@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { useState } from 'react';
-import { any } from 'zod';
 import Info from '../../../public/icons/info.svg';
 import useFormValidation from '../../hooks/useFormValidation';
 import { ProductPackageWeightSchema } from '../../validation/productListingSchema';
@@ -9,20 +8,20 @@ import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
 
 export default function ServicesAndDelivery(props: any) {
-  const { productDetails, currentStep, decStep, setProductDetails } = props;
+  const { productDetails, decStep, setProductDetails, postData } = props;
 
-  const { errors, register, setValue, handleSubmit, isValid } =
-    useFormValidation(ProductPackageWeightSchema);
-
-  console.log(errors);
-
-  function handleFormSubmit(data: any) {
+  function handleWeightChange(e: React.ChangeEvent<HTMLInputElement>) {
     setProductDetails((prev: any) => {
       return {
         ...prev,
-        ...data,
+        package_weight: e.target.value,
       };
     });
+  }
+
+  function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    postData();
   }
 
   return (
@@ -31,20 +30,22 @@ export default function ServicesAndDelivery(props: any) {
         <Image src={Info} alt="" />
         <p>Fields with asterisks* should be filled.</p>
       </div>
-      <form onSubmit={handleSubmit(handleFormSubmit)}>
+      <form onSubmit={handleFormSubmit}>
         <div className="flex space-x-2">
           <p>Per Package Weight*</p>
           <div>
             <div className="flex items-center w-36">
               <TextInput
-                {...register('package_weight')}
+                type="number"
+                min={1}
                 className="rounded-none"
+                onChange={handleWeightChange}
               />
               <span className="h-10 w-10 flex items-center justify-center border border-gray-500">
                 Kg
               </span>
             </div>
-            <ErrorMessage message={errors.package_weight?.message as string} />
+            {/* <ErrorMessage message={errors.package_weight?.message as string} /> */}
           </div>
         </div>
         <div className="flex justify-end space-x-3">

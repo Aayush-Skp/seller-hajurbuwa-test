@@ -3,14 +3,12 @@ import { z } from 'zod';
 export function ProductGeneralInfoSchema(brands: string[]) {
   return z.object({
     product_name: z.string().min(1, { message: 'Please enter product name' }),
-    product_type: z
-      .string()
-      .min(1, { message: 'Please select a product type' }),
+    category_id: z.string().min(1, { message: 'Please select a product type' }),
     brand: z.string().refine(
       (brand) => {
         let isBrand = false;
         brands?.forEach((val: any) => {
-          if (brand === val?.name) isBrand = true;
+          if (parseInt(brand) === val?.id) isBrand = true;
         });
         return isBrand;
       },
@@ -41,7 +39,7 @@ export function ProductPriceSchema(units: string[], isBulkPrice: boolean) {
       (unit) => {
         let isUnit = false;
         units?.forEach((val: any) => {
-          if (unit === val?.name) isUnit = true;
+          if (Number(unit) === val?.id) isUnit = true;
         });
         return isUnit;
       },
