@@ -1,19 +1,19 @@
 import Image from 'next/image';
+import { useEffect } from 'react';
 import businessSetup from '/public/images/business_setup.svg';
 import { BiArrowBack } from 'react-icons/bi';
 import Button from '../common/Button';
+import ErrorMessage from '../common/ErrorMessage';
 import useFormValidation from '../../hooks/useFormValidation';
+import TextInput from '../common/TextInput';
 import {
   businessDetailsSchema,
   BusinessDetailsType,
 } from '../../validation/sellerRegistrationSchema';
-import TextInput from '../common/TextInput';
-import ErrorMessage from '../common/ErrorMessage';
 import {
   SellerRegistrationDataType,
   SetRegistrationData,
 } from './SellerRegistration';
-import { useEffect } from 'react';
 
 type BusinessDetailsProps = {
   registrationData: SellerRegistrationDataType;

@@ -1,9 +1,5 @@
 import React from 'react';
-
-type Tab = {
-  id: string;
-  label: string;
-};
+import { Tab } from '.';
 
 type NavigationHeaderProps = {
   currentTab: Tab;

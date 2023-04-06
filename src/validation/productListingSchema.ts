@@ -26,7 +26,7 @@ export const ProductDetailsSchema = z.object({
 
 export function ProductPriceSchema(units: string[], isBulkPrice: boolean) {
   return z.object({
-    price: z.string().refine(
+    price_per_unit: z.string().refine(
       (price) => {
         if (price === '' && !isBulkPrice) return false;
         if (isNaN(Number(price))) return false;
@@ -64,5 +64,19 @@ export const ProductPackageWeightSchema = z.object({
         return true;
       },
       { message: 'Please enter valid weight of the package' }
+    ),
+});
+
+export const PriceSchema = z.object({
+  price_per_unit: z
+    .string()
+    .min(1, { message: 'Please enter price' })
+    .refine(
+      (value: string | number) => {
+        console.log(typeof value);
+        if (isNaN(Number(value))) return false;
+        return true;
+      },
+      { message: 'Entered Price is invalid' }
     ),
 });

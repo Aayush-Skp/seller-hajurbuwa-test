@@ -18,7 +18,10 @@ type PhoneVerificationProps = {
 
 export default function PhoneVerification(props: PhoneVerificationProps) {
   const { setRegistrationData, incStep, decStep, registrationData } = props;
-  const [otpCode, setOptCode] = useState();
+  const [otpValidation, setOtpValidation] = useState({
+    status: true,
+    message: '',
+  });
   const handleSubmit = (data: any) => {
     incStep();
   };
@@ -51,7 +54,16 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
              text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
               containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
               inputStyle={`outline-none`}
-              numInputs={6}
+              numInputs={4}
+              value={registrationData.phoneOtp}
+              onChange={(value: string) =>
+                setRegistrationData((prev) => {
+                  return {
+                    ...prev,
+                    phoneOtp: value,
+                  };
+                })
+              }
               separator={<span></span>}
             />
             {/* {otpCode !== registrationData.otp && (

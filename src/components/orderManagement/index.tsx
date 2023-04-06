@@ -1,11 +1,29 @@
-import React, { useCallback, useState } from 'react';
-import { orders } from '../../constants/orders';
-import TabsHeader from '../productManagement/TabsHeader';
+import React, { useCallback, useEffect, useState } from 'react';
+import { getOrdersByStatus } from '../../services/orderServices';
 import OrdersTable from './OrdersTable';
+import TabsHeader from './TabsHeader';
 
-type Tab = {
-  id: string;
-  label: string;
+export type OrderState =
+  | 'pending'
+  | 'unshipped'
+  | 'sent'
+  | 'delivered'
+  | 'waiting_for_pickup'
+  | 'picked_up'
+  | 'cancelled'
+  | 'failed';
+
+export type Tab = {
+  id: OrderState;
+  label:
+    | 'Pending'
+    | 'Unshipped'
+    | 'Sent For Delivery'
+    | 'Waiting For Pickup'
+    | 'Picked up'
+    | 'Delivered'
+    | 'Cancelled'
+    | 'Failed';
 };
 
 const tabs: Tab[] = [
@@ -14,12 +32,20 @@ const tabs: Tab[] = [
     label: 'Pending',
   },
   {
-    id: 'unShipped',
+    id: 'unshipped',
     label: 'Unshipped',
   },
   {
+    id: 'waiting_for_pickup',
+    label: 'Waiting For Pickup',
+  },
+  {
+    id: 'picked_up',
+    label: 'Picked up',
+  },
+  {
     id: 'sent',
-    label: 'Sent',
+    label: 'Sent For Delivery',
   },
   {
     id: 'delivered',
@@ -41,7 +67,32 @@ export default function Orders() {
     label: 'Pending',
   });
 
-  const handleTabChange = useCallback((tab: Tab) => setCurrentTab(tab), []);
+  const [orderList, setOrderList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleTabChange = useCallback((tab: Tab) => {
+    setCurrentTab(tab);
+  }, []);
+
+  function getAllOrders() {
+    setOrderList([]);
+    setIsLoading(true);
+    getOrdersByStatus(currentTab.id)
+      .then((res) => {
+        console.log(res);
+        setOrderList(res);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        err.response.status === 404 && setOrderList([]);
+        setIsLoading(false);
+        console.log(err);
+      });
+  }
+
+  useEffect(() => {
+    getAllOrders();
+  }, [currentTab]);
 
   return (
     <section className="flex flex-col justify-center items-center w-full">
@@ -50,8 +101,13 @@ export default function Orders() {
           tabs={tabs}
           currentTab={currentTab}
           onTabClick={handleTabChange}
+          orderList={orderList}
         />
-        <OrdersTable data={orders} productStatus={currentTab.id} />
+        <OrdersTable
+          data={orderList}
+          productStatus={currentTab}
+          getAllOrders={getAllOrders}
+        />
       </div>
     </section>
   );

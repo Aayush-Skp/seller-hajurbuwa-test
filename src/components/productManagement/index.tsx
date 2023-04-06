@@ -1,11 +1,17 @@
-import React, { useCallback, useState } from 'react';
-import { buyers } from '../../constants/buyerData';
+import React, { useCallback, useEffect, useState } from 'react';
 import Header from './TabsHeader';
 import ProductManagementTable from './ProductManagementTable';
+import { getProductByStatus } from '../../services/productService';
 
-type Tab = {
-  id: string;
-  label: string;
+export type Tab = {
+  id: 'online' | 'pending' | 'outOfStock' | 'inActive' | 'suspended' | 'locked';
+  label:
+    | 'Online'
+    | 'Pending QC'
+    | 'Out of stock'
+    | 'Inactive'
+    | 'Suspended'
+    | 'Locked';
 };
 
 const tabs: Tab[] = [
@@ -14,7 +20,7 @@ const tabs: Tab[] = [
     label: 'Online',
   },
   {
-    id: 'pendingQc',
+    id: 'pending',
     label: 'Pending QC',
   },
   {
@@ -23,7 +29,7 @@ const tabs: Tab[] = [
   },
   {
     id: 'inActive',
-    label: 'In Active',
+    label: 'Inactive',
   },
   {
     id: 'suspended',
@@ -41,7 +47,24 @@ export default function ProductManagement() {
     label: 'Online',
   });
 
+  const [productList, setProductList] = useState([]);
+
   const handleTabChange = useCallback((tab: Tab) => setCurrentTab(tab), []);
+
+  function getAllProducts() {
+    getProductByStatus(currentTab.id)
+      .then((res) => {
+        setProductList(res);
+      })
+      .catch((err) => {
+        err?.response?.status === 404 && setProductList([]);
+        console.log(err);
+      });
+  }
+
+  useEffect(() => {
+    getAllProducts();
+  }, [currentTab]);
 
   return (
     <section className="flex flex-col justify-center items-center w-full">
@@ -51,7 +74,11 @@ export default function ProductManagement() {
           currentTab={currentTab}
           onTabClick={handleTabChange}
         />
-        <ProductManagementTable data={buyers} productStatus={currentTab.id} />
+        <ProductManagementTable
+          data={productList}
+          productStatus={currentTab.id}
+          getAllProducts={getAllProducts}
+        />
       </div>
     </section>
   );

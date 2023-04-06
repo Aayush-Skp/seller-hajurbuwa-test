@@ -8,7 +8,6 @@ import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import useFormValidation from '../../hooks/useFormValidation';
 import { ProductDetailsSchema } from '../../validation/productListingSchema';
-import { any } from 'zod';
 
 export default function ProductDetails(props: any) {
   const { productDetails, decStep, incStep, setProductDetails } = props;
@@ -33,9 +32,14 @@ export default function ProductDetails(props: any) {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) {
-    const points = [...featuredHighlights];
+    const points = [...productDetails.featured_highlights];
     points[index] = e.target.value;
-    setFeaturedHighlights(points);
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        featured_highlights: points,
+      };
+    });
     setFeaturedHighlightValidation({
       isValid: true,
       message: '',
@@ -45,9 +49,12 @@ export default function ProductDetails(props: any) {
   function addFeaturedHightLight(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (featuredHighlights.length <= 4) {
-        setFeaturedHighlights((prev) => {
-          return [...prev, ''];
+      if (productDetails.featured_highlights.length <= 4) {
+        setProductDetails((prev: any) => {
+          return {
+            ...prev,
+            featured_highlights: [...prev.featured_highlights, ''],
+          };
         });
       }
     }
@@ -55,12 +62,19 @@ export default function ProductDetails(props: any) {
   }
 
   function removeFeaturedHightLight(index: number) {
-    const filteredPoints = featuredHighlights.filter((_, i) => i !== index);
-    setFeaturedHighlights(filteredPoints);
+    const filteredPoints = productDetails.featured_highlights.filter(
+      (_: any, i: number) => i !== index
+    );
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        featured_highlights: filteredPoints,
+      };
+    });
   }
 
   function validateFeaturedHighlight() {
-    if (featuredHighlights.length < 3) {
+    if (productDetails.featured_highlights.length < 3) {
       setFeaturedHighlightValidation({
         isValid: false,
         message: 'Please add at least 3 featured highlights',
@@ -75,7 +89,6 @@ export default function ProductDetails(props: any) {
     setProductDetails((prev: any) => {
       return {
         ...prev,
-        featured_highlights: featuredHighlights,
         ...data,
       };
     });
@@ -100,28 +113,30 @@ export default function ProductDetails(props: any) {
             </div>
             <div className="w-full">
               <div className="border border-gray-500 p-4 rounded">
-                {featuredHighlights.map((point, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center space-x-2 border-b border-gray-300"
-                  >
-                    <div className="w-3 h-3 bg-success-secondary rounded-full" />
-                    <TextInputField
-                      value={point}
-                      onKeyDown={addFeaturedHightLight}
-                      onChange={(e) => handleOnChange(e, index)}
-                      className="outline-none focus:shadow-none border-none"
-                    />
-                    {index !== 0 ? (
-                      <div
-                        onClick={() => removeFeaturedHightLight(index)}
-                        className="flex items-center cursor-pointer"
-                      >
-                        <Image src={deleteIcon} alt="delete icon" />
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
+                {productDetails.featured_highlights.map(
+                  (point: string, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 border-b border-gray-300"
+                    >
+                      <div className="w-3 h-3 bg-success-secondary rounded-full" />
+                      <TextInputField
+                        value={point}
+                        onKeyDown={addFeaturedHightLight}
+                        onChange={(e) => handleOnChange(e, index)}
+                        className="outline-none focus:shadow-none border-none"
+                      />
+                      {index !== 0 ? (
+                        <div
+                          onClick={() => removeFeaturedHightLight(index)}
+                          className="flex items-center cursor-pointer"
+                        >
+                          <Image src={deleteIcon} alt="delete icon" />
+                        </div>
+                      ) : null}
+                    </div>
+                  )
+                )}
               </div>
 
               {!featuredHighlightValidation.isValid ? (

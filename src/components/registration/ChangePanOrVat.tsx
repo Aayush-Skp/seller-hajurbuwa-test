@@ -27,11 +27,11 @@ export default function ChangePanOrVat(props: ChangePanOrVatProps) {
         </div>
 
         <Image
-          src={URL.createObjectURL(registrationData.pan_image!)}
+          src={URL.createObjectURL(registrationData?.pan_image!)}
           alt="PAN card preview"
-          width={220}
-          height={330}
-          className="max-w-full mt-4"
+          width={300}
+          height={300}
+          objectFit="cover"
         />
         <button
           className="bg-red-600 text-white rounded-sm uppercase w-3/4 h-10 mt-4"

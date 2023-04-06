@@ -18,6 +18,11 @@ export default function PriceAndStock(props: any) {
   const [inStock, setInStock] = useState(true);
   const [isBulkPrice, setIsBulkPrice] = useState(false);
   const [minOrder, setMinOrder] = useState(1);
+  const [minOrderValidation, setMinOrderValidation] = useState({
+    isValid: true,
+    message: '',
+  });
+
   const [bulkValidation, setBulkValidation] = useState({
     isValid: true,
     message: '',
@@ -29,16 +34,18 @@ export default function PriceAndStock(props: any) {
 
   useEffect(() => {
     if (isBulkPrice) {
-      setValue('price', '');
-      setError('price', { message: '' });
+      setValue('price_per_unit', '');
+      setError('price_per_unit', { message: '' });
     }
   }, [isBulkPrice]);
 
   useEffect(() => {
-    setValue('price', productDetails.price);
+    setValue('price_per_unit', productDetails.price_per_unit);
     setMinOrder(productDetails.minimum_order);
     setIsBulkPrice(productDetails.is_bulk_price);
-    setBulkPrices(productDetails.bulk_pricing);
+    productDetails.bulk_pricing.length !== 0 &&
+      setBulkPrices(productDetails.bulk_pricing);
+    setInStock(productDetails.in_stock);
   }, []);
 
   function addBulkPrice() {
@@ -123,23 +130,59 @@ export default function PriceAndStock(props: any) {
       isValid: true,
       message: '',
     });
+    setMinOrderValidation({
+      isValid: true,
+      message: '',
+    });
+  }
+
+  function handleIsBulkPricing(e: React.ChangeEvent<HTMLInputElement>) {
+    !e.target.checked &&
+      setBulkPrices([
+        {
+          quantity: minOrder,
+          pricePerPc: 0,
+        },
+      ]);
+
+    setIsBulkPrice((prev) => !prev);
+    setBulkValidation({
+      isValid: true,
+      message: '',
+    });
   }
 
   const { errors, register, setValue, handleSubmit, setError } =
     useFormValidation(ProductPriceSchema(defaultValues.units, isBulkPrice));
 
   function handleFormSubmit(data: any) {
-    setProductDetails((prev: any) => {
-      return {
-        ...prev,
-        ...data,
-        minimum_order: minOrder,
-        is_bulk_price: Number(isBulkPrice),
-        bulk_pricing: bulkPrices,
-      };
-    });
+    if (!isNaN(minOrder) && bulkValidation.isValid) {
+      setProductDetails((prev: any) => {
+        return {
+          ...prev,
+          ...data,
+          minimum_order: minOrder,
+          in_stock: inStock,
+          is_bulk_price: Number(isBulkPrice),
+          bulk_pricing: bulkPrices,
+        };
+      });
+      incStep();
+    }
 
-    incStep();
+    if (isNaN(bulkPrices[0].pricePerPc) || bulkPrices[0].pricePerPc === 0) {
+      setBulkValidation({
+        isValid: false,
+        message: 'Entered price is invalid',
+      });
+
+      return;
+    }
+
+    setMinOrderValidation({
+      isValid: false,
+      message: 'Enter valid minimum order',
+    });
   }
 
   return (
@@ -169,6 +212,7 @@ export default function PriceAndStock(props: any) {
                   value={minOrder}
                   onChange={handleMinimumOrderChange}
                 />
+                <ErrorMessage message={minOrderValidation.message} />
               </div>
             </div>
           </div>
@@ -183,7 +227,11 @@ export default function PriceAndStock(props: any) {
               >
                 <option value="">Select Unit</option>
                 {defaultValues?.units?.map((unit: any) => (
-                  <option key={unit.id} value={unit.id}>
+                  <option
+                    key={unit.id}
+                    value={unit.id}
+                    selected={unit.id === Number(productDetails.unit)}
+                  >
                     {unit?.name}
                   </option>
                 ))}
@@ -194,7 +242,12 @@ export default function PriceAndStock(props: any) {
         </div>
         <div className="flex items-center space-x-2">
           <div className="w-[6.5rem]">
-            <InputLabel className="" label="Price" htmlFor="price" required />
+            <InputLabel
+              className=""
+              label="Price"
+              htmlFor="price_per_unit"
+              required
+            />
           </div>
           <div>
             <div className="flex items-center">
@@ -203,14 +256,14 @@ export default function PriceAndStock(props: any) {
               </span>
               <input
                 disabled={isBulkPrice}
-                id="price"
+                id="price_per_unit"
                 className={`h-10 pl-3 border border-gray-600 rounded-r outline-none ${
                   isBulkPrice ? 'cursor-not-allowed' : 'cursor-pointer'
                 }`}
-                {...register('price')}
+                {...register('price_per_unit')}
               />
             </div>
-            <ErrorMessage message={errors?.price?.message as string} />
+            <ErrorMessage message={errors?.price_per_unit?.message as string} />
           </div>
         </div>
 
@@ -221,7 +274,7 @@ export default function PriceAndStock(props: any) {
               label="Click here to add bulk pricing "
             />
             <CheckboxInput
-              onChange={() => setIsBulkPrice((prev) => !prev)}
+              onChange={(e) => handleIsBulkPricing(e)}
               checked={isBulkPrice}
               id="bulk_price"
             />
@@ -276,11 +329,11 @@ export default function PriceAndStock(props: any) {
                   <Button
                     onClick={addBulkPrice}
                     disabled={
-                      bulkPrices[0].pricePerPc === 0 ||
-                      isNaN(bulkPrices[bulkPrices.length - 1].quantity) ||
-                      isNaN(bulkPrices[bulkPrices.length - 1].pricePerPc) ||
+                      bulkPrices[0]?.pricePerPc === 0 ||
+                      isNaN(bulkPrices[bulkPrices.length - 1]?.quantity) ||
+                      isNaN(bulkPrices[bulkPrices.length - 1]?.pricePerPc) ||
                       !bulkValidation.isValid ||
-                      bulkPrices.length === 4
+                      bulkPrices?.length === 4
                     }
                   >
                     Add

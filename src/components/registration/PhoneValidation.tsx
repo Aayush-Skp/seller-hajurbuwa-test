@@ -39,21 +39,14 @@ export default function PhoneValidation(props: PhoneValidationProps) {
     phoneVerificationService(data)
       .then((res) => {
         console.log(res);
-        if (res === 'success') {
-          setRegistrationData((prev) => {
-            return {
-              ...prev,
-              ...data,
-            };
-          });
-          incStep();
-          return;
-        }
-
-        setError('phone', {
-          type: 'custom',
-          message: 'Phone number that you have entered already exists.',
+        setRegistrationData((prev) => {
+          return {
+            ...prev,
+            ...data,
+          };
         });
+        incStep();
+        return;
       })
       .catch((err) => {
         console.log(err);

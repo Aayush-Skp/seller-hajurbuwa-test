@@ -17,26 +17,26 @@ const listingSteps = [
 ];
 
 export default function ProductListing() {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(2);
   const [defaultValues, setDefaultValues] = useState({
     brands: [],
     units: [],
   });
 
   const [productDetails, setProductDetails] = useState({
-    featured_highlights: [],
-    minimum_order: null,
+    featured_highlights: [''],
+    minimum_order: 1,
     included_items: '',
     price_per_unit: '',
     package_weight: 1,
     category_id: null,
-    is_bulk_price: '0',
+    is_bulk_pricing: false,
     bulk_pricing: [],
     product_name: '',
     description: '',
     cover_image: '',
     sub_images: [],
-    in_stock: '1',
+    in_stock: true,
     brand: null,
     unit: null,
   });

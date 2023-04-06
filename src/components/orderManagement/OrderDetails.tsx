@@ -1,19 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdContentCopy } from 'react-icons/md';
 import { BsArrowLeft } from 'react-icons/bs';
 import Link from 'next/link';
-
-const orderAttributes = [
-  { value: '0533658', label: 'Order ID' },
-  { value: 'Pending', label: 'Order Status' },
-  { value: '12 May 2023 5:00 PM    ', label: 'Order Date' },
-  { value: 'T shirt Red colored double set XXL', label: 'Product Name' },
-  { value: '1ad2516', label: 'Product ID' },
-  { value: '5 Pcs', label: 'Ordered Quantity' },
-  { value: '2500 NPR', label: 'Item Subtotal' },
-];
+import { getSingleOrderDetails } from '../../services/orderServices';
+import { useRouter } from 'next/router';
 
 export default function OrderDetails() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [orderDetails, setOrderDetails] = useState({
+    order_code: '',
+    order_status: '',
+    order_date: '',
+    product_name: '',
+    product_id: '',
+    quantity: '',
+    sub_total: '',
+    customer_name: '',
+    pan_number: '',
+  });
+
+  const { query } = useRouter();
+
+  useEffect(() => {
+    getSingleOrderDetails(`${query.order_id}`)
+      .then((res) => {
+        setIsLoading(false);
+        setOrderDetails(res);
+      })
+      .catch((err) => {
+        setIsLoading(false);
+      });
+  }, [query]);
+
+  if (isLoading) return <div>Loading...</div>;
+
   return (
     <section className="space-y-2 ">
       <div className="pt-5 border-b border-gray-300">
@@ -21,34 +41,80 @@ export default function OrderDetails() {
           <span className="text-2xl">
             Order Details of Order Number 0532565
           </span>
-          <Link href="/">
-            <div className="flex items-center space-x-1 text-blue-700">
+          <Link href="/order-management">
+            <a className="flex items-center space-x-1 text-blue-700">
               <BsArrowLeft className="font-bold" />
-              <span>Back to Orders List</span>
-            </div>
+              <span>Back to orders List</span>
+            </a>
           </Link>
         </div>
       </div>
       <div className="px-16">
         <ul className="w-2/4 space-y-4">
-          {orderAttributes.map((attribute) => (
-            <li className="border-b py-2 border-gray-300" key={attribute.label}>
-              <div className="flex items-center">
-                <span className="w-40 text-gray-400">{attribute.label}</span>
-                <div className="flex items-center justify-center space-x-2">
-                  <span>{attribute.value}</span>
-                  {attribute.label === 'Order ID' ||
-                  attribute.label === 'Product ID' ? (
-                    <button className="group" onClick={() => {}}>
-                      <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
-                    </button>
-                  ) : (
-                    ''
-                  )}
-                </div>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Order ID</span>
+              <div className="flex items-center justify-center space-x-2">
+                <span>{orderDetails?.order_code}</span>
+                <button className="group" onClick={() => {}}>
+                  <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
+                </button>
               </div>
-            </li>
-          ))}
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Order Status</span>
+              <span>{orderDetails.order_status}</span>
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Order Date</span>
+              <span>{orderDetails.order_date}</span>
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Product Name</span>
+              <span>{orderDetails.product_name}</span>
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Product Id</span>
+              <div className="flex items-center justify-center space-x-2">
+                <span>{orderDetails.product_id}</span>
+                <button className="group" onClick={() => {}}>
+                  <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
+                </button>
+              </div>
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Ordered Quantity</span>
+              <span>{orderDetails.quantity}</span>
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Item Subtotal</span>
+              <span>{orderDetails.sub_total}</span>
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Customer Name</span>
+              <span>{orderDetails.customer_name}</span>
+            </div>
+          </li>
+          <li className="border-b py-2 border-gray-300">
+            <div className="flex items-center">
+              <span className="w-40 text-gray-400">Pan Number</span>
+              <span>{orderDetails.pan_number}</span>
+            </div>
+          </li>
         </ul>
       </div>
     </section>

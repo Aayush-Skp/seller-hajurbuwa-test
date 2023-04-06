@@ -36,6 +36,7 @@ export default function OrderActionModal({
         },
 
         overlay: {
+          zIndex: 100,
           backgroundColor: 'rgba(0, 0, 0, 0.3)',
         },
       }}
@@ -48,8 +49,12 @@ export default function OrderActionModal({
               <span>Are you sure want to confirm this order?</span>
             </div>
             <div className="space-x-4">
-              <Button className="bg-red-200">No, Cancel</Button>
-              <Button>Yes, Confirm</Button>
+              <button className="px-5 py-2 border border-accent-primary rounded text-accent-primary">
+                No, Cancel
+              </button>
+              <button className="px-5 py-2 border border-accent-primary rounded text-white bg-accent-primary">
+                Yes, Confirm
+              </button>
             </div>
           </div>
         )}
@@ -75,10 +80,12 @@ export default function OrderActionModal({
               <Button className="w-full">Save</Button>
             ) : (
               <div className="space-x-4">
-                <Button className="bg-red-200">No, Cancel</Button>
-                <Button onClick={() => setActionType('confirmCancelOrder')}>
+                <button className="px-5 py-2 border border-accent-primary rounded text-accent-primary">
+                  No, Cancel
+                </button>
+                <button className="px-5 py-2 border border-accent-primary rounded text-white bg-accent-primary">
                   Yes, Confirm
-                </Button>
+                </button>
               </div>
             )}
           </div>
@@ -93,8 +100,12 @@ export default function OrderActionModal({
               </span>
             </div>
             <div className="space-x-4">
-              <Button className="bg-red-200">No, Cancel</Button>
-              <Button>Yes, Confirm</Button>
+              <button className="px-5 py-2 border border-accent-primary rounded text-accent-primary">
+                No, Cancel
+              </button>
+              <button className="px-5 py-2 border border-accent-primary rounded text-white bg-accent-primary">
+                Yes, Confirm
+              </button>
             </div>
           </div>
         )}

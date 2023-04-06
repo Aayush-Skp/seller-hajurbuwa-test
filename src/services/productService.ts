@@ -2,6 +2,21 @@ import { httpClient } from '../config/httpClient';
 
 const productUrl = '/seller/product';
 
+type ProductStatus =
+  | 'pending'
+  | 'pending'
+  | 'online'
+  | 'inActive'
+  | 'locked'
+  | 'suspended'
+  | 'outOfStock';
+
+export function getProductByStatus(productStatus: ProductStatus) {
+  return httpClient
+    .get(`${productUrl}?status=${productStatus}`)
+    .then((res) => res.data.data);
+}
+
 export function addProduct(productDetails: any) {
   const formData = new FormData();
   formData.append('product_name', productDetails.product_name);
@@ -12,10 +27,10 @@ export function addProduct(productDetails: any) {
   formData.append('unit', String(productDetails.unit));
   formData.append('included_items', productDetails.included_items);
   formData.append('price_per_unit', productDetails.price_per_unit);
-  formData.append('in_stock', productDetails.in_stock);
+  formData.append('in_stock', `${Number(productDetails.in_stock)}`);
   formData.append('package_weight', String(productDetails.package_weight));
   formData.append('cover_image', productDetails.cover_image);
-  formData.append('is_bulk_price', String(productDetails.is_bulk_price));
+  formData.append('is_bulk_price', `${Number(productDetails.is_bulk_price)}`);
 
   formData.append(
     'featured_highlights',
@@ -43,4 +58,13 @@ export function addProduct(productDetails: any) {
       },
     })
     .then((res) => res.data.data);
+}
+
+export function updateProduct(
+  productId: string | number,
+  updatedField: Record<string, string>
+) {
+  return httpClient
+    .put(`${productUrl}/${productId}`, updatedField)
+    .then((res) => res);
 }

@@ -8,6 +8,7 @@ import PanOrVatUpload from './PanOrVatUpload';
 import ChangePanOrVat from './ChangePanOrVat';
 import { registrationService } from '../../services/registrationService';
 import Success from './Success';
+import EmailVerification from './EmailVerification';
 
 export type SellerRegistrationDataType = {
   phone: string;
@@ -21,7 +22,8 @@ export type SellerRegistrationDataType = {
   confirm_terms_and_conditions: boolean;
   receive_updates_on_whatsapp: boolean;
   confirm_business_name: boolean;
-  otp: string;
+  phoneOtp: string;
+  emailOtp: string;
 };
 
 export type SetRegistrationData = Dispatch<
@@ -55,12 +57,14 @@ export default function SellerRegistration() {
       confirm_terms_and_conditions: false,
       receive_updates_on_whatsapp: true,
       confirm_business_name: false,
-      otp: '',
+      phoneOtp: '',
+      emailOtp: '',
     });
 
   const [step, setStep] = useState<number>(1);
+
   function incStep() {
-    if (step >= 7) return;
+    if (step >= 9) return;
     setStep((prev) => prev + 1);
   }
 
@@ -70,25 +74,7 @@ export default function SellerRegistration() {
   }
 
   function submitRegistrationData() {
-    const formData = new FormData();
-
-    formData.append('first_name', registrationData.first_name);
-    formData.append('last_name', registrationData.last_name);
-    formData.append('pan_number', registrationData.pan_number);
-    formData.append('password', registrationData.password);
-    formData.append('email', registrationData.email);
-    formData.append('business_name', registrationData.business_name);
-    formData.append('pan_image', registrationData.pan_image!);
-    formData.append(
-      'confirm_terms_and_conditions',
-      registrationData.confirm_terms_and_conditions ? '1' : '0'
-    );
-    formData.append(
-      'receive_updates_on_whatsapp',
-      registrationData.receive_updates_on_whatsapp ? '1' : '0'
-    );
-
-    registrationService(formData)
+    registrationService(registrationData)
       .then((res) => console.log(res))
       .then((err) => console.log(err));
   }
@@ -110,39 +96,46 @@ export default function SellerRegistration() {
             decStep={decStep}
           />
         ) : step === 3 ? (
+          <EmailVerification
+            registrationData={registrationData}
+            setRegistrationData={setRegistrationData}
+            incStep={incStep}
+            decStep={decStep}
+          />
+        ) : step === 4 ? (
           <BusinessDetails
             setRegistrationData={setRegistrationData}
             incStep={incStep}
             registrationData={registrationData}
             decStep={decStep}
           />
-        ) : step === 4 ? (
+        ) : step === 5 ? (
           <PanOrVatUpload
             setRegistrationData={setRegistrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step === 5 ? (
+        ) : step === 6 ? (
           <ChangePanOrVat
             registrationData={registrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step === 6 ? (
+        ) : step === 7 ? (
           <TermsAndConditions
             setRegistrationData={setRegistrationData}
             registrationData={registrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step === 7 ? (
+        ) : step === 8 ? (
           <PhoneVerification
             registrationData={registrationData}
             setRegistrationData={setRegistrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step === 8 ? (
+        ) : step === 9 ? (
           <Success />
         ) : null}
       </div>

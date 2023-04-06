@@ -1,13 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { BiArrowBack } from 'react-icons/bi';
 import useFormValidation from '../../hooks/useFormValidation';
+import { emailVerificationService } from '../../services/emailVerificationService';
+import Button from '../common/Button';
+import ErrorMessage from '../common/ErrorMessage';
+import TextInput from '../common/TextInput';
+import PasswordTextInput from './PasswordTextInput';
 import {
   sellerDetailsSchema,
   SellerDetailsType,
 } from '../../validation/sellerRegistrationSchema';
-import Button from '../common/Button';
-import ErrorMessage from '../common/ErrorMessage';
-import TextInput from '../common/TextInput';
 import {
   SellerRegistrationDataType,
   SetRegistrationData,
@@ -23,7 +25,7 @@ type SellerDetailsProps = {
 export default function SellerDetails(props: SellerDetailsProps) {
   const { setRegistrationData, incStep, decStep, registrationData } = props;
 
-  const { register, handleSubmit, errors, setValue } =
+  const { register, handleSubmit, errors, setValue, setError } =
     useFormValidation(sellerDetailsSchema);
 
   useEffect(() => {
@@ -34,13 +36,25 @@ export default function SellerDetails(props: SellerDetailsProps) {
   }, []);
 
   function handleFormValidation(data: SellerDetailsType) {
-    setRegistrationData((prev) => {
-      return {
-        ...prev,
-        ...data,
-      };
-    });
-    incStep();
+    emailVerificationService(data.email)
+      .then((res) => {
+        setRegistrationData((prev) => {
+          return {
+            ...prev,
+            ...data,
+          };
+        });
+
+        console.log(res);
+      })
+      .then(() => incStep())
+      .catch((err) => {
+        setError('email', {
+          type: 'custom',
+          message: 'Email already exist. Please another email.',
+        });
+        console.log(err);
+      });
   }
 
   return (
@@ -84,13 +98,12 @@ export default function SellerDetails(props: SellerDetailsProps) {
           </div>
         </div>
       </div>
-      <div className="my-5">
+      <div className="my-5 w-full">
         <span className="font-bold text-lg capitalize mb-2">
           Enter Your Account Password
         </span>
-        <TextInput
-          className="h-14  outline-none"
-          type="password"
+
+        <PasswordTextInput
           placeholder="Password"
           {...register('password')}
           error={errors.hasOwnProperty('password')}
@@ -109,9 +122,7 @@ export default function SellerDetails(props: SellerDetailsProps) {
           {...register('email')}
           error={errors.hasOwnProperty('email')}
         />
-        {errors.email && (
-          <ErrorMessage message={errors.email?.message as string} />
-        )}
+        <ErrorMessage message={errors.email?.message as string} />
       </div>
       <Button type="submit">Continue</Button>
     </form>

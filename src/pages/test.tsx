@@ -1,13 +1,15 @@
-import React, { useRef } from 'react';
-import InputLabel from '../components/common/InputLabel';
-import TextInput from '../components/common/TextInput';
+import { useState } from 'react';
+import Pdf from '../components/Pdf';
 
 export default function Test() {
-  const ref = useRef<any>(null);
+  const [clicked, setClicked] = useState(false);
   return (
-    <form>
-      <input type="file" ref={ref} className="bg-red-600" />
-      <p onClick={ref.current}>click me</p>
-    </form>
+    <div className="flex justify-center">
+      {clicked ? (
+        <Pdf />
+      ) : (
+        <button onClick={() => setClicked((prev) => !prev)}>Click</button>
+      )}
+    </div>
   );
 }

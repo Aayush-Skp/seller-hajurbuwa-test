@@ -4,7 +4,18 @@ export const phoneSchema = z.object({
   phone: z
     .string()
     .min(1, { message: 'Please enter your phone number' })
-    .max(10, { message: 'Phone number should be exactly 10 digits' }),
+    .startsWith('9', { message: 'Please enter a valid phone number' })
+    .min(10, { message: 'Phone number should be of exactly 10 digits' })
+    .max(10, { message: 'Phone number should be of exactly 10 digits' })
+    .refine(
+      (value) => {
+        if (isNaN(Number(value))) return false;
+        return true;
+      },
+      {
+        message: 'Entered number is not a valid number',
+      }
+    ),
 });
 
 export type PhoneNumberType = z.infer<typeof phoneSchema>;
@@ -25,7 +36,10 @@ export type BusinessDetailsType = z.infer<typeof businessDetailsSchema>;
 export const sellerDetailsSchema = z.object({
   first_name: z.string().min(1, { message: 'First name is required' }).max(256),
   last_name: z.string().min(1, { message: 'First name is required' }).max(256),
-  email: z.string().email(),
+  email: z
+    .string()
+    .min(1, { message: 'Please enter your email' })
+    .email('Please enter a valid email'),
   password: z
     .string()
     .min(8, { message: 'Password must be at least 8 characters long' })

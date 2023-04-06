@@ -24,14 +24,12 @@ export default function PanOrVatUpload(props: PanOrVatUploadProps) {
   }
 
   return (
-    <form className="flex flex-col px-10 pb-0 md:pb-5 items-center justify-around md:justify-between text-black h-full w-full">
-      <div className="absolute top-0 flex flex-col items-center justify-center translate-y-1/2">
-        <span className="font-bold text-md capitalize mb-2">
-          Upload PAN/VAT Document
-        </span>
-      </div>
-      <div className="cursor-pointer" onClick={decStep}>
-        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+    <form className="flex flex-col px-10 py-4 md:pb-5 items-center justify-around md:justify-between text-black h-full w-full space-y-4">
+      <div className="w-full flex items-center space-x-14">
+        <div className="flex items-center cursor-pointer" onClick={decStep}>
+          <BiArrowBack className="text-3xl cursor-pointer" />
+        </div>
+        <p className="font-bold text-md capitalize">Upload PAN/VAT Document</p>
       </div>
       <div>
         <div className="grid grid-cols-3 gaps-3 md:gaps-1 pt-0">
@@ -90,7 +88,7 @@ export default function PanOrVatUpload(props: PanOrVatUploadProps) {
               <span className="text-sm text-center text-gray-875 mt-2 capitalize">
                 Use High Resolution Photo for better approval chances
               </span>
-              <div className="bg-blue-700 flex justify-center items-center text-white rounded-sm uppercase w-3/4 h-10 mt-4">
+              <div className="bg-blue-700 flex justify-center items-center text-white rounded-sm uppercase w-3/4 h-10 mt-4 cursor-pointer">
                 Upload Document
               </div>
             </div>

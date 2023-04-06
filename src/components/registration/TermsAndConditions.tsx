@@ -96,7 +96,7 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
         disabled={!(confirm_terms_and_conditions && confirm_business_name)}
         onClick={incStep}
       >
-        Next
+        Continue
       </Button>
     </form>
   );
