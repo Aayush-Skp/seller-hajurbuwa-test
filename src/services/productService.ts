@@ -26,6 +26,7 @@ export function getProductDescription(productId: string | number) {
 
 export function getProductById(productId: string | number) {
   return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
+    console.log(res);
     const productDetails = {
       productId: '',
       featured_highlights: [''],
@@ -55,7 +56,7 @@ export function getProductById(productId: string | number) {
       },
     };
 
-    for (let i = 0; i < res.data.data[0].sub_images.length; i++) {
+    for (let i = 0; i < res?.data?.data[0]?.sub_images.length; i++) {
       if (i === 0)
         productDetails.images.first = `${imageServerBaseUrl}${res.data.data[0].sub_images[0]}`;
       if (i === 1)

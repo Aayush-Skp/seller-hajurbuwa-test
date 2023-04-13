@@ -52,7 +52,7 @@ export default function ServicesAndDelivery(props: any) {
     }
 
     if (isUpdate) {
-      const params = new URLSearchParams();
+      const params = new FormData();
 
       params.append('product_name', productDetails.product_name);
       params.append('category_id', productDetails.category_id);
@@ -80,14 +80,16 @@ export default function ServicesAndDelivery(props: any) {
 
       for (const key in productDetails.images) {
         if (typeof productDetails.images[key] !== 'string') {
-          console.log(String(productDetails.images[key]));
+          console.log(productDetails.images[key]);
           params.append(`sub_images[]`, productDetails.images[key]);
         }
       }
 
-      // updateProduct(productDetails.productId, params)
-      //   .then(console.log)
-      //   .catch(console.log);
+      params.append('_method', 'PUT');
+
+      updateProduct(productDetails.productId, params)
+        .then(console.log)
+        .catch(console.log);
     }
 
     // addProduct(productDetails).then(console.log).catch(console.log);
