@@ -1,4 +1,5 @@
 export const publicRoutes = [
+  '/',
   '/terms-conditions',
   '/login',
   '/register',

@@ -8,7 +8,6 @@ const Home: NextPage = () => {
         <title>Hajurbuwa</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>OnBoarding</div>
     </div>
   );
 };
