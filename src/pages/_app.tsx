@@ -5,7 +5,7 @@ import PageWrapper from '../components/PageWrapper';
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <PageWrapper>
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
     </PageWrapper>
   );
 }
