@@ -5,9 +5,7 @@ import PageWrapper from '../components/PageWrapper';
 export default function OrderManagement() {
   return (
     <div>
-      <PageWrapper>
-        <Orders />
-      </PageWrapper>
+      <Orders />
     </div>
   );
 }

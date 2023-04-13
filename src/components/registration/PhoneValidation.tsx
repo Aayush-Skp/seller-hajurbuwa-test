@@ -1,8 +1,6 @@
 import Image from 'next/image';
 import registerPhoneNumber from '/public/images/register_phone_number.svg';
 import antMobile from '/public/images/ant_mobile.svg';
-import { BiArrowBack } from 'react-icons/bi';
-import { useRouter } from 'next/router';
 import Button from '../common/Button';
 import useFormValidation from '../../hooks/useFormValidation';
 import {
@@ -17,7 +15,7 @@ import type {
   SetRegistrationData,
 } from './SellerRegistration';
 import { phoneVerificationService } from '../../services/phoneVerificationService';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type PhoneValidationProps = {
   setRegistrationData: SetRegistrationData;
@@ -28,7 +26,9 @@ type PhoneValidationProps = {
 export default function PhoneValidation(props: PhoneValidationProps) {
   const { setRegistrationData, incStep, registrationData } = props;
 
-  const { register, handleSubmit, errors, setError, isValid, setValue } =
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { register, handleSubmit, errors, setError, setValue } =
     useFormValidation(phoneSchema);
 
   useEffect(() => {
@@ -36,17 +36,25 @@ export default function PhoneValidation(props: PhoneValidationProps) {
   }, []);
 
   function handleFormSubmit(data: PhoneNumberType) {
+    setIsLoading(true);
     phoneVerificationService(data)
       .then((res) => {
-        console.log(res);
-        setRegistrationData((prev) => {
-          return {
-            ...prev,
-            ...data,
-          };
-        });
-        incStep();
-        return;
+        if (res.status === 'success') {
+          setIsLoading(false);
+          setRegistrationData((prev) => {
+            return {
+              ...prev,
+              ...data,
+            };
+          });
+          incStep();
+          return;
+        }
+
+        if (res.status === 'error') {
+          setError('phone', { message: 'Phone number is already registered.' });
+          setIsLoading(false);
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -54,18 +62,15 @@ export default function PhoneValidation(props: PhoneValidationProps) {
           type: 'custom',
           message: 'Network Error. Check if your internet is working properly',
         });
+        setIsLoading(false);
       });
   }
 
-  const router = useRouter();
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col px-10 pt-10 pb-5 items-around justify-center text-black h-full w-full"
     >
-      <div className="cursor-pointer" onClick={() => router.push('/')}>
-        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
-      </div>
       <Image
         src={registerPhoneNumber}
         alt="Register Phone Number Illustration"
@@ -79,23 +84,26 @@ export default function PhoneValidation(props: PhoneValidationProps) {
         </p>
       </div>
 
-      <div className="flex flex-col items-center justify-center">
-        <div className="relative">
-          <div
-            className={`absolute inset-y-0 left-0 flex text-gray-875 items-center pl-3 mr-3`}
-          >
-            <Image src={antMobile} alt="Ant Mobile Icon" />
-            <span className="text-gray-875">+977</span>
-          </div>
+      <div className="flex flex-col justify-center items-center">
+        <div className="w-full">
+          <div className="relative">
+            <div
+              className={`absolute inset-y-0 left-0 flex text-gray-875 items-center pl-3 mr-3`}
+            >
+              <Image src={antMobile} alt="Ant Mobile Icon" />
+              <span className="text-gray-875">+977</span>
+            </div>
 
-          <TextInput className="pl-20" {...register('phone')} />
+            <TextInput
+              className="pl-20"
+              {...register('phone')}
+              error={errors.hasOwnProperty('phone')}
+            />
+          </div>
+          <ErrorMessage message={errors?.phone?.message as string} />
         </div>
-        {errors.phone?.message ? (
-          <ErrorMessage message={errors.phone.message as string} />
-        ) : (
-          ''
-        )}
-        <p className="text-sm p-6 px-10 text-gray-850 text-center">
+
+        <p className="text-sm py-6 text-gray-850">
           By Clicking &quot;Continue&quot;, you agree to Hajurbuwa.com&apos;s
           <Link href="/terms-conditions" className="text-accent-tertiary">
             <a className="text-accent-primary">{` Terms of Service `}</a>
@@ -107,7 +115,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
           .
         </p>
         <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
-          Continue
+          {isLoading ? 'Loading...' : 'Continue'}
         </Button>
       </div>
     </form>

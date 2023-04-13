@@ -24,14 +24,11 @@ export default function PasswordChangeSuccess() {
             <span className="text-3xl font-semibold">
               Password Successfully Changed.
             </span>
-            <div className="space-y-2">
-              <span className="text-xs">Proceed to Login?</span>
-              <Button>
-                <Link href="">
-                  <a className="">Continue</a>
-                </Link>
-              </Button>
-            </div>
+            <Button>
+              <Link href="/login">
+                <a className="">Proceed to Login</a>
+              </Link>
+            </Button>
           </div>
         </form>
       </div>

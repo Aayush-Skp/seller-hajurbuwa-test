@@ -7,7 +7,7 @@ import InputLabel from '../common/InputLabel';
 import TextInput from '../common/TextInput';
 
 type ChangeOrderStatusModalProps = {
-  orderStatus: { orderId: string | number; status: string };
+  orderStatus: { orderId: string | number; status: string; reason?: string };
   isOrderStatusModelOpen: boolean;
   setIsOrderStatusModelOpen: (status: boolean) => void;
   getAllOrders: () => void;
@@ -26,14 +26,14 @@ export default function ChangeOrderStatusModal(
   const [isLoading, setIsLoading] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
 
+  console.log(cancelReason);
   function handleStatusChange() {
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    changeOrderStatus(orderStatus)
+    changeOrderStatus({
+      ...orderStatus,
+      reason: cancelReason,
+    })
       .then((res) => {
         setIsLoading(false);
         getAllOrders();

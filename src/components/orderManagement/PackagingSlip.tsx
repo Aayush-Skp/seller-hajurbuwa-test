@@ -9,9 +9,21 @@ import {
 } from '@react-pdf/renderer';
 
 export default function PackagingSlip({
-  companyName,
+  packing_slip_id,
+  seller_pan_no,
+  total_amount,
+  seller_company_name,
+  product_included_item,
+  product_name,
+  quantity,
 }: {
-  companyName: string;
+  packing_slip_id: string;
+  seller_pan_no: string;
+  total_amount: string | number;
+  seller_company_name: string;
+  product_included_item: string;
+  product_name: string;
+  quantity: string;
 }) {
   return (
     <PDFViewer
@@ -59,8 +71,8 @@ export default function PackagingSlip({
                   </View>
                 </View>
                 <View style={{ fontSize: 15 }}>
-                  <Text>{companyName} Trading Pvt. Ltd.</Text>
-                  <Text>Tax Id: 609985371</Text>
+                  <Text>{seller_company_name} Trading Pvt. Ltd.</Text>
+                  <Text>Tax Id: {seller_pan_no}</Text>
                 </View>
               </View>
               <View
@@ -72,11 +84,11 @@ export default function PackagingSlip({
               >
                 <View style={{}}>
                   <Text style={{ fontSize: 20 }}>PACKING SLIP</Text>
-                  <Text>#PS-0001</Text>
+                  <Text>#PS-{packing_slip_id}</Text>
                 </View>
                 <View style={{ fontSize: 15 }}>
                   <Text>Balance Due</Text>
-                  <Text>NPR 2500</Text>
+                  <Text>NPR {total_amount}</Text>
                 </View>
               </View>
             </View>
@@ -118,11 +130,13 @@ export default function PackagingSlip({
                   }}
                 >
                   <Text style={{ marginRight: 20 }}>1</Text>
-                  <Text>Tshirt Red Colored Double set XXL</Text>
+                  <Text>
+                    {product_name} {product_included_item}
+                  </Text>
                 </View>
               </View>
               <View>
-                <Text>5 Pcs</Text>
+                <Text>{quantity}</Text>
               </View>
             </View>
           </View>

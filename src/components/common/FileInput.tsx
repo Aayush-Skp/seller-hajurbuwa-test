@@ -1,5 +1,8 @@
 import React from 'react';
 
+import cameraIcon from '../../../public/icons/Camera_fill.png';
+import Image from 'next/image';
+
 type FileInputFieldProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
@@ -13,7 +16,7 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputFieldProps>(
     return (
       <label
         htmlFor={id}
-        className="group w-24 h-20 md:h-24 lg:h-24 md:w-36 lg:w-36 outline-dotted outline-gray-400 p-2 rounded cursor-pointer"
+        className="group w-24 h-24 md:h-36 lg:h-36 md:w-36 lg:w-36 shadow-xl p-2 rounded cursor-pointer"
       >
         <input
           id={id}
@@ -26,7 +29,9 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputFieldProps>(
           {...additionalProps}
         />
         <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4 lg:space-y-4">
-          <div>
+          <Image src={cameraIcon} alt="" />
+
+          {/* <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -46,12 +51,12 @@ const FileInput = React.forwardRef<HTMLInputElement, FileInputFieldProps>(
                 d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"
               />
             </svg>
-          </div>
-          <p className="text-center text-xs md:text-sm lg:text-sm md:group-hover:text-gray-500 lg:group-hover:text-gray-500 transition-colors duration-300">
+          </div> */}
+          {/* <p className="text-center text-xs md:text-sm lg:text-sm md:group-hover:text-gray-500 lg:group-hover:text-gray-500 transition-colors duration-300">
             {placeholder
               ? placeholder
               : `Please select ${multiple ? 'files' : 'a file'} to upload`}
-          </p>
+          </p> */}
         </div>
       </label>
     );

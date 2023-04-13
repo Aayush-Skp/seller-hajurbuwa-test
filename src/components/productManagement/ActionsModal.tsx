@@ -5,23 +5,24 @@ import Button from '../common/Button';
 import checkMark from '../../../public/icons/check-mark.svg';
 
 type ActionModalProps = {
+  productId: string | number;
   productStatus: string;
-  isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
+  isActionModalOpen: boolean;
+  setIsActionModalOpen: (value: boolean) => void;
 };
 
 export default function ActionModal({
   productStatus,
-  isOpen,
-  setIsOpen,
+  isActionModalOpen,
+  setIsActionModalOpen,
 }: ActionModalProps) {
   const [actionType, setActionType] = useState('');
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={isActionModalOpen}
       onRequestClose={() => {
-        setIsOpen(false);
+        setIsActionModalOpen(false);
         setActionType('');
       }}
       className="w-1/3 h-1/4 bg-white rounded-md flex flex-col justify-center items-center"

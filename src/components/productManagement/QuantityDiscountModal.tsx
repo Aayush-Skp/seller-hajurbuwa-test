@@ -1,11 +1,10 @@
 import Image from 'next/image';
 import Modal from 'react-modal';
 import Button from '../common/Button';
-import checkMark from '../../../public/icons/check-mark.svg';
-import { AiFillDelete } from 'react-icons/ai';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ErrorMessage from '../common/ErrorMessage';
 import deleteIcon from '../../../public/icons/delete.svg';
+import checkMark from '../../../public/icons/check-mark.svg';
 
 type ProductAttribute = {
   id: string;
@@ -14,10 +13,14 @@ type ProductAttribute = {
 };
 
 type QuantityDiscountProps = {
-  productId?: string;
+  productId: string | number;
   quantityDiscountPrices: ProductAttribute[] | [];
   isQuantityDiscountModalOpen: boolean;
   setIsQuantityDiscountModelOpen: (value: boolean) => void;
+  updateProductAttribute: (
+    productId: string | number,
+    updatedField: any
+  ) => Promise<void>;
 };
 
 export default function QuantityDiscountModal(props: QuantityDiscountProps) {
@@ -26,7 +29,10 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
     quantityDiscountPrices,
     isQuantityDiscountModalOpen,
     setIsQuantityDiscountModelOpen,
+    updateProductAttribute,
   } = props;
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [bulkPrices, setBulkPrices] = useState<any>([]);
   const [bulkValidation, setBulkValidation] = useState({
@@ -109,6 +115,52 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
         });
       }
     }
+  }
+
+  function handleFormSubmit() {
+    if (
+      bulkPrices.length === 1 &&
+      (bulkPrices[0]?.price <= 0 || isNaN(bulkPrices[0]?.price))
+    ) {
+      setBulkValidation({
+        isValid: false,
+        message: 'Price must be a valid amount',
+      });
+
+      return;
+    }
+
+    if (!bulkValidation.isValid) return;
+
+    console.log('looking');
+
+    setIsLoading(true);
+
+    let data = {
+      price_per_unit: '',
+      is_bulk_price: '1',
+    };
+
+    let updated = bulkPrices.map((price: any) => {
+      return [price.quantity, price.price];
+    });
+
+    for (let i = 0; i < updated.length; i++) {
+      for (let j = 0; j < updated[i].length; j++) {
+        data = {
+          ...data,
+          [`bulk_pricing[${i}][${j}]`]: `${updated[i][j]}`,
+        };
+      }
+    }
+
+    updateProductAttribute(productId, new URLSearchParams(data))
+      .then(() => setIsQuantityDiscountModelOpen(false))
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        setIsQuantityDiscountModelOpen(false);
+      });
   }
 
   return (
@@ -204,14 +256,15 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
             No, Cancel
           </button>
           <button
-            disabled={bulkValidation.isValid}
+            onClick={handleFormSubmit}
+            // disabled={bulkValidation.isValid}
             className={`px-5 py-2 w-full border ${
               bulkValidation.isValid
                 ? 'border-accent-primary bg-accent-primary cursor-pointer'
                 : 'border-accent-secondary bg-accent-secondary cursor-not-allowed'
             }  rounded text-white`}
           >
-            Yes, Confirm
+            {isLoading ? 'Loading...' : 'Yes, Confirm'}
           </button>
         </div>
       </div>

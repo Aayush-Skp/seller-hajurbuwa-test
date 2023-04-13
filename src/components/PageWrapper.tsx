@@ -1,4 +1,6 @@
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { publicRoutes } from '../constants/publicRoutes';
 import Navbar from './NavBar';
 
 type PageWrapperProps = {
@@ -6,10 +8,26 @@ type PageWrapperProps = {
 };
 
 const PageWrapper = ({ children }: PageWrapperProps) => {
+  const [isRoutePublic, setIsRoutePublic] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    localStorage.getItem('token');
+    const isPublic = publicRoutes.includes(router.pathname);
+
+    setIsRoutePublic(isPublic);
+  }, [router]);
+
   return (
     <div className="">
-      <Navbar />
-      <div className="mt-[112px]">{children}</div>
+      {!isRoutePublic ? (
+        <>
+          <Navbar />
+          <div className="mt-[112px]">{children}</div>
+        </>
+      ) : (
+        <div>{children}</div>
+      )}
     </div>
   );
 };

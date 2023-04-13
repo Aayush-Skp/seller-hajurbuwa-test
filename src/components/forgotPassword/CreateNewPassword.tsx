@@ -1,7 +1,5 @@
-import Link from 'next/link';
 import Image from 'next/image';
 import Button from '../common/Button';
-import TextInput from '../common/TextInput';
 import { BiArrowBack } from 'react-icons/bi';
 import ErrorMessage from '../common/ErrorMessage';
 import hajurBuwaLogo from '../../../public/icons/hajurbuwa-logo.svg';
@@ -12,6 +10,7 @@ import {
   MatchPasswordSchemaType,
 } from '../../validation/forgotPasswordSchema';
 import { resetPassword } from '../../services/forgotPasswordService';
+import PasswordTextInput from '../registration/PasswordTextInput';
 
 type OPTVerificationProps = {
   incStep: () => void;
@@ -68,7 +67,7 @@ export default function CreateNewPassword(props: OPTVerificationProps) {
               <div className="space-y-4">
                 <div className="space-y-1">
                   <InputLabel label="New Password" htmlFor="password" />
-                  <TextInput
+                  <PasswordTextInput
                     type="password"
                     placeholder="**********"
                     id="password"
@@ -81,7 +80,7 @@ export default function CreateNewPassword(props: OPTVerificationProps) {
                     label="Confirm Password"
                     htmlFor="password_confirmation"
                   />
-                  <TextInput
+                  <PasswordTextInput
                     type="password"
                     placeholder="**********"
                     id="password_confirmation"

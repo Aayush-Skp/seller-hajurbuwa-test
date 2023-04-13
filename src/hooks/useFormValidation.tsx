@@ -1,32 +1,33 @@
+import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
 export default function useFormValidation(validationSchema: Zod.Schema) {
-  type ValidationSchemaType = z.infer<typeof validationSchema>;
   const formOptions = { resolver: zodResolver(validationSchema) };
 
   const {
     reset,
     control,
-    register,
     setError,
+    register,
     setValue,
     formState,
+    getValues,
     handleSubmit,
-  } = useForm<ValidationSchemaType>(formOptions);
+  } = useForm<z.infer<typeof validationSchema>>(formOptions);
 
   const { errors, isValid } = formState;
 
   return {
     reset,
+    errors,
     control,
+    isValid,
     register,
     setError,
     setValue,
-    handleSubmit,
+    getValues,
     formState,
-    errors,
-    isValid,
+    handleSubmit,
   };
 }

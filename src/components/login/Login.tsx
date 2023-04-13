@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import hajurBuwaLogo from '../../../public/icons/hajurbuwa-logo.svg';
-import { BiArrowBack } from 'react-icons/bi';
 import Button from '../common/Button';
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
@@ -8,26 +7,61 @@ import Link from 'next/link';
 import InputLabel from '../common/InputLabel';
 import { loginService } from '../../services/loginService';
 import useFormValidation from '../../hooks/useFormValidation';
+import PasswordInput from '../common/PasswordInput';
 import {
   LoginSchema,
   LoginSchemaType,
 } from '../../validation/sellerLoginSchema';
 import { useState } from 'react';
-import PasswordInput from '../common/PasswordInput';
 
 export default function Login() {
-  const [isValidCredentials, setIsValidCredentials] = useState(true);
-  const { register, errors, handleSubmit } = useFormValidation(LoginSchema);
+  const [apiResponse, setApiResponse] = useState({
+    loading: false,
+  });
+
+  const { register, errors, handleSubmit, setError } =
+    useFormValidation(LoginSchema);
 
   function handleFormSubmit(data: LoginSchemaType) {
+    setApiResponse({
+      loading: true,
+    });
+
     loginService(data)
       .then((res) => {
-        setIsValidCredentials(true);
+        setApiResponse({
+          loading: false,
+        });
+
+        if (
+          res.status === 'error' &&
+          res.message === 'This account is not verified yet'
+        ) {
+          setError('password', {
+            message:
+              'Your account is not verified yet. Please wait till it is verified.',
+          });
+          setError('email', {
+            message: '',
+          });
+        }
+        if (res.status === 'success') {
+          localStorage.setItem('token', res?.token);
+        }
       })
       .catch((err) => {
-        if (err.response.status === 404) setIsValidCredentials(false);
+        if (err?.response?.status === 404) {
+          setError('password', { message: 'Invalid credentials' });
+          setError('email', { message: '' });
+        }
+        setApiResponse({
+          loading: false,
+        });
+        console.log(err);
       });
   }
+
+  console.log(errors);
 
   return (
     <div className="bg-gray-150 h-screen w-full flex justify-center items-center">
@@ -36,16 +70,11 @@ export default function Login() {
           onSubmit={handleSubmit(handleFormSubmit)}
           className="px-6 py-4 w-full space-y-4 my-5"
         >
-          <div className="w-full">
-            <div className="cursor-pointer" onClick={() => {}}>
-              <BiArrowBack className="text-3xl cursor-pointer" />
-            </div>
-            <div className="w-full flex justify-center">
-              <Image
-                src={hajurBuwaLogo}
-                alt="Register Phone Number Illustration"
-              />
-            </div>
+          <div className="w-full flex justify-center">
+            <Image
+              src={hajurBuwaLogo}
+              alt="Register Phone Number Illustration"
+            />
           </div>
 
           <div className="flex flex-col w-full space-y-5">
@@ -60,9 +89,7 @@ export default function Login() {
                     placeholder="user@email.com"
                     id="emailOrPhone"
                     {...register('email')}
-                    error={
-                      !isValidCredentials || errors.hasOwnProperty('email')
-                    }
+                    error={errors.hasOwnProperty('email')}
                   />
                   <ErrorMessage message={errors?.email?.message as string} />
                 </div>
@@ -75,21 +102,11 @@ export default function Login() {
                   <PasswordInput
                     id="password"
                     type="password"
-                    placeholder="**********"
-                    error={
-                      !isValidCredentials || errors.hasOwnProperty('password')
-                    }
+                    placeholder="Enter your password"
+                    error={errors.hasOwnProperty('password')}
                     {...register('password')}
                   />
-                  {errors.hasOwnProperty('password') ? (
-                    <ErrorMessage
-                      message={errors?.password?.message as string}
-                    />
-                  ) : !isValidCredentials ? (
-                    <ErrorMessage message="Invalid email or password" />
-                  ) : (
-                    ''
-                  )}
+                  <ErrorMessage message={errors?.password?.message as string} />
                 </div>
               </div>
             </div>
@@ -115,7 +132,9 @@ export default function Login() {
               </p>
             </div>
             <div>
-              <Button type="submit">Login</Button>
+              <Button type="submit">
+                {apiResponse.loading ? 'Signing in...' : 'Login'}
+              </Button>
             </div>
             <div className="flex items-center space-x-4 text-sm">
               <div className="w-full h-[1px] bg-black" />

@@ -6,17 +6,15 @@ import { useEffect, useState } from 'react';
 import ErrorMessage from '../common/ErrorMessage';
 import deleteIcon from '../../../public/icons/delete.svg';
 
-type ProductAttribute = {
-  id: string;
-  quantity: number;
-  price: number;
-};
-
 type AddQuantityDiscountProps = {
   productId: string;
   minimumOrder: number;
   isQuantityDiscountModalOpen: boolean;
   setIsQuantityDiscountModelOpen: (value: boolean) => void;
+  updateProductAttribute: (
+    productId: string | number,
+    updatedField: any
+  ) => Promise<void>;
 };
 
 export default function AddQuantityDiscountModal(
@@ -27,7 +25,10 @@ export default function AddQuantityDiscountModal(
     minimumOrder,
     isQuantityDiscountModalOpen,
     setIsQuantityDiscountModelOpen,
+    updateProductAttribute,
   } = props;
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [bulkPrices, setBulkPrices] = useState<any>([]);
   const [bulkValidation, setBulkValidation] = useState({
@@ -128,7 +129,7 @@ export default function AddQuantityDiscountModal(
   function handleFormSubmit() {
     if (
       bulkPrices.length === 1 &&
-      (bulkPrices[0].price <= 0 || isNaN(bulkPrices[0].price))
+      (bulkPrices[0]?.price <= 0 || isNaN(bulkPrices[0]?.price))
     ) {
       setBulkValidation({
         isValid: false,
@@ -140,7 +141,33 @@ export default function AddQuantityDiscountModal(
 
     if (!bulkValidation.isValid) return;
 
-    console.log('submitted');
+    setIsLoading(true);
+
+    let data = {
+      price_per_unit: '',
+      is_bulk_price: '1',
+    };
+
+    let updated = bulkPrices.map((price: any) => {
+      return [price.quantity, price.price];
+    });
+
+    for (let i = 0; i < updated.length; i++) {
+      for (let j = 0; j < updated[i].length; j++) {
+        data = {
+          ...data,
+          [`bulk_pricing[${i}][${j}]`]: `${updated[i][j]}`,
+        };
+      }
+    }
+
+    updateProductAttribute(productId, new URLSearchParams(data))
+      .then(() => setIsQuantityDiscountModelOpen(false))
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+        setIsQuantityDiscountModelOpen(false);
+      });
   }
 
   return (
@@ -161,10 +188,9 @@ export default function AddQuantityDiscountModal(
 
         overlay: {
           zIndex: 100,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backgroundColor: 'rgba(0, 0, 0, 0.1)',
         },
       }}
-      ariaHideApp={false}
     >
       <div className="w-[500px] space-y-2">
         <div className="flex items-center justify-center space-x-1 my-4">
@@ -223,7 +249,7 @@ export default function AddQuantityDiscountModal(
                 bulkPrices?.length === 4
               }
             >
-              Add
+              Add Row
             </Button>
           </div>
         </div>
@@ -238,11 +264,15 @@ export default function AddQuantityDiscountModal(
           <button
             onClick={() => {
               handleFormSubmit();
-              console.log('clicked');
             }}
-            className="px-5 py-2 w-full border border-accent-primary bg-accent-primary cursor-pointer rounded text-white"
+            disabled={!bulkValidation.isValid}
+            className={`px-5 py-2 w-full border border-accent-primary ${
+              !bulkValidation.isValid
+                ? 'bg-accent-secondary cursor-not-allowed'
+                : 'bg-accent-primary cursor-pointer'
+            }  rounded text-white`}
           >
-            Yes, Confirm
+            {isLoading ? 'Loading...' : 'Yes, Confirm'}
           </button>
         </div>
       </div>

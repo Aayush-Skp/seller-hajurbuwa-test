@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 export default function OrderDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [orderDetails, setOrderDetails] = useState({
-    order_code: '',
+    order_id: '',
     order_status: '',
     order_date: '',
     product_name: '',
@@ -17,6 +17,9 @@ export default function OrderDetails() {
     sub_total: '',
     customer_name: '',
     pan_number: '',
+    amount: '',
+    seller_name: '',
+    seller_pan_no: '',
   });
 
   const { query } = useRouter();
@@ -24,13 +27,23 @@ export default function OrderDetails() {
   useEffect(() => {
     getSingleOrderDetails(`${query.order_id}`)
       .then((res) => {
+        console.log(res);
         setIsLoading(false);
-        setOrderDetails(res);
+        setOrderDetails(res[0]);
       })
       .catch((err) => {
         setIsLoading(false);
       });
   }, [query]);
+
+  function formatDate(date: string) {
+    return new Date(date).toLocaleDateString('en-us', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -39,7 +52,7 @@ export default function OrderDetails() {
       <div className="pt-5 border-b border-gray-300">
         <div className="flex justify-between px-16">
           <span className="text-2xl">
-            Order Details of Order Number 0532565
+            Order Details of Order Number {orderDetails.order_id}
           </span>
           <Link href="/order-management">
             <a className="flex items-center space-x-1 text-blue-700">
@@ -55,7 +68,7 @@ export default function OrderDetails() {
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Order ID</span>
               <div className="flex items-center justify-center space-x-2">
-                <span>{orderDetails?.order_code}</span>
+                <span>{orderDetails?.order_id}</span>
                 <button className="group" onClick={() => {}}>
                   <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
                 </button>
@@ -65,13 +78,29 @@ export default function OrderDetails() {
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Order Status</span>
-              <span>{orderDetails.order_status}</span>
+              {orderDetails.order_status === 'pending' ? (
+                <span>Pending</span>
+              ) : orderDetails.order_status === 'unshipped' ? (
+                <span>Unshipped</span>
+              ) : orderDetails.order_status === 'picked_up' ? (
+                <span>Picked up</span>
+              ) : orderDetails.order_status === 'waiting_for_pickup' ? (
+                <span>Waiting for pickup</span>
+              ) : orderDetails.order_status === 'failed' ? (
+                <span>Failed</span>
+              ) : orderDetails.order_status === 'cancelled' ? (
+                <span>Cancelled</span>
+              ) : orderDetails.order_status === 'sent' ? (
+                <span>Sent for delivery</span>
+              ) : orderDetails.order_status === 'delivered' ? (
+                <span>Delivered</span>
+              ) : null}
             </div>
           </li>
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Order Date</span>
-              <span>{orderDetails.order_date}</span>
+              <span>{formatDate(orderDetails.order_date)}</span>
             </div>
           </li>
           <li className="border-b py-2 border-gray-300">
@@ -100,19 +129,19 @@ export default function OrderDetails() {
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Item Subtotal</span>
-              <span>{orderDetails.sub_total}</span>
+              <span>Rs. {orderDetails.amount}</span>
             </div>
           </li>
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Customer Name</span>
-              <span>{orderDetails.customer_name}</span>
+              <span>{orderDetails.seller_name}</span>
             </div>
           </li>
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Pan Number</span>
-              <span>{orderDetails.pan_number}</span>
+              <span>{orderDetails.seller_pan_no}</span>
             </div>
           </li>
         </ul>

@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import hajurBuwaLogo from '../../../public/icons/hajurbuwa-logo.svg';
-import { BiArrowBack } from 'react-icons/bi';
 import Button from '../common/Button';
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
@@ -13,30 +12,60 @@ import useFormValidation from '../../hooks/useFormValidation';
 import { forgotPasswordService } from '../../services/forgotPasswordService';
 import { useState } from 'react';
 import Link from 'next/link';
+import { checkIfEmailExist } from '../../services/emailVerificationService';
 
 type EnterEmailOrPasswordProps = {
   incStep: () => void;
   decStep: () => void;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
-  const { incStep, decStep } = props;
+  const { incStep, setEmail } = props;
 
-  const [isEmailExist, setIsEmailExist] = useState(true);
+  const [apiResponse, setApiResponse] = useState({
+    loading: false,
+  });
 
   const { register, errors, handleSubmit, setError } =
     useFormValidation(EmailSchema);
 
   function handleFormSubmit(data: EmailSchemaType) {
-    forgotPasswordService(data)
+    setApiResponse({
+      loading: true,
+    });
+
+    setEmail(data.email);
+
+    checkIfEmailExist(data.email)
       .then((res) => {
-        if (res.status === 200) incStep();
+        if (res === 'error') {
+          forgotPasswordService(data)
+            .then((res) => {
+              incStep();
+            })
+            .catch((err) => {
+              console.log(err);
+              if (err.response.status === 404) {
+                setError('email', { message: 'Email does not exist' });
+              }
+
+              if (err.response.status === 500) {
+                setError('email', { message: 'Internal server error' });
+              }
+            });
+        }
+
+        if (res === 'success') {
+          setError('email', { message: 'Email not registered' });
+          setApiResponse({
+            loading: false,
+          });
+        }
       })
       .catch((err) => {
+        console.log('inside here');
         console.log(err);
-        if (err.response.status === 404) setIsEmailExist(false);
-        if (err.response.status === 500)
-          setError('email', { message: 'Internal server error' });
       });
   }
 
@@ -47,16 +76,11 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
           onSubmit={handleSubmit(handleFormSubmit)}
           className="px-6 py-4 w-full space-y-4 my-5"
         >
-          <div className="w-full">
-            <div className="cursor-pointer" onClick={() => {}}>
-              <BiArrowBack className="text-3xl cursor-pointer" />
-            </div>
-            <div className="w-full flex justify-center">
-              <Image
-                src={hajurBuwaLogo}
-                alt="Register Phone Number Illustration"
-              />
-            </div>
+          <div className="w-full flex justify-center">
+            <Image
+              src={hajurBuwaLogo}
+              alt="Register Phone Number Illustration"
+            />
           </div>
 
           <div className="flex flex-col w-full space-y-5">
@@ -65,31 +89,26 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
                 <div className="space-y-1">
                   <p className="text-3xl font-semibold">Password Assistance</p>
                   <p className="text-xs">
-                    Enter the email address or mobile phone number associated
-                    with your Hajurbuwa account.
+                    Enter the email address associated with your Hajurbuwa
+                    account.
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <InputLabel
-                    label="Email or Phone no."
-                    htmlFor="emailOrPhone"
-                  />
+                  <InputLabel label="Email" htmlFor="emailOrPhone" />
                   <TextInput
                     {...register('email')}
                     error={errors.hasOwnProperty('email')}
                     placeholder="user@email.com"
                     id="emailOrPhone"
                   />
-                  {errors.hasOwnProperty('email') ? (
-                    <ErrorMessage message={errors.email?.message as string} />
-                  ) : !isEmailExist ? (
-                    <ErrorMessage message="No such user detected" />
-                  ) : null}
+                  <ErrorMessage message={errors.email?.message as string} />
                 </div>
               </div>
             </div>
             <div>
-              <Button type="submit">Continue</Button>
+              <Button type="submit">
+                {apiResponse.loading ? 'Loading...' : 'Continue'}
+              </Button>
             </div>
             <div className="flex items-center space-x-4 text-sm">
               <div className="w-full h-[1px] bg-black" />
@@ -97,7 +116,7 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
               <div className="w-full h-[1px] bg-black" />
             </div>
             <Link href="/register">
-              <a className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2">
+              <a className="bg-white text-accent-primary border border-accent-primary text-center rounded px-3 py-2">
                 Register as Hajurbuwa seller
               </a>
             </Link>

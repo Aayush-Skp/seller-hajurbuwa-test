@@ -4,10 +4,8 @@ import PageWrapper from '../../components/PageWrapper';
 
 export default function Orders() {
   return (
-    <div>
-      <PageWrapper>
-        <OrderDetails />
-      </PageWrapper>
-    </div>
+    <>
+      <OrderDetails />
+    </>
   );
 }

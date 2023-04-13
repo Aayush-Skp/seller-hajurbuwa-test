@@ -7,4 +7,4 @@ export const httpClient = axios.create({
 });
 
 httpClient.defaults.headers.common.Authorization =
-  'Bearer 13|xLQYQ3EZowrAGO3ZhAQugUeaYmkHAYesJc4NSBFk';
+  'Bearer 18|2h6F7WscHROZxPTzjueCHkYRDD1r53naPWwaRkwS';

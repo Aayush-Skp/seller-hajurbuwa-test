@@ -7,7 +7,15 @@ import {
 const Url = 'seller/password';
 
 export function forgotPasswordService(data: EmailSchemaType) {
-  return httpClient.post(`${Url}/email`, data).then((res) => res.data);
+  const formData = new FormData();
+  formData.append('email', data.email);
+  return httpClient
+    .post(`${Url}/email`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((res) => res.data);
 }
 
 export function validateOTP(otp: string) {

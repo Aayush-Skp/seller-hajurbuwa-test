@@ -80,3 +80,17 @@ export const PriceSchema = z.object({
       { message: 'Entered Price is invalid' }
     ),
 });
+
+export const PackageWeightSchema = z.object({
+  package_weight: z
+    .string()
+    .min(1, { message: 'Please enter package weight' })
+    .refine(
+      (value: string) => {
+        if (value === '0' || isNaN(Number(value))) return false;
+
+        return true;
+      },
+      { message: 'Entered package weight is invalid' }
+    ),
+});

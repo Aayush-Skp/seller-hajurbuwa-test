@@ -1,4 +1,5 @@
 import { httpClient } from '../config/httpClient';
+import { imageServerBaseUrl } from '../constants/serverConstants';
 
 const productUrl = '/seller/product';
 
@@ -6,15 +7,110 @@ type ProductStatus =
   | 'pending'
   | 'pending'
   | 'online'
-  | 'inActive'
+  | 'deactivated'
   | 'locked'
   | 'suspended'
-  | 'outOfStock';
+  | 'out_of_stock';
 
 export function getProductByStatus(productStatus: ProductStatus) {
   return httpClient
     .get(`${productUrl}?status=${productStatus}`)
     .then((res) => res.data.data);
+}
+
+export function getProductDescription(productId: string | number) {
+  return httpClient
+    .get(`${productUrl}/${productId}`)
+    .then((res) => res.data.data[0]);
+}
+
+export function getProductById(productId: string | number) {
+  return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
+    const productDetails = {
+      featured_highlights: [''],
+      minimum_order: 1,
+      included_items: '',
+      price_per_unit: '',
+      package_weight: '',
+      category_id: null,
+      is_bulk_price: false,
+      bulk_pricing: [],
+      product_name: '',
+      description: '',
+      cover_image: '',
+      sub_images: [],
+      in_stock: true,
+      brand: '',
+      unit: null,
+      images: {
+        first: '',
+        second: '',
+        third: '',
+        fourth: '',
+        fifth: '',
+        sixth: '',
+        seventh: '',
+        eighth: '',
+      },
+    };
+
+    for (let i = 0; i < res.data.data[0].sub_images.length; i++) {
+      if (i === 0)
+        productDetails.images.first = `${imageServerBaseUrl}${res.data.data[0].sub_images[0]}`;
+      if (i === 1)
+        productDetails.images.second = `${imageServerBaseUrl}${res.data.data[0].sub_images[1]}`;
+      if (i === 2)
+        productDetails.images.third = `${imageServerBaseUrl}${res.data.data[0].sub_images[2]}`;
+      if (i === 3)
+        productDetails.images.fourth = `${imageServerBaseUrl}${res.data.data[0].sub_images[3]}`;
+      if (i === 4)
+        productDetails.images.fifth = `${imageServerBaseUrl}${res.data.data[0].sub_images[4]}`;
+      if (i === 5)
+        productDetails.images.sixth = `${res.data.data[0].sub_images[5]}`;
+      if (i === 6)
+        productDetails.images.seventh = `${imageServerBaseUrl}${res.data.data[0].sub_images[6]}`;
+      if (i === 7)
+        productDetails.images.eighth = `${imageServerBaseUrl}${res.data.data[0].sub_images[7]}`;
+    }
+
+    productDetails.product_name = res.data.data[0].product_name;
+    productDetails.included_items = res.data.data[0].included_items;
+    productDetails.minimum_order = res.data.data[0].minimum_order;
+    productDetails.package_weight = res.data.data[0].package_weight;
+    productDetails.price_per_unit = res.data.data[0].price_per_unit;
+    productDetails.category_id = res.data.data[0].product_type;
+    productDetails.in_stock = res.data.data[0].stock_availability;
+    productDetails.unit = res.data.data[0].unit_selection;
+    productDetails.is_bulk_price = res.data.data[0].is_bulk_price;
+    productDetails.brand = res.data.data[0].brand_specification;
+    productDetails.description = res.data.data[0].description;
+    productDetails.featured_highlights = res.data.data[0].featured_highlights;
+    productDetails.cover_image = `${imageServerBaseUrl}${res.data.data[0].cover_image}`;
+
+    return productDetails;
+  });
+}
+
+export function updateProduct(productId: string | number, updatedField: any) {
+  return httpClient
+    .put(`${productUrl}/${productId}`, updatedField, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    })
+    .then((res) => res);
+}
+
+export function deleteProduct(productId: string | number) {
+  return httpClient.delete(`${productUrl}/${productId}`);
+}
+
+export function deactivateProduct(productId: string | number) {
+  return httpClient.delete(`/seller/deactivate-product/${productId}`);
+}
+
+export function activateProduct(productId: string | number) {
+  return httpClient.delete(`seller/activate-product/${productId}`);
 }
 
 export function addProduct(productDetails: any) {
@@ -43,28 +139,17 @@ export function addProduct(productDetails: any) {
 
   for (let i = 0; i < bulkPrices.length; i++) {
     for (let j = 0; j < bulkPrices[i].length; j++) {
-      formData.append(`bulk_pricing[${i}][${j}]:`, bulkPrices[i][j]);
+      formData.append(`bulk_pricing[${i}][${j}]`, bulkPrices[i][j]);
     }
   }
 
-  productDetails.sub_images.forEach((element: any) => {
-    formData.append('sub_images[]', element);
+  for (const key in productDetails.images) {
+    formData.append('sub_images[]', productDetails.images[key]);
+  }
+
+  return httpClient.post(productUrl, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
-
-  return httpClient
-    .post(productUrl, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    .then((res) => res.data.data);
-}
-
-export function updateProduct(
-  productId: string | number,
-  updatedField: Record<string, string>
-) {
-  return httpClient
-    .put(`${productUrl}/${productId}`, updatedField)
-    .then((res) => res);
 }

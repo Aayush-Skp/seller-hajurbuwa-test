@@ -1,27 +1,56 @@
 import Image from 'next/image';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Info from '../../../public/icons/info.svg';
-import useFormValidation from '../../hooks/useFormValidation';
-import { ProductPackageWeightSchema } from '../../validation/productListingSchema';
+import { addProduct } from '../../services/productService';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
 
 export default function ServicesAndDelivery(props: any) {
-  const { productDetails, decStep, setProductDetails, postData } = props;
+  const { productDetails, setProductDetails, decStep } = props;
 
-  function handleWeightChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const [packageWeightValidation, setPackageWeightValidation] = useState({
+    isValid: true,
+    message: '',
+  });
+
+  function handlePackageWeightChange(e: React.ChangeEvent<HTMLInputElement>) {
     setProductDetails((prev: any) => {
       return {
         ...prev,
         package_weight: e.target.value,
       };
     });
+
+    setPackageWeightValidation({
+      isValid: true,
+      message: '',
+    });
   }
 
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    postData();
+    if (productDetails.package_weight === '') {
+      setPackageWeightValidation({
+        isValid: false,
+        message: 'Please enter valid weight of the package',
+      });
+
+      return;
+    }
+    if (
+      isNaN(Number(productDetails.package_weight)) ||
+      Number(productDetails.package_weight) <= 0
+    ) {
+      setPackageWeightValidation({
+        isValid: false,
+        message: 'Please enter valid weight of the package',
+      });
+
+      return;
+    }
+
+    addProduct(productDetails).then(console.log).catch(console.log);
   }
 
   return (
@@ -37,15 +66,17 @@ export default function ServicesAndDelivery(props: any) {
             <div className="flex items-center w-36">
               <TextInput
                 type="number"
-                min={1}
+                aria-invalid={packageWeightValidation.isValid}
+                error={!packageWeightValidation.isValid}
                 className="rounded-none"
-                onChange={handleWeightChange}
+                onChange={handlePackageWeightChange}
+                value={productDetails.package_weight}
               />
               <span className="h-10 w-10 flex items-center justify-center border border-gray-500">
                 Kg
               </span>
             </div>
-            {/* <ErrorMessage message={errors.package_weight?.message as string} /> */}
+            <ErrorMessage message={packageWeightValidation?.message} />
           </div>
         </div>
         <div className="flex justify-end space-x-3">

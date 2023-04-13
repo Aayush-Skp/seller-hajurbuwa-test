@@ -32,6 +32,9 @@ export default function PriceAndStock(props: any) {
     { quantity: minOrder, pricePerPc: 0 },
   ]);
 
+  const { errors, register, setValue, handleSubmit, setError, getValues } =
+    useFormValidation(ProductPriceSchema(defaultValues.units, isBulkPrice));
+
   useEffect(() => {
     if (isBulkPrice) {
       setValue('price_per_unit', '');
@@ -72,6 +75,8 @@ export default function PriceAndStock(props: any) {
 
   function onBulkChange(e: React.ChangeEvent<HTMLInputElement>, index: number) {
     const { name, valueAsNumber } = e.target;
+
+    console.log(getValues());
 
     const update = bulkPrices.map((val, i) => {
       if (i === index) {
@@ -152,37 +157,34 @@ export default function PriceAndStock(props: any) {
     });
   }
 
-  const { errors, register, setValue, handleSubmit, setError } =
-    useFormValidation(ProductPriceSchema(defaultValues.units, isBulkPrice));
-
   function handleFormSubmit(data: any) {
-    if (!isNaN(minOrder) && bulkValidation.isValid) {
-      setProductDetails((prev: any) => {
-        return {
-          ...prev,
-          ...data,
-          minimum_order: minOrder,
-          in_stock: inStock,
-          is_bulk_price: Number(isBulkPrice),
-          bulk_pricing: bulkPrices,
-        };
-      });
-      incStep();
-    }
-
     if (isNaN(bulkPrices[0].pricePerPc) || bulkPrices[0].pricePerPc === 0) {
       setBulkValidation({
         isValid: false,
         message: 'Entered price is invalid',
       });
 
-      return;
+      if (isNaN(minOrder) || minOrder === 0) {
+        setMinOrderValidation({
+          isValid: false,
+          message: 'Enter valid minimum order',
+        });
+      }
+
+      if (!bulkValidation.isValid) return;
     }
 
-    setMinOrderValidation({
-      isValid: false,
-      message: 'Enter valid minimum order',
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        ...data,
+        minimum_order: minOrder,
+        in_stock: inStock,
+        is_bulk_price: isBulkPrice,
+        bulk_pricing: isBulkPrice ? bulkPrices : [],
+      };
     });
+    incStep();
   }
 
   return (
@@ -297,6 +299,7 @@ export default function PriceAndStock(props: any) {
                         name="quantity"
                         type="number"
                         disabled={i === 0}
+                        min={1}
                         onChange={(e) => onBulkChange(e, i)}
                         className="outline-none border border-gray-600 h-8 w-36 px-3"
                       />

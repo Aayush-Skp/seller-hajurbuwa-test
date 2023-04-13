@@ -5,7 +5,7 @@ export function getOrdersByStatus(status: string) {
     .post('/seller/get-orders', {
       status,
     })
-    .then((res) => res.data.data);
+    .then((res) => res.data);
 }
 
 export function getSingleOrderDetails(orderId: string | number) {
@@ -17,13 +17,16 @@ export function getSingleOrderDetails(orderId: string | number) {
 export function changeOrderStatus({
   orderId,
   status,
+  reason,
 }: {
   orderId: string | number;
   status: string;
+  reason?: string;
 }) {
   return httpClient
     .post(`seller/set-order-status/${orderId}`, {
       status,
+      reason,
     })
     .then((res) => res.data.data);
 }

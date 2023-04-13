@@ -4,7 +4,13 @@ import ProductManagementTable from './ProductManagementTable';
 import { getProductByStatus } from '../../services/productService';
 
 export type Tab = {
-  id: 'online' | 'pending' | 'outOfStock' | 'inActive' | 'suspended' | 'locked';
+  id:
+    | 'online'
+    | 'pending'
+    | 'out_of_stock'
+    | 'deactivated'
+    | 'suspended'
+    | 'locked';
   label:
     | 'Online'
     | 'Pending QC'
@@ -24,11 +30,11 @@ const tabs: Tab[] = [
     label: 'Pending QC',
   },
   {
-    id: 'outOfStock',
+    id: 'out_of_stock',
     label: 'Out of stock',
   },
   {
-    id: 'inActive',
+    id: 'deactivated',
     label: 'Inactive',
   },
   {
@@ -57,8 +63,8 @@ export default function ProductManagement() {
         setProductList(res);
       })
       .catch((err) => {
-        err?.response?.status === 404 && setProductList([]);
         console.log(err);
+        if (err.response.status === 404) setProductList([]);
       });
   }
 
@@ -76,7 +82,7 @@ export default function ProductManagement() {
         />
         <ProductManagementTable
           data={productList}
-          productStatus={currentTab.id}
+          productStatus={currentTab}
           getAllProducts={getAllProducts}
         />
       </div>

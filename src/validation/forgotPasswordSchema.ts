@@ -4,7 +4,7 @@ export const EmailSchema = z.object({
   email: z
     .string()
     .min(1, { message: 'Please enter your email' })
-    .email('Email must be a valid email'),
+    .email({ message: 'Entered email is invalid' }),
 });
 
 export type EmailSchemaType = z.infer<typeof EmailSchema>;

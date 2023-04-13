@@ -4,9 +4,7 @@ import PageWrapper from '../components/PageWrapper';
 export default function Finance() {
   return (
     <>
-      <PageWrapper>
-        <AccountFinanceStatement />
-      </PageWrapper>
+      <AccountFinanceStatement />
     </>
   );
 }

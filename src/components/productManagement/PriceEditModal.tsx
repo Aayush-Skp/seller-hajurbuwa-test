@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Modal from 'react-modal';
 import Button from '../common/Button';
@@ -28,6 +28,8 @@ export default function PriceEditModal(props: PriceEditModalProps) {
     updateProductAttribute,
   } = props;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const { register, errors, handleSubmit, setValue } =
     useFormValidation(PriceSchema);
 
@@ -35,12 +37,18 @@ export default function PriceEditModal(props: PriceEditModalProps) {
     setValue('price_per_unit', String(value));
   }, []);
 
-  console.log(productId);
-
   function handleFormSubmit(data: any) {
-    updateProductAttribute(productId, data)
+    setIsLoading(true);
+    updateProductAttribute(productId, {
+      is_bulk_price: '0',
+      ...data,
+      bulk_price: '',
+    })
       .then(() => setIsPriceModalOpen(false))
-      .catch(console.log);
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
   }
 
   return (
@@ -60,7 +68,7 @@ export default function PriceEditModal(props: PriceEditModalProps) {
 
           overlay: {
             zIndex: 100,
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
           },
         }}
       >
@@ -86,7 +94,7 @@ export default function PriceEditModal(props: PriceEditModalProps) {
               >
                 Cancel
               </Button>
-              <Button type="submit">Save</Button>
+              <Button type="submit">{isLoading ? 'Loading...' : 'Save'}</Button>
             </div>
           </div>
         </form>

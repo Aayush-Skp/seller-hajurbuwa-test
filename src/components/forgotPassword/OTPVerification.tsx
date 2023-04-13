@@ -3,12 +3,15 @@ import hajurBuwaLogo from '../../../public/icons/hajurbuwa-logo.svg';
 import OtpInput from 'react-otp-input';
 import { BiArrowBack } from 'react-icons/bi';
 import Button from '../common/Button';
-import Link from 'next/link';
-import { useState } from 'react';
-import { validateOTP } from '../../services/forgotPasswordService';
+import { useEffect, useState } from 'react';
+import {
+  forgotPasswordService,
+  validateOTP,
+} from '../../services/forgotPasswordService';
 import ErrorMessage from '../common/ErrorMessage';
 
 type OPTVerificationProps = {
+  email: string;
   incStep: () => void;
   decStep: () => void;
   otp: string;
@@ -17,7 +20,27 @@ type OPTVerificationProps = {
 
 export default function OPTVerification(props: OPTVerificationProps) {
   const [isOTPValid, setIsOTPValid] = useState(true);
-  const { incStep, decStep, handleOTPChange, otp } = props;
+  const { incStep, decStep, handleOTPChange, otp, email } = props;
+
+  const [validOTPTime, setValidOTPTime] = useState(60);
+
+  useEffect(() => {
+    if (validOTPTime !== 0) {
+      const counter = setTimeout(() => {
+        setValidOTPTime((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearTimeout(counter);
+    }
+  }, [validOTPTime]);
+
+  function handleResendOTP() {
+    forgotPasswordService({ email })
+      .then(() => {
+        setValidOTPTime(60);
+      })
+      .catch(console.log);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -52,14 +75,8 @@ export default function OPTVerification(props: OPTVerificationProps) {
               Verification Required
             </span>
             <div className="space-x-1 text-xs">
-              <span>We have sent a One-Time-Password (OTP) to</span>
-              <span>
-                <Link href="">
-                  <a className="text-accent-primary">
-                    asdfasfdasfasdf@gmail.com
-                  </a>
-                </Link>
-              </span>
+              <span>We have sent an One-Time-Password (OTP) to</span>
+              <span className="text-accent-primary">{email}</span>
             </div>
             <div>
               <span className="text-gray-500 text-sm">Enter OTP code</span>
@@ -81,17 +98,26 @@ export default function OPTVerification(props: OPTVerificationProps) {
                 <ErrorMessage message={'Invalid OTP code. Please try again.'} />
               ) : null}
             </div>
-            <div>
-              <Button type="submit">Continue</Button>
+            <div className="space-y-1">
+              <div>
+                <Button type="submit">Continue</Button>
+              </div>
+              <div className="w-full flex justify-between text-gray-500 text-sm">
+                <span className="cursor-pointer" onClick={decStep}>
+                  Change email
+                </span>
+                <button
+                  type="button"
+                  disabled={validOTPTime !== 0}
+                  onClick={handleResendOTP}
+                  className="cursor-pointer"
+                >
+                  {validOTPTime !== 0
+                    ? `${validOTPTime} seconds`
+                    : 'Resend OTP'}
+                </button>
+              </div>
             </div>
-            <div className="flex items-center space-x-4 text-sm">
-              <div className="w-full h-[1px] bg-black" />
-              <p className="whitespace-nowrap">New to Hajurbuwa?</p>
-              <div className="w-full h-[1px] bg-black" />
-            </div>
-            <button className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2">
-              Register as Hajurbuwa seller
-            </button>
           </div>
         </form>
       </div>

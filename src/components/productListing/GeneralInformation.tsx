@@ -16,13 +16,15 @@ export default function GeneralInformation(props: any) {
     ProductGeneralInfoSchema(defaultValues?.brands)
   );
 
+  console.log(defaultValues);
+
   useEffect(() => {
     setValue('product_name', productDetails?.product_name);
     setValue('product_type', productDetails?.category_id);
     setValue('brand', productDetails?.brand);
     setValue('unit', productDetails?.unit);
     setValue('minimum_order', productDetails?.minimum_order);
-  }, []);
+  }, [productDetails]);
 
   function handleFormSubmit(data: any) {
     setProductDetails((prev: any) => {

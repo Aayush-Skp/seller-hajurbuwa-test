@@ -10,7 +10,7 @@ type StockAvailabilityModalProps = {
   productId?: string | number;
   updateProductAttribute: (
     productId: string | number,
-    updatedField: Record<string, string>
+    updatedField: any
   ) => Promise<any>;
 };
 
@@ -27,7 +27,7 @@ export default function StockAvailabilityModal(
     message: '',
   });
 
-  const [isStockAvailable, setIsStockAvailable] = useState(in_stock);
+  const [isStockAvailable, setIsStockAvailable] = useState(0);
 
   function handleStockStatusChange() {
     setResponseState({
@@ -36,11 +36,21 @@ export default function StockAvailabilityModal(
       isIdle: false,
     });
 
-    updateProductAttribute(`${productId}`, {
-      in_stock: `${Number(isStockAvailable)}`,
-    })
+    updateProductAttribute(
+      `${productId}`,
+      new URLSearchParams({
+        in_stock: isStockAvailable.toString(),
+      })
+    )
       .then((res) => {
         setIsModalOpen(false);
+        setResponseState({
+          ...responseState,
+          isLoading: false,
+          isIdle: true,
+          isError: false,
+          message: '',
+        });
       })
       .catch((err) => {
         setResponseState({
@@ -53,6 +63,8 @@ export default function StockAvailabilityModal(
       });
   }
 
+  console.log(isStockAvailable);
+
   return (
     <div>
       <div className="flex flex-col items-center space-y-2">
@@ -60,8 +72,9 @@ export default function StockAvailabilityModal(
           <InputLabel label="Yes" />
           <RadioInput
             name={productId as string}
-            checked={Boolean(in_stock)}
+            checked={in_stock === 1 ? true : false}
             onClick={() => {
+              console.log(productId);
               setIsStockAvailable(1);
               !in_stock && setIsModalOpen(true);
             }}
@@ -70,9 +83,10 @@ export default function StockAvailabilityModal(
         <div className="flex justify-center items-center space-x-1">
           <InputLabel label="No" />
           <RadioInput
-            checked={!Boolean(in_stock)}
+            checked={in_stock === 0 ? true : false}
             name={productId as string}
             onClick={() => {
+              console.log(productId);
               setIsStockAvailable(0);
               in_stock && setIsModalOpen(true);
             }}

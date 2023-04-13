@@ -7,6 +7,7 @@ import ChangeOrderStatusModal from './ChangeOrderStatusModal';
 import PackagingSlip from './PackagingSlip';
 import cancelIcon from '../../../public/icons/cancel.svg';
 import { Tab } from '.';
+import { imageServerBaseUrl } from '../../constants/serverConstants';
 
 interface ITableData {
   id?: string | number;
@@ -69,6 +70,15 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
+  function formatDate(date: string) {
+    return new Date(date).toLocaleDateString('en-us', {
+      weekday: 'short',
+      year: '2-digit',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
   return (
     <div className="border-3">
       <table {...getTableProps()} className="w-full border-x-4">
@@ -110,22 +120,24 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                       key={i}
                     >
                       {cell.column.Header === 'Product' ? (
-                        <div className="flex justify-center items-center space-y-2 py-2">
+                        <div className="flex space-x-2 py-1 px-2">
                           <div>
-                            <Image
-                              height={80}
-                              width={80}
-                              src={row.original.cover_image}
-                              alt=""
-                            />
+                            {row?.original?.product_cover_image ? (
+                              <Image
+                                height={80}
+                                width={80}
+                                src={`${imageServerBaseUrl}${row.original.product_cover_image}`}
+                                alt=""
+                              />
+                            ) : null}
                           </div>
                           <div className="flex flex-col items-start space-y-1">
                             <div className="text-sm text-accent-primary text-start">
-                              <p>{cell.value.product_name}</p>
-                              <p>{row.original.included_items}</p>
+                              <p>{row.original.product_name}</p>
+                              <p>{row.original.product_included_item}</p>
                             </div>
                             <div>
-                              <p>{row.original.product_id}</p>
+                              <p>Id: {row.original.product_id}</p>
                             </div>
                           </div>
                         </div>
@@ -135,7 +147,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                             <div className="space-x-1">
                               <span>Order Id: </span>
                               <span className="font-semibold">
-                                {row.original.order_code}
+                                {row.original.order_id}
                               </span>
                             </div>
                             <div className="space-x-1">
@@ -150,13 +162,13 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                             <div className="space-x-1">
                               <span>Item Subtotal:</span>
                               <span className="font-semibold">
-                                {row.original.sub_total} NPR
+                                {row.original.amount} NPR
                               </span>
                             </div>
                             <div className="space-x-1">
                               <span>Order Date:</span>
                               <span className="font-semibold">
-                                {row.original.order_date}
+                                {formatDate(row.original.order_date)}
                               </span>
                             </div>
                             <Link href={`/order?order_id=${row.original.id}`}>
@@ -186,7 +198,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                 Confirm Order
                               </Button>
                               <Button
-                                className="bg-red-200 text-sm"
+                                className="bg-error-primary text-sm"
                                 onClick={(e) => {
                                   setIsOrderStatusModelOpen(true);
                                   setOrderStatus({
@@ -198,7 +210,9 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                 Cancel Order
                               </Button>
                             </div>
-                          ) : productStatus.id === 'sent' ? (
+                          ) : productStatus.id === 'sent' ||
+                            productStatus.id === 'picked_up' ||
+                            productStatus.id === 'waiting_for_pickup' ? (
                             <div>
                               <Button
                                 className="text-sm"
@@ -241,7 +255,21 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                             {isPrintSlip ? (
                               <div className="relative w-3/4 py-10 h-full bg-gray-400 flex items-center justify-center rounded">
                                 <div>
-                                  <PackagingSlip companyName="Bishal" />
+                                  <PackagingSlip
+                                    packing_slip_id={
+                                      row.original.packing_slip_id
+                                    }
+                                    seller_pan_no={row.original.seller_pan_no}
+                                    total_amount={row.original.total_amount}
+                                    seller_company_name={
+                                      row.original.seller_company_name
+                                    }
+                                    product_included_item={
+                                      row.original.product_included_item
+                                    }
+                                    product_name={row.original.product_name}
+                                    quantity={row.original.quantity}
+                                  />
                                 </div>
                                 <div
                                   className="absolute flex items-center justify-center top-4 right-6 bg-white rounded-full cursor-pointer"
@@ -255,16 +283,51 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                         </div>
                       ) : cell.column.Header === 'Order Status' ? (
                         <div className="flex items-center justify-center space-x-2">
-                          <span className="text-red-200 text-sm capitalize">
-                            {productStatus.label}
+                          <span className="text-sm capitalize">
+                            {cell.value === 'cancelled' ? (
+                              <div>
+                                <p className="text-error-primary">
+                                  Cancelled by {row.original.cancelled_by}
+                                </p>
+                                <p className="">
+                                  Cancellation Reason:{' '}
+                                  {row.original.cancel_reason}
+                                </p>
+                              </div>
+                            ) : cell.value === 'failed' ? (
+                              <div>
+                                <p className="text-error-primary">Failed</p>
+                                <p className="">
+                                  Failed reason: {row.original.fail_reason}
+                                </p>
+                              </div>
+                            ) : cell.value === 'delivered' ? (
+                              <div>
+                                <span className="text-accent-primary">
+                                  Delivered
+                                </span>
+                              </div>
+                            ) : cell.value === 'unshipped' ||
+                              cell.value === 'pending' ? (
+                              <div className="text-red-200">
+                                {productStatus.label}
+                              </div>
+                            ) : (
+                              productStatus.label
+                            )}
                           </span>
                         </div>
                       ) : cell.column.Header === 'Time Left' ? (
                         <div className="flex flex-col text-xs">
-                          <span className="">
-                            For packing and scheduling for pickup
-                          </span>
-                          <span className="text-red-200">{cell.value}</span>
+                          {row.original.order_status === 'unshipped' ||
+                          row.original.order_status === 'pending' ? (
+                            <div>
+                              <p className="">
+                                For packing and scheduling for pickup
+                              </p>
+                              <p className="text-red-200">{cell.value}</p>
+                            </div>
+                          ) : null}
                         </div>
                       ) : (
                         cell.render('Cell')

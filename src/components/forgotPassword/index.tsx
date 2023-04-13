@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CreateNewPassword from './CreateNewPassword';
 import EnterEmailOrPassword from './EnterEmailOrPhone';
 import OPTVerification from './OTPVerification';
@@ -7,6 +7,7 @@ import PasswordChangeSuccess from './PasswordChangeSuccess';
 export default function ForgotPassword() {
   const [step, setStep] = useState(1);
   const [otp, setOtp] = useState<string>('');
+  const [email, setEmail] = useState('');
 
   function handleOTPChange(value: string) {
     setOtp(value);
@@ -20,14 +21,17 @@ export default function ForgotPassword() {
     step >= 1 && setStep((prev) => prev - 1);
   }
 
-  console.log(otp);
-
   return (
     <div>
       {step === 1 ? (
-        <EnterEmailOrPassword incStep={incStep} decStep={decStep} />
+        <EnterEmailOrPassword
+          incStep={incStep}
+          decStep={decStep}
+          setEmail={setEmail}
+        />
       ) : step === 2 ? (
         <OPTVerification
+          email={email}
           otp={otp}
           handleOTPChange={handleOTPChange}
           incStep={incStep}

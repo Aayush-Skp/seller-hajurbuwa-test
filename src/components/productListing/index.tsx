@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { getBrands } from '../../services/getBrandService';
 import { getUnits } from '../../services/getUnitService';
-import { addProduct } from '../../services/productService';
 import GeneralInformation from './GeneralInformation';
 import PriceAndStock from './PriceAndStock';
 import ProductDetails from './ProductDetails';
 import ProductImagesAndVideos from './ProductImagesAndVideos';
 import ServicesAndDelivery from './ServicesAndDelivery';
+import { useRouter } from 'next/router';
+import { getProductById } from '../../services/productService';
 
 const listingSteps = [
   { id: 1, label: 'General Information' },
@@ -17,31 +18,52 @@ const listingSteps = [
 ];
 
 export default function ProductListing() {
-  const [currentStep, setCurrentStep] = useState(2);
+  const [currentStep, setCurrentStep] = useState(1);
   const [defaultValues, setDefaultValues] = useState({
     brands: [],
     units: [],
   });
+
+  const router = useRouter();
 
   const [productDetails, setProductDetails] = useState({
     featured_highlights: [''],
     minimum_order: 1,
     included_items: '',
     price_per_unit: '',
-    package_weight: 1,
+    package_weight: '',
     category_id: null,
-    is_bulk_pricing: false,
+    is_bulk_price: false,
     bulk_pricing: [],
     product_name: '',
     description: '',
     cover_image: '',
     sub_images: [],
     in_stock: true,
-    brand: null,
+    brand: '',
     unit: null,
+    images: {
+      first: '',
+      second: '',
+      third: '',
+      fourth: '',
+      fifth: '',
+      sixth: '',
+      seventh: '',
+      eighth: '',
+    },
   });
 
   useEffect(() => {
+    if (router.pathname === '/product/update' && router?.query?.id) {
+      getProductById(router.query.id as string)
+        .then((res) => {
+          setProductDetails(res);
+          console.log(res);
+        })
+        .catch(console.log);
+    }
+
     getBrands()
       .then((brands) => {
         getUnits().then((units) =>
@@ -52,11 +74,9 @@ export default function ProductListing() {
         );
       })
       .catch(console.log);
-  }, []);
+  }, [router]);
 
-  function postData() {
-    addProduct(productDetails).then(console.log).catch(console.log);
-  }
+  console.log(productDetails);
 
   function incStep() {
     setCurrentStep((prev) => prev + 1);
@@ -65,8 +85,6 @@ export default function ProductListing() {
   function decStep() {
     setCurrentStep((prev) => prev - 1);
   }
-
-  console.log(productDetails);
 
   return (
     <section className="h-full w-full pb-5">
@@ -127,7 +145,6 @@ export default function ProductListing() {
               currentStep={currentStep}
               incStep={incStep}
               decStep={decStep}
-              postData={postData}
             />
           )}
           {currentStep === 5 && (
@@ -135,7 +152,6 @@ export default function ProductListing() {
               setProductDetails={setProductDetails}
               productDetails={productDetails}
               currentStep={currentStep}
-              postData={postData}
               incStep={incStep}
               decStep={decStep}
             />

@@ -2,19 +2,22 @@ import React, { useState } from 'react';
 import { AiFillCaretDown } from 'react-icons/ai';
 import Button from '../common/Button';
 import Modal from 'react-modal';
-import TextInput from '../common/TextInput';
 import Image from 'next/image';
 import checkMark from '../../../public/icons/check-mark.svg';
 import { useClickAwayListener } from '../../hooks/useClickAwayListener';
+import {
+  activateProduct,
+  deactivateProduct,
+  deleteProduct,
+} from '../../services/productService';
 
 type ActionButtonProps = {
-  currentTab: string;
-  // | 'online'
-  // | 'outOfStock'
-  // | 'inActive'
-  // | 'pendingQc'
-  // | 'suspended'
-  // | 'locked';
+  productId: string;
+  currentTab: {
+    id: string;
+    label: string;
+  };
+  getAllProducts: () => void;
 };
 
 const buttons = {
@@ -44,19 +47,70 @@ const buttons = {
   },
 };
 
-export default function ActionButtons({ currentTab }: ActionButtonProps) {
+export default function ActionButtons({
+  currentTab,
+  productId,
+  getAllProducts,
+}: ActionButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState<string | undefined>();
+  const [apiResponse, setApiResponse] = useState({
+    loading: false,
+    message: '',
+  });
 
   const { nodeRef, isNodeVisible, setIsNodeVisible } = useClickAwayListener();
 
   function handleAction(type: string) {
     setActionType(type);
     setIsModalOpen(true);
+
+    console.log(actionType);
+    console.log(productId);
+  }
+
+  function handleProductAction() {
+    setApiResponse({
+      loading: true,
+      message: '',
+    });
+    if (actionType === 'Deactivate')
+      deactivateProduct(productId)
+        .then((res) => {
+          setApiResponse({
+            loading: false,
+            message: '',
+          });
+        })
+        .catch(console.log);
+    if (actionType === 'Activate')
+      activateProduct(productId)
+        .then((res) => {
+          setApiResponse({
+            loading: false,
+            message: '',
+          });
+        })
+        .catch(console.log);
+    if (actionType === 'Delete')
+      deleteProduct(productId)
+        .then((res) => {
+          console.log(res);
+          getAllProducts();
+          setIsModalOpen(false);
+        })
+        .catch((err) => {
+          setApiResponse({
+            loading: false,
+            message: '',
+          });
+
+          console.log(err);
+        });
   }
 
   function MoreButtons() {
-    if (currentTab === 'online')
+    if (currentTab.id === 'online')
       return (
         <div className="absolute -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
@@ -74,7 +128,7 @@ export default function ActionButtons({ currentTab }: ActionButtonProps) {
         </div>
       );
 
-    if (currentTab === 'outOfStock')
+    if (currentTab.id === 'outOfStock')
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
@@ -92,7 +146,7 @@ export default function ActionButtons({ currentTab }: ActionButtonProps) {
         </div>
       );
 
-    if (currentTab === 'inActive')
+    if (currentTab.id === 'inActive')
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
@@ -110,19 +164,19 @@ export default function ActionButtons({ currentTab }: ActionButtonProps) {
         </div>
       );
 
-    if (currentTab === 'pendingQc')
+    if (currentTab.id === 'pending')
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
             className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Deactivate')}
+            onClick={() => handleAction('Delete')}
           >
-            Deactivate
+            Delete
           </button>
         </div>
       );
 
-    if (currentTab === 'suspended')
+    if (currentTab.id === 'suspended')
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
@@ -134,7 +188,7 @@ export default function ActionButtons({ currentTab }: ActionButtonProps) {
         </div>
       );
 
-    if (currentTab === 'locked')
+    if (currentTab.id === 'locked')
       return (
         <div className="absolute top-10 z-30 flex flex-col space-y-2 w-32 bg-white border border-gray-300 rounded shadow-sm">
           <button
@@ -151,7 +205,7 @@ export default function ActionButtons({ currentTab }: ActionButtonProps) {
 
   return (
     <div className="relative flex flex-col space-y-2 px-1">
-      {currentTab !== 'locked' ? <Button className="">Edit</Button> : null}
+      {currentTab.id !== 'locked' ? <Button className="">Edit</Button> : null}
       <div
         ref={nodeRef}
         onClick={() => setIsNodeVisible((prev) => !prev)}
@@ -198,7 +252,10 @@ export default function ActionButtons({ currentTab }: ActionButtonProps) {
             >
               No, Cancel
             </button>
-            <button className="bg-accent-primary px-5 py-1 text-white rounded">
+            <button
+              onClick={handleProductAction}
+              className="bg-accent-primary px-5 py-1 text-white rounded"
+            >
               Yes, Confirm
             </button>
           </div>

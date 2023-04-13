@@ -8,6 +8,7 @@ import ActionButtons from './ActionButtons';
 import { updateProduct } from '../../services/productService';
 import { FaEdit } from 'react-icons/fa';
 import AddQuantityDiscountModal from './AddQuantityDiscountModal';
+import { imageServerBaseUrl } from '../../constants/serverConstants';
 
 type ITableData = {
   product_id: string;
@@ -21,7 +22,10 @@ type ITableData = {
 
 type ProductManagementTableProps = {
   data: ITableData[];
-  productStatus: string;
+  productStatus: {
+    id: string;
+    label: string;
+  };
   getAllProducts: () => void;
 };
 
@@ -87,7 +91,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
 
   const tableInstance = useTable({
     columns:
-      productStatus === 'suspended' ? columnsWithSuspensionReason : columns,
+      productStatus.id === 'suspended' ? columnsWithSuspensionReason : columns,
     data,
   });
 
@@ -96,7 +100,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
 
   function updateProductAttribute(
     productId: string | number,
-    updatedField: Record<string, string>
+    updatedField: any
   ) {
     return updateProduct(productId, updatedField).then((res) =>
       getAllProducts()
@@ -144,15 +148,17 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                       key={i}
                     >
                       {cell.column.Header === 'Product' ? (
-                        <div className="flex justify-center items-center space-y-2 py-2">
-                          <div>
-                            <Image
-                              height={80}
-                              width={80}
-                              src={row.original.cover_image}
-                              alt=""
-                            />
-                          </div>
+                        <div className="flex items-center space-x-2 py-2 px-2">
+                          {row?.original?.cover_image ? (
+                            <div>
+                              <Image
+                                height={80}
+                                width={80}
+                                src={`${imageServerBaseUrl}${row.original.cover_image}`}
+                                alt=""
+                              />
+                            </div>
+                          ) : null}
                           <div className="flex flex-col items-start space-y-1">
                             <p className="text-sm text-accent-primary">
                               {cell.value}
@@ -172,15 +178,33 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                         </div>
                       ) : cell.column.Header === 'Action' ? (
                         <div className="relative">
-                          <ActionButtons currentTab={productStatus} />
+                          <ActionButtons
+                            productId={row.original.id}
+                            currentTab={productStatus}
+                            getAllProducts={getAllProducts}
+                          />
                         </div>
                       ) : cell.column.Header === 'Price' ? (
                         <div className="flex items-center justify-center">
-                          {!row.original.is_bulk_pricing ? (
+                          {row.original.is_bulk_pricing ? (
                             <div className="flex space-x-1 items-center">
-                              <span>Rs. </span>
-                              <span>{cell.value}</span>
-                              <FaEdit
+                              <button
+                                onClick={() => {
+                                  setSelectedPriceForUpdate({
+                                    productId: row.original.id,
+                                    value: '',
+                                  });
+                                  setIsPriceModalOpen(true);
+                                }}
+                                className="text-sm text-accent-primary hover:underline"
+                              >
+                                Add Singular Price
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center text-sm space-x-2">
+                              <span>Rs. {cell.value}</span>
+                              <button
                                 onClick={() => {
                                   setSelectedPriceForUpdate({
                                     productId: row.original.id,
@@ -188,13 +212,10 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                   });
                                   setIsPriceModalOpen(true);
                                 }}
-                                className="w-4 h-4 text-warning-primary cursor-pointer"
-                              />
-                            </div>
-                          ) : (
-                            <div className="text-gray-500">
-                              <span>Rs. </span>
-                              <span>{cell.value}</span>
+                                className="text-accent-primary hover:underline"
+                              >
+                                Edit
+                              </button>
                             </div>
                           )}
                           {isPriceModalOpen ? (
@@ -238,6 +259,9 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                   setIsQuantityDiscountModelOpen={
                                     setIsAddQuantityDiscountModalOpen
                                   }
+                                  updateProductAttribute={
+                                    updateProductAttribute
+                                  }
                                 />
                               ) : null}
                             </div>
@@ -248,7 +272,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                   return (
                                     <div
                                       key={val.id}
-                                      className="text-sm flex space-x-3 justify-center"
+                                      className="text-xs flex space-x-3 justify-center"
                                     >
                                       <div>
                                         <span>{val.price} NPR for </span>
@@ -277,6 +301,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                           )}
                           {isQuantityDiscountModalOpen ? (
                             <QuantityDiscountModal
+                              productId={row.original.id}
                               quantityDiscountPrices={
                                 newQuantityDiscountsToBeAdded
                               }
@@ -286,6 +311,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                               isQuantityDiscountModalOpen={
                                 isQuantityDiscountModalOpen
                               }
+                              updateProductAttribute={updateProductAttribute}
                             />
                           ) : null}
                         </div>
