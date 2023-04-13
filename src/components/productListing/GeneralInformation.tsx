@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '../common/InputLabel';
 import TextInputField from '../common/TextInput';
 import Info from '../../../public/icons/info.svg';
@@ -8,15 +8,18 @@ import useFormValidation from '../../hooks/useFormValidation';
 import { ProductGeneralInfoSchema } from '../../validation/productListingSchema';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
+import DiscardModal from './DiscardModal';
 
 export default function GeneralInformation(props: any) {
   const { productDetails, incStep, defaultValues, setProductDetails } = props;
 
-  const { errors, register, setValue, handleSubmit } = useFormValidation(
-    ProductGeneralInfoSchema(defaultValues?.brands)
-  );
+  const { errors, register, setValue, handleSubmit, getValues } =
+    useFormValidation(ProductGeneralInfoSchema);
 
-  console.log(defaultValues);
+  const [brandValidation, setBrandValidation] = useState({
+    isValid: true,
+    message: '',
+  });
 
   useEffect(() => {
     setValue('product_name', productDetails?.product_name);
@@ -26,7 +29,30 @@ export default function GeneralInformation(props: any) {
     setValue('minimum_order', productDetails?.minimum_order);
   }, [productDetails]);
 
+  function handleBrandChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        brand: e.target.value,
+      };
+    });
+
+    setBrandValidation({
+      isValid: true,
+      message: '',
+    });
+  }
+
   function handleFormSubmit(data: any) {
+    if (productDetails.brand === '') {
+      setBrandValidation({
+        isValid: false,
+        message: 'Please select a brand',
+      });
+
+      return;
+    }
+
     setProductDetails((prev: any) => {
       return {
         ...prev,
@@ -123,24 +149,26 @@ export default function GeneralInformation(props: any) {
           </div>
           <div className="w-full">
             <select
-              {...register('brand')}
+              onChange={handleBrandChange}
               className="w-full h-10 outline-none border border-gray-600 rounded cursor-pointer"
             >
               <option value="">Select Brand</option>
               {defaultValues?.brands?.map((brand: any) => (
-                <option key={brand.id} value={brand.id}>
+                <option
+                  key={brand.id}
+                  value={brand.id}
+                  selected={String(brand.id) === productDetails.brand}
+                >
                   {brand?.name}
                 </option>
               ))}
             </select>
-            <ErrorMessage message={errors?.brand?.message as string} />
+            <ErrorMessage message={brandValidation.message} />
           </div>
         </div>
         <div className="flex justify-end space-x-3">
           <div className="w-96 flex items-center justify-center space-x-4">
-            <Button type="button" className="py-3 text-sm">
-              Discard
-            </Button>
+            <DiscardModal />
             <Button type="submit" className="py-3 text-sm">
               Continue
             </Button>

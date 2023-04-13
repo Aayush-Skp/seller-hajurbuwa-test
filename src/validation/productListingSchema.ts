@@ -1,21 +1,9 @@
 import { z } from 'zod';
 
-export function ProductGeneralInfoSchema(brands: string[]) {
-  return z.object({
-    product_name: z.string().min(1, { message: 'Please enter product name' }),
-    category_id: z.string().min(1, { message: 'Please select a product type' }),
-    brand: z.string().refine(
-      (brand) => {
-        let isBrand = false;
-        brands?.forEach((val: any) => {
-          if (parseInt(brand) === val?.id) isBrand = true;
-        });
-        return isBrand;
-      },
-      { message: 'please select a brand' }
-    ),
-  });
-}
+export const ProductGeneralInfoSchema = z.object({
+  product_name: z.string().min(1, { message: 'Please enter product name' }),
+  category_id: z.string().min(1, { message: 'Please select a product type' }),
+});
 
 export const ProductDetailsSchema = z.object({
   description: z.string().max(1000).optional(),

@@ -5,6 +5,7 @@ import AddIcon from '../../../public/icons/addIcon.svg';
 import cancelIcon from '../../../public/icons/cancel.svg';
 import FileInput from '../common/FileInput';
 import Button from '../common/Button';
+import DiscardModal from './DiscardModal';
 
 type ImageObj = {
   file: File | null;
@@ -663,9 +664,7 @@ export default function ProductImagesAndVideos(props: any) {
           <Button className="py-3 text-sm" onClick={decStep}>
             Back
           </Button>
-          <Button type="button" className="py-3 text-sm">
-            Discard
-          </Button>
+          <DiscardModal />
           <Button onClick={handleSubmit} className="py-3 text-sm">
             Continue
           </Button>

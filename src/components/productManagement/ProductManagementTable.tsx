@@ -6,7 +6,6 @@ import PriceEditModal from './PriceEditModal';
 import QuantityDiscountModal from './QuantityDiscountModal';
 import ActionButtons from './ActionButtons';
 import { updateProduct } from '../../services/productService';
-import { FaEdit } from 'react-icons/fa';
 import AddQuantityDiscountModal from './AddQuantityDiscountModal';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 
@@ -77,6 +76,11 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
 
   const [newQuantityDiscountsToBeAdded, setNewQuantityDiscountsToBeAdded] =
     useState<any>([]);
+
+  const [quantityDiscountToBeEdited, setQuantityDiscountToBeEdited] =
+    useState<any>({
+      id: '',
+    });
 
   const [minOrderForNewQuantityDiscount, setMinOrderForNewQuantityDiscount] =
     useState<any>({
@@ -285,6 +289,9 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                               <button
                                 className="text-accent-primary"
                                 onClick={() => {
+                                  setQuantityDiscountToBeEdited({
+                                    id: row.original.id,
+                                  });
                                   setNewQuantityDiscountsToBeAdded(() => {
                                     return cell.value.map((val: any) => {
                                       return {
@@ -301,7 +308,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                           )}
                           {isQuantityDiscountModalOpen ? (
                             <QuantityDiscountModal
-                              productId={row.original.id}
+                              productId={quantityDiscountToBeEdited.id}
                               quantityDiscountPrices={
                                 newQuantityDiscountsToBeAdded
                               }

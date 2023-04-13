@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Info from '../../../public/icons/info.svg';
 import deleteIcon from '../../../public/icons/delete.svg';
 import useFormValidation from '../../hooks/useFormValidation';
@@ -10,14 +10,12 @@ import ErrorMessage from '../common/ErrorMessage';
 import InputLabel from '../common/InputLabel';
 import RadioInput from '../common/RadioInput';
 import TextInput from '../common/TextInput';
+import DiscardModal from './DiscardModal';
 
 export default function PriceAndStock(props: any) {
   const { productDetails, decStep, incStep, defaultValues, setProductDetails } =
     props;
 
-  const [inStock, setInStock] = useState(true);
-  const [isBulkPrice, setIsBulkPrice] = useState(false);
-  const [minOrder, setMinOrder] = useState(1);
   const [minOrderValidation, setMinOrderValidation] = useState({
     isValid: true,
     message: '',
@@ -28,44 +26,50 @@ export default function PriceAndStock(props: any) {
     message: '',
   });
 
-  const [bulkPrices, setBulkPrices] = useState([
-    { quantity: minOrder, pricePerPc: 0 },
-  ]);
-
-  const { errors, register, setValue, handleSubmit, setError, getValues } =
-    useFormValidation(ProductPriceSchema(defaultValues.units, isBulkPrice));
+  const { errors, register, setValue, handleSubmit, setError } =
+    useFormValidation(
+      ProductPriceSchema(defaultValues.units, productDetails.is_bulk_price)
+    );
 
   useEffect(() => {
-    if (isBulkPrice) {
+    if (productDetails.is_bulk_price) {
       setValue('price_per_unit', '');
       setError('price_per_unit', { message: '' });
     }
-  }, [isBulkPrice]);
+  }, [productDetails.is_bulk_price]);
 
   useEffect(() => {
     setValue('price_per_unit', productDetails.price_per_unit);
-    setMinOrder(productDetails.minimum_order);
-    setIsBulkPrice(productDetails.is_bulk_price);
-    productDetails.bulk_pricing.length !== 0 &&
-      setBulkPrices(productDetails.bulk_pricing);
-    setInStock(productDetails.in_stock);
   }, []);
 
   function addBulkPrice() {
-    if (bulkPrices.length <= 3)
-      setBulkPrices([
-        ...bulkPrices,
-        {
-          quantity: bulkPrices[bulkPrices.length - 1].quantity + 1,
-          pricePerPc: bulkPrices[bulkPrices.length - 1].pricePerPc - 1,
-        },
-      ]);
+    if (productDetails.bulk_pricing.length <= 3)
+      setProductDetails((prev: any) => {
+        return {
+          ...prev,
+          bulk_pricing: [
+            ...prev.bulk_pricing,
+            {
+              quantity:
+                prev.bulk_pricing[prev.bulk_pricing.length - 1].quantity + 1,
+              price: prev.bulk_pricing[prev.bulk_pricing.length - 1].price - 1,
+            },
+          ],
+        };
+      });
   }
 
   function handleBulkPriceDelete(index: number) {
-    const updated = bulkPrices.filter((_, i) => i !== index);
+    const updated = productDetails.bulk_pricing.filter(
+      (_: any, i: number) => i !== index
+    );
 
-    setBulkPrices(updated);
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        bulk_pricing: updated,
+      };
+    });
 
     setBulkValidation({
       isValid: true,
@@ -76,28 +80,30 @@ export default function PriceAndStock(props: any) {
   function onBulkChange(e: React.ChangeEvent<HTMLInputElement>, index: number) {
     const { name, valueAsNumber } = e.target;
 
-    console.log(getValues());
-
-    const update = bulkPrices.map((val, i) => {
+    const updated = productDetails.bulk_pricing.map((val: any, i: number) => {
       if (i === index) {
         if (name === 'quantity') val.quantity = valueAsNumber;
-        if (name === 'pricePerPc') val.pricePerPc = valueAsNumber;
+        if (name === 'price') val.price = valueAsNumber;
       }
-
       return val;
     });
 
-    setBulkPrices(update);
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        bulk_pricing: updated,
+      };
+    });
 
     if (name === 'quantity' && index !== 0) {
       if (
-        bulkPrices[index - 1].quantity >= valueAsNumber ||
+        productDetails.bulk_pricing[index - 1].quantity >= valueAsNumber ||
         isNaN(valueAsNumber)
       ) {
         setBulkValidation({
           isValid: false,
           message: `Quantity must me greater than ${
-            bulkPrices[index - 1].quantity
+            productDetails.bulk_pricing[index - 1].quantity
           }`,
         });
       } else {
@@ -108,15 +114,15 @@ export default function PriceAndStock(props: any) {
       }
     }
 
-    if (name === 'pricePerPc' && index !== 0) {
+    if (name === 'price' && index !== 0) {
       if (
-        bulkPrices[index - 1].pricePerPc <= valueAsNumber ||
+        productDetails.bulk_pricing[index - 1].price <= valueAsNumber ||
         isNaN(valueAsNumber)
       ) {
         setBulkValidation({
           isValid: false,
           message: `Price must me less than ${
-            bulkPrices[index - 1].pricePerPc
+            productDetails.bulk_pricing[index - 1].price
           }`,
         });
       } else {
@@ -129,8 +135,13 @@ export default function PriceAndStock(props: any) {
   }
 
   function handleMinimumOrderChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setMinOrder(e.target.valueAsNumber);
-    setBulkPrices([{ quantity: e.target.valueAsNumber, pricePerPc: 0 }]);
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        minimum_order: e.target.valueAsNumber,
+        bulk_pricing: [{ quantity: e.target.valueAsNumber, price: 0 }],
+      };
+    });
     setBulkValidation({
       isValid: true,
       message: '',
@@ -141,30 +152,54 @@ export default function PriceAndStock(props: any) {
     });
   }
 
-  function handleIsBulkPricing(e: React.ChangeEvent<HTMLInputElement>) {
-    !e.target.checked &&
-      setBulkPrices([
-        {
-          quantity: minOrder,
-          pricePerPc: 0,
-        },
-      ]);
+  function handleIsBulkPricing() {
+    if (productDetails.bulk_pricing.length === 0) {
+      setProductDetails((prev: any) => {
+        return {
+          ...prev,
+          bulk_pricing: [{ quantity: prev.minimum_order, price: 0 }],
+          is_bulk_price: !prev.is_bulk_price,
+        };
+      });
+      return;
+    }
 
-    setIsBulkPrice((prev) => !prev);
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        is_bulk_price: !prev.is_bulk_price,
+      };
+    });
+
     setBulkValidation({
       isValid: true,
       message: '',
     });
   }
 
+  function handleStockAvailability(e: React.ChangeEvent<HTMLInputElement>) {
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        in_stock: e.target.value,
+      };
+    });
+  }
+
   function handleFormSubmit(data: any) {
-    if (isNaN(bulkPrices[0].pricePerPc) || bulkPrices[0].pricePerPc === 0) {
+    if (
+      isNaN(productDetails.bulk_pricing[0].price) ||
+      productDetails.bulk_pricing[0].price === 0
+    ) {
       setBulkValidation({
         isValid: false,
         message: 'Entered price is invalid',
       });
 
-      if (isNaN(minOrder) || minOrder === 0) {
+      if (
+        isNaN(productDetails.minimum_order) ||
+        productDetails.minimum_order === 0
+      ) {
         setMinOrderValidation({
           isValid: false,
           message: 'Enter valid minimum order',
@@ -178,10 +213,6 @@ export default function PriceAndStock(props: any) {
       return {
         ...prev,
         ...data,
-        minimum_order: minOrder,
-        in_stock: inStock,
-        is_bulk_price: isBulkPrice,
-        bulk_pricing: isBulkPrice ? bulkPrices : [],
       };
     });
     incStep();
@@ -211,7 +242,7 @@ export default function PriceAndStock(props: any) {
                   id="minimum_order"
                   type="number"
                   min={1}
-                  value={minOrder}
+                  value={productDetails.minimum_order}
                   onChange={handleMinimumOrderChange}
                 />
                 <ErrorMessage message={minOrderValidation.message} />
@@ -257,10 +288,12 @@ export default function PriceAndStock(props: any) {
                 NPR
               </span>
               <input
-                disabled={isBulkPrice}
+                disabled={productDetails.is_bulk_price}
                 id="price_per_unit"
                 className={`h-10 pl-3 border border-gray-600 rounded-r outline-none ${
-                  isBulkPrice ? 'cursor-not-allowed' : 'cursor-pointer'
+                  productDetails.is_bulk_price
+                    ? 'cursor-not-allowed'
+                    : 'cursor-pointer'
                 }`}
                 {...register('price_per_unit')}
               />
@@ -276,26 +309,26 @@ export default function PriceAndStock(props: any) {
               label="Click here to add bulk pricing "
             />
             <CheckboxInput
-              onChange={(e) => handleIsBulkPricing(e)}
-              checked={isBulkPrice}
+              onChange={handleIsBulkPricing}
+              checked={productDetails.is_bulk_price}
               id="bulk_price"
             />
           </div>
-          {isBulkPrice ? (
+          {productDetails.is_bulk_price ? (
             <div className="w-[500px] space-y-2">
               <div className="border border-gray-600">
                 <div className="flex items-center justify-between bg-accent-primary py-2 px-8 text-white">
                   <p className="">Quantity</p>
                   <p>Price Per Pc</p>
                 </div>
-                {bulkPrices.map((price, i) => (
+                {productDetails.bulk_pricing.map((price: any, i: number) => (
                   <div
                     key={i}
                     className="relative flex justify-between px-2 py-2"
                   >
                     <div className="flex space-x-3">
                       <input
-                        value={i === 0 ? minOrder : price.quantity}
+                        value={price.quantity}
                         name="quantity"
                         type="number"
                         disabled={i === 0}
@@ -308,9 +341,9 @@ export default function PriceAndStock(props: any) {
                     <div className="flex space-x-3">
                       <span className="flex items-center">NPR</span>
                       <input
-                        value={price.pricePerPc}
+                        value={price.price}
                         type="number"
-                        name="pricePerPc"
+                        name="price"
                         onChange={(e) => onBulkChange(e, i)}
                         className="outline-none border border-gray-600 h-8 w-36 px-3"
                       />
@@ -329,18 +362,7 @@ export default function PriceAndStock(props: any) {
               <div className="flex w-full justify-between">
                 <ErrorMessage message={bulkValidation.message} />
                 <div className="w-36 flex space-x-2">
-                  <Button
-                    onClick={addBulkPrice}
-                    disabled={
-                      bulkPrices[0]?.pricePerPc === 0 ||
-                      isNaN(bulkPrices[bulkPrices.length - 1]?.quantity) ||
-                      isNaN(bulkPrices[bulkPrices.length - 1]?.pricePerPc) ||
-                      !bulkValidation.isValid ||
-                      bulkPrices?.length === 4
-                    }
-                  >
-                    Add
-                  </Button>
+                  <Button onClick={addBulkPrice}>Add</Button>
                 </div>
               </div>
             </div>
@@ -352,19 +374,21 @@ export default function PriceAndStock(props: any) {
           <div className="flex items-center justify-center">
             <InputLabel htmlFor="yes" label="Yes" />
             <RadioInput
-              checked={inStock}
-              onChange={() => setInStock(true)}
+              checked={Boolean(Number(productDetails.in_stock))}
+              onChange={handleStockAvailability}
               id="yes"
               name="stock"
+              value={1}
             />
           </div>
           <div className="flex items-center justify-center">
             <InputLabel label="No" htmlFor="no" />
             <RadioInput
-              onChange={() => setInStock(false)}
-              checked={!inStock}
+              onChange={(e) => handleStockAvailability(e)}
+              checked={!Boolean(Number(productDetails.in_stock))}
               id="no"
               name="stock"
+              value={0}
             />
           </div>
         </div>
@@ -374,7 +398,7 @@ export default function PriceAndStock(props: any) {
           <Button className="py-3 text-sm" onClick={decStep}>
             Back
           </Button>
-          <Button className="py-3 text-sm">Discard</Button>
+          <DiscardModal />
           <Button type="submit" className="py-3 text-sm">
             Continue
           </Button>

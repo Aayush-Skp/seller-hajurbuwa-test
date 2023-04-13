@@ -1,13 +1,14 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
 import Info from '../../../public/icons/info.svg';
-import { addProduct } from '../../services/productService';
+import { addProduct, updateProduct } from '../../services/productService';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
+import DiscardModal from './DiscardModal';
 
 export default function ServicesAndDelivery(props: any) {
-  const { productDetails, setProductDetails, decStep } = props;
+  const { productDetails, setProductDetails, decStep, isUpdate } = props;
 
   const [packageWeightValidation, setPackageWeightValidation] = useState({
     isValid: true,
@@ -50,7 +51,46 @@ export default function ServicesAndDelivery(props: any) {
       return;
     }
 
-    addProduct(productDetails).then(console.log).catch(console.log);
+    if (isUpdate) {
+      const params = new URLSearchParams();
+
+      params.append('product_name', productDetails.product_name);
+      params.append('category_id', productDetails.category_id);
+      params.append('brand', productDetails.brand);
+      params.append('minimum_order', productDetails.minimum_order);
+      params.append('description', productDetails.description);
+      params.append('unit', productDetails.unit);
+      params.append('included_items', productDetails.included_items);
+      params.append('price_per_unit', productDetails.price_per_unit);
+      params.append('in_stock', productDetails.in_stock);
+      params.append('package_weight', productDetails.package_weight);
+      params.append('cover_image', productDetails.cover_image);
+      params.append('is_bulk_price', productDetails.is_bulk_price);
+      params.append('featured_highlights', productDetails.featured_highlights);
+
+      let bulkPrices = productDetails.bulk_pricing.map((price: any) => {
+        return [price.quantity, price.price];
+      });
+
+      for (let i = 0; i < bulkPrices.length; i++) {
+        for (let j = 0; j < bulkPrices[i].length; j++) {
+          params.append(`bulk_pricing[${i}][${j}]`, bulkPrices[i][j]);
+        }
+      }
+
+      for (const key in productDetails.images) {
+        if (typeof productDetails.images[key] !== 'string') {
+          console.log(String(productDetails.images[key]));
+          params.append(`sub_images[]`, productDetails.images[key]);
+        }
+      }
+
+      // updateProduct(productDetails.productId, params)
+      //   .then(console.log)
+      //   .catch(console.log);
+    }
+
+    // addProduct(productDetails).then(console.log).catch(console.log);
   }
 
   return (
@@ -84,9 +124,7 @@ export default function ServicesAndDelivery(props: any) {
             <Button className="py-3 text-sm" onClick={decStep}>
               Back
             </Button>
-            <Button type="button" className="py-3 text-sm">
-              Discard
-            </Button>
+            <DiscardModal />
             <Button type="submit" className="py-3 text-sm">
               Submit
             </Button>

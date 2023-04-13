@@ -24,6 +24,8 @@ export default function ProductListing() {
     units: [],
   });
 
+  const [isUpdate, setIsUpdate] = useState(false);
+
   const router = useRouter();
 
   const [productDetails, setProductDetails] = useState({
@@ -56,10 +58,11 @@ export default function ProductListing() {
 
   useEffect(() => {
     if (router.pathname === '/product/update' && router?.query?.id) {
+      setIsUpdate(true);
       getProductById(router.query.id as string)
         .then((res) => {
-          setProductDetails(res);
           console.log(res);
+          setProductDetails(res);
         })
         .catch(console.log);
     }
@@ -76,8 +79,6 @@ export default function ProductListing() {
       .catch(console.log);
   }, [router]);
 
-  console.log(productDetails);
-
   function incStep() {
     setCurrentStep((prev) => prev + 1);
   }
@@ -85,6 +86,8 @@ export default function ProductListing() {
   function decStep() {
     setCurrentStep((prev) => prev - 1);
   }
+
+  console.log(isUpdate);
 
   return (
     <section className="h-full w-full pb-5">
@@ -152,6 +155,7 @@ export default function ProductListing() {
               setProductDetails={setProductDetails}
               productDetails={productDetails}
               currentStep={currentStep}
+              isUpdate={isUpdate}
               incStep={incStep}
               decStep={decStep}
             />

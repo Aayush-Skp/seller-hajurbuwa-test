@@ -27,6 +27,7 @@ export function getProductDescription(productId: string | number) {
 export function getProductById(productId: string | number) {
   return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
     const productDetails = {
+      productId: '',
       featured_highlights: [''],
       minimum_order: 1,
       included_items: '',
@@ -77,14 +78,20 @@ export function getProductById(productId: string | number) {
     productDetails.included_items = res.data.data[0].included_items;
     productDetails.minimum_order = res.data.data[0].minimum_order;
     productDetails.package_weight = res.data.data[0].package_weight;
-    productDetails.price_per_unit = res.data.data[0].price_per_unit;
+
+    res.data.data[0].price_per_unit === null
+      ? (productDetails.price_per_unit = '')
+      : (productDetails.price_per_unit = res.data.data[0].price_per_unit);
+
     productDetails.category_id = res.data.data[0].product_type;
     productDetails.in_stock = res.data.data[0].stock_availability;
     productDetails.unit = res.data.data[0].unit_selection;
     productDetails.is_bulk_price = res.data.data[0].is_bulk_price;
-    productDetails.brand = res.data.data[0].brand_specification;
+    productDetails.bulk_pricing = res.data.data[0].bulk_pricing;
+    productDetails.brand = res.data.data[0].brand_specification.toString();
     productDetails.description = res.data.data[0].description;
     productDetails.featured_highlights = res.data.data[0].featured_highlights;
+    productDetails.productId = res.data.data[0].id;
     productDetails.cover_image = `${imageServerBaseUrl}${res.data.data[0].cover_image}`;
 
     return productDetails;
@@ -134,7 +141,7 @@ export function addProduct(productDetails: any) {
   );
 
   let bulkPrices = productDetails.bulk_pricing.map((price: any) => {
-    return [price.quantity, price.pricePerPc];
+    return [price.quantity, price.price];
   });
 
   for (let i = 0; i < bulkPrices.length; i++) {

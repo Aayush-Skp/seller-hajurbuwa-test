@@ -10,6 +10,7 @@ import {
   deactivateProduct,
   deleteProduct,
 } from '../../services/productService';
+import Link from 'next/link';
 
 type ActionButtonProps = {
   productId: string;
@@ -205,7 +206,16 @@ export default function ActionButtons({
 
   return (
     <div className="relative flex flex-col space-y-2 px-1">
-      {currentTab.id !== 'locked' ? <Button className="">Edit</Button> : null}
+      {currentTab.id !== 'locked' ? (
+        <Link href={`/product/update?id=${productId}`} className="">
+          <a
+            className="bg-blue-700 text-white px-3 py-1 rounded"
+            target="_blank"
+          >
+            Edit
+          </a>
+        </Link>
+      ) : null}
       <div
         ref={nodeRef}
         onClick={() => setIsNodeVisible((prev) => !prev)}

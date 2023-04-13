@@ -8,6 +8,7 @@ import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import useFormValidation from '../../hooks/useFormValidation';
 import { ProductDetailsSchema } from '../../validation/productListingSchema';
+import DiscardModal from './DiscardModal';
 
 export default function ProductDetails(props: any) {
   const { productDetails, decStep, incStep, setProductDetails } = props;
@@ -25,7 +26,7 @@ export default function ProductDetails(props: any) {
   useEffect(() => {
     setValue('included_items', productDetails.included_items);
     setValue('description', productDetails.description);
-    setFeaturedHighlights(productDetails.featured_highlights);
+    // setFeaturedHighlights(productDetails.featured_highlights);
   }, []);
 
   function handleOnChange(
@@ -182,7 +183,7 @@ export default function ProductDetails(props: any) {
           <Button className="py-3 text-sm" onClick={decStep}>
             Back
           </Button>
-          <Button className="py-3 text-sm">Discard</Button>
+          <DiscardModal />
           <Button type="submit" className="py-3 text-sm">
             Continue
           </Button>
