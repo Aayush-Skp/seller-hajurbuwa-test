@@ -30,3 +30,11 @@ export function changeOrderStatus({
     })
     .then((res) => res.data.data);
 }
+
+export function replyToAnOrder(orderId: string | number, message: string) {
+  return httpClient
+    .post(`/seller/order/reply/${orderId}`, {
+      message,
+    })
+    .then((res) => res.data);
+}

@@ -4,6 +4,8 @@ import { BsSearch } from 'react-icons/bs';
 import Image from 'next/image';
 import Button from '../common/Button';
 import StarRating from '../StarRating';
+import { getAllReviews } from '../../services/getAllReviews';
+import ReplyModal from './ReplyModal';
 
 interface ITableData {
   orderId: string;
@@ -45,6 +47,11 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
 }) => {
   const [pageSize, setPageSize] = useState(25);
   const [pageIndex, setPageIndex] = useState(0);
+  const [reviews, setReviews] = useState<any>([]);
+  const [replyOrderId, setReplyOrderId] = useState('');
+  const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const tableData = useMemo(() => {
     const start = pageIndex * pageSize;
@@ -71,32 +78,20 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
     setPageIndex((prev) => Math.min(prev + 1, pageCount - 1));
   };
 
+  function getReviewsList() {
+    getAllReviews()
+      .then((res) => {
+        setIsLoading(false);
+        setReviews(res);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
+  }
+
   return (
     <div className="border-3">
-      <div className="flex p-3 border-x-4 grid-cols-5 gap-3">
-        <input
-          type="text"
-          className="relative w-1/3 border-0 bg-gray-150 p-2 pl-10 col-span-2"
-          placeholder={`Search by Name, Phone Number and PAN No.`}
-        />
-        <BsSearch className="absolute flex items-center justify-center mt-3 ml-3 text-gray-900" />
-        <div className="w-72"></div>
-        <div className="w-96"></div>
-        <div
-          className="col-start-4 flex justify-center items-center"
-          style={{ alignSelf: 'flex-end', justifySelf: 'flex-end' }}
-        >
-          <span>Show: </span>
-          <select
-            className="bg-gray-150 p-2 pr-4"
-            onChange={(e) => handlePageSizeChange(e)}
-          >
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </div>
-      </div>
       <table {...getTableProps()} className="w-full border-x-4">
         <thead className="border-b-4 h-5 font-bold bg-gray-150">
           {headerGroups.map((headerGroup: any, i: number) => (
@@ -172,7 +167,24 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                         </div>
                       ) : cell.column.Header === 'Action' &&
                         !row.values.content.isReplied ? (
-                        <Button className="">Reply</Button>
+                        <div>
+                          <Button
+                            onClick={() => {
+                              setIsReplyModalOpen(true);
+                              setReplyOrderId(row.original.id);
+                            }}
+                            className=""
+                          >
+                            Reply
+                          </Button>
+                          {isReplyModalOpen ? (
+                            <ReplyModal
+                              isReplyModalOpen={isReplyModalOpen}
+                              setIsReplyModalOpen={setIsReplyModalOpen}
+                              orderId={replyOrderId}
+                            />
+                          ) : null}
+                        </div>
                       ) : (
                         cell.render('Cell')
                       )}
@@ -183,38 +195,6 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
             );
           })}
         </tbody>
-        <tfoot className="">
-          <tr>
-            <td colSpan={6}>
-              <div className="flex justify-between items-center">
-                <div className="flex justify-center items-center">
-                  <button
-                    className="bg-accent-primary text-white px-3 py-3 w-24 m-2"
-                    onClick={handlePrevClick}
-                    disabled={pageIndex === 0}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    className="bg-accent-primary text-white px-3 py-3 w-24 m-2"
-                    onClick={handleNextClick}
-                    disabled={pageIndex === pageCount - 1}
-                  >
-                    Next
-                  </button>
-                </div>
-                <div className="flex justify-center items-center">
-                  <span>
-                    Page
-                    <strong>
-                      {pageIndex + 1} of {pageCount}
-                    </strong>
-                  </span>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </tfoot>
       </table>
     </div>
   );

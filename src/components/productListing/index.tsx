@@ -87,8 +87,6 @@ export default function ProductListing() {
     setCurrentStep((prev) => prev - 1);
   }
 
-  console.log(isUpdate);
-
   return (
     <section className="h-full w-full pb-5">
       <div className="flex flex-col justify-between h-28 space-y-5 bg-white">

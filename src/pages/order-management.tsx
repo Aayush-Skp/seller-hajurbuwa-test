@@ -1,11 +1,16 @@
 import React from 'react';
 import Orders from '../components/orderManagement';
 import PageWrapper from '../components/PageWrapper';
+import authenticatedRoute from '../components/WithAuth';
 
-export default function OrderManagement() {
+function OrderManagement() {
   return (
     <div>
-      <Orders />
+      <PageWrapper>
+        <Orders />
+      </PageWrapper>
     </div>
   );
 }
+
+export default authenticatedRoute(OrderManagement);
