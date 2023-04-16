@@ -11,8 +11,8 @@ import Image from 'next/image';
 const Footer = () => {
   return (
     <>
-      <div className="relative h-[400px] lg:h-[641px] md:h-[480px] 3xl:h-[381px] 3xl:px-[200px] w-full bg-blue-800 text-white p-10 md:px-[100px] z-20">
-        <div className="absolute flex justify-end bottom-14 lg:bottom-28 3xl:bottom-0 md:bottom-4 right-2 lg:right-10 h-[167px] w-[167px] md:h-[300px] md:w-[300px] lg:h-[375px] lg:w-[375px] ">
+      <div className="relative h-[400px] lg:h-[459px] xl:h-[381px] md:h-[480px] 3xl:h-[381px] 3xl:px-[200px] w-full bg-blue-800 text-white p-10 md:px-[100px] z-20">
+        <div className="absolute flex justify-end bottom-14 lg:bottom-15 xl:bottom-0 3xl:bottom-0 md:bottom-4 right-2 lg:right-10 h-[167px] w-[167px] md:h-[300px] md:w-[300px] lg:h-[375px] lg:w-[375px] ">
           <Image src={hajurbuwaVector} alt={'hajurbuwa vector image'} />
         </div>
         <div className="grid grid-cols-2 xl:grid-cols-3">

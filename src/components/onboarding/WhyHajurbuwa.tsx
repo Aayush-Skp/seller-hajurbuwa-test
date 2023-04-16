@@ -42,8 +42,8 @@ const features = [
 
 const WhyHajurbuwa = () => {
   return (
-    <div className="relative h-[700px] md:h-[500px] lg:h-[500px] px-[40px] mt-[112px] md:mt-[250px] xl:mt-0 z-20 text-black">
-      <div className="text-center xl:text-left font-medium text-3xl px-[100px]">
+    <div id="why" className="relative h-[1017px] md:h-[500px] lg:h-[500px] px-[40px] mt-[112px] md:mt-[250px] xl:mt-0 z-20 text-black">
+      <div className="text-center xl:text-left font-medium text-3xl md:px-[100px]">
         Why Sell on <span className="font-bold xl:font-medium">Hajurbuwa?</span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 mt-4 gap-10 lg:gap-18 pl-2 lg:px-[100px] pt-6">
