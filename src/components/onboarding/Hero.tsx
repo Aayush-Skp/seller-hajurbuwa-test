@@ -1,5 +1,6 @@
 import React from 'react';
 import CTA from './CTA';
+import Link from 'next/link';
 
 const Hero = () => {
   return (
@@ -14,10 +15,12 @@ const Hero = () => {
       </div>
       <CTA />
       <div className="flex flex-row items-center justify-start text-white px-[35px] py-[14px] mt-2 lg:mt-4">
-      <div className="flex flex-col px-4">
-        <div className="text-[20px] font-medium">Learn More</div>
+        <div className="flex flex-col px-4">
+          <div className="text-[20px] font-medium z-30">
+            <Link href="#why" className='cursor-pointer'>Learn More</Link>
+          </div>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
