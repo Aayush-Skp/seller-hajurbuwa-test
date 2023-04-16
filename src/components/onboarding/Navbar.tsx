@@ -4,11 +4,11 @@ import burger from '/public/icons/Burger.svg';
 
 const Navbar = () => {
   return (
-    <div className="pt-[66px] pb-[20px] md:px-[100px] lg:pt-[25px] px-8 flex justify-between items-center">
+    <div className="pt-[66px] pb-[20px] lg:px-[100px] lg:pt-[25px] px-8 flex justify-between items-center">
       <div className="flex justify-center items-center">
         <Image src={hajurbuwMobileLogo} alt={'Hajurbuwa MObile Logo'} />
 
-        <div className="hidden md:flex font-extrabold text-white ml-2 leading-tight text-4xl">
+        <div className="hidden lg:flex font-extrabold text-white ml-2 leading-tight text-4xl">
           Hajurbuwa
         </div>
       </div>

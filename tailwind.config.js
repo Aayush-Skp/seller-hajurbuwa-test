@@ -2,7 +2,11 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        '3xl': "1920px",
+      },
+    },
     colors: {
       white: '#FFFFFF',
       black: '#000',
@@ -13,13 +17,13 @@ module.exports = {
       },
       blue: {
         700: '#1366A8',
-        800: "#09091A",
+        800: '#09091A',
       },
       gray: {
         100: '#F2F2F2',
         150: '#f5f5f5',
         200: '#D6D6D6',
-        250: "#E2E7EF",
+        250: '#E2E7EF',
         300: '#BDBDBD',
         400: '#828282',
         500: '#4F4F4F',
