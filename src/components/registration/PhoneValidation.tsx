@@ -96,6 +96,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
 
             <TextInput
               className="pl-20"
+              type='number'
               {...register('phone')}
               error={errors.hasOwnProperty('phone')}
             />
