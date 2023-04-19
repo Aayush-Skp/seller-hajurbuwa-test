@@ -31,14 +31,14 @@ export default function LandingPage() {
       <Hero
         openOrders={5}
         todaysSales={landingPageData?.data?.today_sells}
-        unansweredQuestions={5}
+        onlineProducts={landingPageData.product_status_array[0].count}
       />
       <DashboardStats
         pendingOrders={landingPageData?.order_status_array[0]?.count}
         unshippedOrders={landingPageData?.order_status_array[1]?.count}
         newReviews={landingPageData?.data?.new_review}
       />
-      <HotSellingProducts products={[]} />
+      {/* <HotSellingProducts products={[]} /> */}
     </div>
   );
 }

@@ -80,9 +80,15 @@ export default function ServicesAndDelivery(props: any) {
 
       for (const key in productDetails.images) {
         if (typeof productDetails.images[key] !== 'string') {
-          console.log(productDetails.images[key]);
           params.append(`sub_images[]`, productDetails.images[key]);
+          continue;
         }
+
+        if (
+          typeof productDetails.images[key] === 'string' &&
+          productDetails.images[key] !== ''
+        )
+          params.append('old_sub_images[]', productDetails.images[key]);
       }
 
       params.append('_method', 'PUT');
@@ -90,9 +96,11 @@ export default function ServicesAndDelivery(props: any) {
       updateProduct(productDetails.productId, params)
         .then(console.log)
         .catch(console.log);
+
+      return;
     }
 
-    // addProduct(productDetails).then(console.log).catch(console.log);
+    addProduct(productDetails).then(console.log).catch(console.log);
   }
 
   return (

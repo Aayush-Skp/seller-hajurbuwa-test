@@ -22,6 +22,9 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
     status: true,
     message: '',
   });
+
+  console.log(registrationData);
+
   const handleSubmit = (data: any) => {
     incStep();
   };

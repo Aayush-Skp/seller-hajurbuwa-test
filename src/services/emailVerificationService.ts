@@ -1,13 +1,18 @@
 import { httpClient } from '../config/httpClient';
 
-const emailValidationURL = '/verify/email';
+const emailValidationURL = '/seller/verify/email';
 
 export function emailVerificationService(email: string) {
+  console.log(email);
+  const formData = new FormData();
+  formData.append('email', email);
   return httpClient
-    .post(emailValidationURL, {
-      email,
+    .post(emailValidationURL, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
-    .then((res) => res.data.status);
+    .then((res) => res.data);
 }
 
 export function checkIfEmailExist(email: string) {
@@ -15,5 +20,5 @@ export function checkIfEmailExist(email: string) {
     .post('/check-email', {
       email,
     })
-    .then((res) => res.data.status);
+    .then((res) => res.data);
 }

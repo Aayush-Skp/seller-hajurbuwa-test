@@ -4,10 +4,10 @@ import { FaChevronDown } from 'react-icons/fa';
 type HeroProps = {
   openOrders: number;
   todaysSales: number;
-  unansweredQuestions: number;
+  onlineProducts: number;
 };
 
-const Hero = ({ openOrders, todaysSales, unansweredQuestions }: HeroProps) => {
+const Hero = ({ openOrders, todaysSales, onlineProducts }: HeroProps) => {
   return (
     <div className="relative w-full overflow-hidden h-72 flex">
       <div className="inset-0 absolute">
@@ -43,9 +43,9 @@ const Hero = ({ openOrders, todaysSales, unansweredQuestions }: HeroProps) => {
             </div>
           </div>
           <div className="flex flex-col items-start justify-start w-96 bg-white m-2 p-2">
-            <h1 className="text-base text-black">Unanswered Questions</h1>
+            <h1 className="text-base text-black">Total Products Online</h1>
             <div className="w-full flex items-center justify-between pr-2">
-              <h1 className="text-xxxl text-black">{unansweredQuestions}</h1>
+              <h1 className="text-xxxl text-black">{onlineProducts}</h1>
               <FaChevronDown />
             </div>
           </div>

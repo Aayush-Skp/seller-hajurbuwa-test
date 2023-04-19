@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { BiArrowBack } from 'react-icons/bi';
 import useFormValidation from '../../hooks/useFormValidation';
-import { emailVerificationService } from '../../services/emailVerificationService';
+import {
+  checkIfEmailExist,
+  emailVerificationService,
+} from '../../services/emailVerificationService';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
@@ -14,6 +17,7 @@ import {
   SellerRegistrationDataType,
   SetRegistrationData,
 } from './SellerRegistration';
+import Spinner from '../loader/Spinner';
 
 type SellerDetailsProps = {
   registrationData: SellerRegistrationDataType;
@@ -24,6 +28,7 @@ type SellerDetailsProps = {
 
 export default function SellerDetails(props: SellerDetailsProps) {
   const { setRegistrationData, incStep, decStep, registrationData } = props;
+  const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, errors, setValue, setError } =
     useFormValidation(sellerDetailsSchema);
@@ -36,24 +41,40 @@ export default function SellerDetails(props: SellerDetailsProps) {
   }, []);
 
   function handleFormValidation(data: SellerDetailsType) {
-    emailVerificationService(data.email)
+    setIsLoading(true);
+    checkIfEmailExist(data.email)
       .then((res) => {
-        setRegistrationData((prev) => {
-          return {
-            ...prev,
-            ...data,
-          };
-        });
+        if (
+          res.status === 'error' &&
+          res.message === 'Email already Registered'
+        ) {
+          throw new Error('Email already registered', {
+            cause: {
+              isAlreadyRegistered: true,
+            },
+          });
+        }
 
-        console.log(res);
+        emailVerificationService(data.email)
+          .then((res) => {
+            setRegistrationData((prev) => {
+              return {
+                ...prev,
+                ...data,
+              };
+            });
+            console.log(res);
+          })
+          .then(() => incStep())
+          .catch(console.log);
       })
-      .then(() => incStep())
       .catch((err) => {
+        setIsLoading(false);
         setError('email', {
           type: 'custom',
-          message: 'Email already exist. Please another email.',
+          message: 'Email already registered.',
         });
-        console.log(err);
+        console.log(err.cause);
       });
   }
 
@@ -124,7 +145,16 @@ export default function SellerDetails(props: SellerDetailsProps) {
         />
         <ErrorMessage message={errors.email?.message as string} />
       </div>
-      <Button type="submit">Continue</Button>
+      <Button type="submit">
+        {isLoading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <span>Please wait...</span>
+            <Spinner />
+          </div>
+        ) : (
+          'Continue'
+        )}
+      </Button>
     </form>
   );
 }

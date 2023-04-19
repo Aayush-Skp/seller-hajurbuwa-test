@@ -16,6 +16,7 @@ import type {
 } from './SellerRegistration';
 import { phoneVerificationService } from '../../services/phoneVerificationService';
 import { useEffect, useState } from 'react';
+import Spinner from '../loader/Spinner';
 
 type PhoneValidationProps = {
   setRegistrationData: SetRegistrationData;
@@ -115,7 +116,14 @@ export default function PhoneValidation(props: PhoneValidationProps) {
           .
         </p>
         <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
-          {isLoading ? 'Loading...' : 'Continue'}
+          {isLoading ? (
+            <div className="flex items-center justify-center space-x-2">
+              <span>Please wait...</span>
+              <Spinner />
+            </div>
+          ) : (
+            'Continue'
+          )}
         </Button>
       </div>
     </form>
