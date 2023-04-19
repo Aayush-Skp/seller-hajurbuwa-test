@@ -9,12 +9,19 @@ import { ProductGeneralInfoSchema } from '../../validation/productListingSchema'
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import DiscardModal from './DiscardModal';
+import { searchCategory } from '../../services/categoryService';
 
 export default function GeneralInformation(props: any) {
   const { productDetails, incStep, defaultValues, setProductDetails } = props;
 
-  const { errors, register, setValue, handleSubmit, getValues } =
-    useFormValidation(ProductGeneralInfoSchema);
+  const { errors, register, setValue, handleSubmit } = useFormValidation(
+    ProductGeneralInfoSchema
+  );
+
+  const [categoryList, setCategoryList] = useState<any>([]);
+  const [selectedCategory, setSelectedCategory] = useState<any>([]);
+  const [categoryKeyword, setCategoryKeyword] = useState('');
+  const [categorySearchList, setCategorySearchList] = useState<any>([]);
 
   const [brandValidation, setBrandValidation] = useState({
     isValid: true,
@@ -41,6 +48,30 @@ export default function GeneralInformation(props: any) {
       isValid: true,
       message: '',
     });
+  }
+
+  function handleCategorySearch() {
+    searchCategory(categoryKeyword)
+      .then((res) => {
+        let data = [];
+
+        for (const category of res) {
+          let tree_name = '';
+          const splitCategoryTree = category.tree_name.split(',');
+          if (splitCategoryTree.length !== 0) {
+            for (let i = 0; i < splitCategoryTree.length; i++) {
+              tree_name =
+                i === splitCategoryTree.length - 1
+                  ? `${splitCategoryTree[i]}`
+                  : `${splitCategoryTree[i]}>`;
+            }
+          }
+        }
+        setCategorySearchList(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function handleFormSubmit(data: any) {
@@ -97,9 +128,8 @@ export default function GeneralInformation(props: any) {
           <div className="w-full  space-y-3">
             <div>
               <TextInputField
-                error={errors.hasOwnProperty('category_id')}
                 id="category_id"
-                {...register('category_id')}
+                onChange={(e) => setCategoryKeyword(e.target.value)}
               />
               <ErrorMessage message={errors?.category_id?.message as string} />
             </div>
