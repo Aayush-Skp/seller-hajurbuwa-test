@@ -41,21 +41,19 @@ const Navbar = ({ pageName }: any) => {
               </Link>
             </div>
             <div className="flex-shrink-0 flex items-center justify-center px-10 text-lg shadow-md h-7 w-28">
-              <Link href="/">
-                <a className="font-bold text-sm whitespace-nowrap">XYZ shop</a>
-              </Link>
+              <span className="font-bold text-sm whitespace-nowrap">
+                XYZ shop
+              </span>
             </div>
             <div>
-              <Link href="/">
-                <a>
-                  <Image
-                    src={nepalFlag}
-                    alt="Nepal Flag"
-                    width={100}
-                    height={50}
-                  />
-                </a>
-              </Link>
+              <span>
+                <Image
+                  src={nepalFlag}
+                  alt="Nepal Flag"
+                  width={100}
+                  height={50}
+                />
+              </span>
             </div>
           </div>
           <div className="flex flex-2 justify-center items-center">
@@ -76,6 +74,16 @@ const Navbar = ({ pageName }: any) => {
                 <a className="font-bold text-lg">Help</a>
               </Link>
             </div>
+            <div className="flex-shrink-0 flex items-center justify-center px-5 text-lg">
+              <Link href="/">
+                <a className="font-bold text-lg">Help</a>
+              </Link>
+            </div>
+            <div className="flex-shrink-0 flex items-center justify-center px-5 text-lg">
+              <Link href="/">
+                <a className="font-bold text-lg">Help</a>
+              </Link>
+            </div>
           </div>
         </div>
         <div className="flex items-center justify-center">
@@ -86,15 +94,15 @@ const Navbar = ({ pageName }: any) => {
           </div>
           <div className=" flex items-center">
             <Dropdown
-              title="Users Management"
+              title="Product Manager"
               links={['Buyer Verification', 'Seller Verification']}
             />
             <Dropdown
-              title="Accounts"
+              title="Order And Reviews"
               links={['Commission Manager', 'Payment']}
             />
             <Dropdown
-              title="Site Management"
+              title="Voucher Manager"
               links={[
                 'Slider Image',
                 'Blog Management',
@@ -103,7 +111,7 @@ const Navbar = ({ pageName }: any) => {
               ]}
             />
             <Dropdown
-              title="Product Management"
+              title="Finance"
               links={[
                 'Product Listing',
                 'Product Requests Listing',
@@ -113,15 +121,6 @@ const Navbar = ({ pageName }: any) => {
                 'Brand',
               ]}
             />
-            <Dropdown
-              title="Order Manager"
-              links={['View Order', 'View Cart Data', 'Cancelled Order']}
-            />
-            <Dropdown
-              title="Logistics"
-              links={['Delivery Area', 'Shipping Zone']}
-            />
-            <Dropdown title="Other Sections" links={['Feedbacks', 'Issues']} />
           </div>
         </div>
       </div>

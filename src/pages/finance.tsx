@@ -1,10 +1,15 @@
 import AccountFinanceStatement from '../components/AccountFinanceStatement';
 import PageWrapper from '../components/PageWrapper';
+import authenticatedRoute from '../components/WithAuth';
 
-export default function Finance() {
+function Finance() {
   return (
     <>
-      <AccountFinanceStatement />
+      <PageWrapper>
+        <AccountFinanceStatement />
+      </PageWrapper>
     </>
   );
 }
+
+export default authenticatedRoute(Finance);

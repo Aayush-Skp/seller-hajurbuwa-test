@@ -1,10 +1,16 @@
 import React from 'react';
 import LandingPage from '../components/LandingPage';
+import PageWrapper from '../components/PageWrapper';
+import authenticatedRoute from '../components/WithAuth';
 
-export default function Dashboard() {
+function Dashboard() {
   return (
     <div>
-      <LandingPage />
+      <PageWrapper>
+        <LandingPage />
+      </PageWrapper>
     </div>
   );
 }
+
+export default authenticatedRoute(Dashboard);

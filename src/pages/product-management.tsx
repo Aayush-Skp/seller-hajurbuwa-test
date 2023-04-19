@@ -1,10 +1,16 @@
 import React from 'react';
 import ProductManagement from '../components/productManagement';
+import PageWrapper from '../components/PageWrapper';
+import authenticatedRoute from '../components/WithAuth';
 
-export default function ProductManagementPage() {
+function ProductManagementPage() {
   return (
     <div>
-      <ProductManagement />
+      <PageWrapper>
+        <ProductManagement />
+      </PageWrapper>
     </div>
   );
 }
+
+export default authenticatedRoute(ProductManagementPage);

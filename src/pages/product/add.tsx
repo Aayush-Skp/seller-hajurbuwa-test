@@ -1,10 +1,16 @@
 import React from 'react';
 import ProductListing from '../../components/productListing';
+import PageWrapper from '../../components/PageWrapper';
+import authenticatedRoute from '../../components/WithAuth';
 
-export default function ProductAddPage() {
+function ProductAddPage() {
   return (
     <div>
-      <ProductListing />
+      <PageWrapper>
+        <ProductListing />
+      </PageWrapper>
     </div>
   );
 }
+
+export default authenticatedRoute(ProductAddPage);

@@ -13,11 +13,14 @@ import {
   LoginSchemaType,
 } from '../../validation/sellerLoginSchema';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function Login() {
   const [apiResponse, setApiResponse] = useState({
     loading: false,
   });
+
+  const router = useRouter();
 
   const { register, errors, handleSubmit, setError } =
     useFormValidation(LoginSchema);
@@ -46,7 +49,9 @@ export default function Login() {
           });
         }
         if (res.status === 'success') {
+          console.log(res);
           localStorage.setItem('token', res?.token);
+          router.push('/dashboard');
         }
       })
       .catch((err) => {
@@ -60,8 +65,6 @@ export default function Login() {
         console.log(err);
       });
   }
-
-  console.log(errors);
 
   return (
     <div className="bg-gray-150 h-screen w-full flex justify-center items-center">
@@ -141,9 +144,11 @@ export default function Login() {
               <p className="whitespace-nowrap"> New to Hajurbuwa? </p>
               <div className="w-full h-[1px] bg-black" />
             </div>
-            <button className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2">
-              Register as Hajurbuwa seller
-            </button>
+            <Link href="/register">
+              <a className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2 text-center">
+                Register as Hajurbuwa seller
+              </a>
+            </Link>
           </div>
         </form>
       </div>
