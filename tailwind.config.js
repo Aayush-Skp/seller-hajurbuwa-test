@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-        '3xl': "1920px",
+        '3xl': '1920px',
       },
     },
     colors: {
@@ -18,6 +18,7 @@ module.exports = {
       blue: {
         700: '#1366A8',
         800: '#09091A',
+        900: '#273B4A',
       },
       gray: {
         100: '#F2F2F2',

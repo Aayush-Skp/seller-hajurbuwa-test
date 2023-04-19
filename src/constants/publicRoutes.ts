@@ -5,4 +5,8 @@ export const publicRoutes = [
   '/register',
   '/_error',
   '/forgot-password',
+  '/policies',
+  '/policies/privacy-policy',
+  '/404',
+  '/500',
 ];
