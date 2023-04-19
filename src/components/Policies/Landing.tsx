@@ -4,7 +4,7 @@ import Hero from './Hero';
 
 const Landing = () => {
   return (
-    <div className="h-[700px] w-full bg-blue-700 z-0">
+    <div className="relative h-[700px] w-full bg-blue-700 z-0">
       <Navbar />
       <Hero />
     </div>
