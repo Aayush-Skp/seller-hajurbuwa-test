@@ -17,6 +17,8 @@ import type {
 import { phoneVerificationService } from '../../services/phoneVerificationService';
 import { useEffect, useState } from 'react';
 import Spinner from '../loader/Spinner';
+import { BiArrowBack } from 'react-icons/bi';
+import { useRouter } from 'next/router';
 
 type PhoneValidationProps = {
   setRegistrationData: SetRegistrationData;
@@ -67,11 +69,16 @@ export default function PhoneValidation(props: PhoneValidationProps) {
       });
   }
 
+  const router = useRouter();
+
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col px-10 pt-10 pb-5 items-around justify-center text-black h-full w-full"
     >
+      <div className="cursor-pointer" onClick={() => router.push('/')}>
+        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+      </div>
       <Image
         src={registerPhoneNumber}
         alt="Register Phone Number Illustration"
@@ -97,6 +104,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
 
             <TextInput
               className="pl-20"
+              type="number"
               {...register('phone')}
               error={errors.hasOwnProperty('phone')}
             />
