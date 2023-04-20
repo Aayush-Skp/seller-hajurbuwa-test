@@ -14,6 +14,8 @@ import {
 } from '../../validation/sellerLoginSchema';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import formBackground from '/public/images/form_background.svg';
+import { BiArrowBack } from 'react-icons/bi';
 
 export default function Login() {
   const [apiResponse, setApiResponse] = useState({
@@ -67,8 +69,20 @@ export default function Login() {
   }
 
   return (
-    <div className="bg-gray-150 h-screen w-full flex justify-center items-center">
-      <div className="h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white">
+    <div className=" h-screen flex justify-center items-center relative w-full overflow-hidden">
+      <div
+        className="absolute h-full w-full z-0 opacity-20"
+        style={{
+          backgroundImage: `url(${formBackground.src})`,
+          backgroundPosition: 'bottom',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}
+      ></div>
+      <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:h-4/5 md:w-1/2 lg:w-1/3  2xl:h-fit 2xl:w-1/4 bg-white z-10 shadow-lg">
+        <div className="cursor-pointer" onClick={() => router.push('/')}>
+          <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+        </div>
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
           className="px-6 py-4 w-full space-y-4 my-5"
