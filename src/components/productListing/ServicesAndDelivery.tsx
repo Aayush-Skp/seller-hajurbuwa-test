@@ -79,11 +79,10 @@ export default function ServicesAndDelivery(props: any) {
       }
 
       for (const key in productDetails.images) {
-        if (typeof productDetails.images[key] !== 'string') {
+        // console.log(typeof productDetails.images[key]);
+        if (typeof productDetails.images[key] === 'object') {
           params.append(`sub_images[]`, productDetails.images[key]);
-          continue;
         }
-
         if (
           typeof productDetails.images[key] === 'string' &&
           productDetails.images[key] !== ''
@@ -100,7 +99,7 @@ export default function ServicesAndDelivery(props: any) {
       return;
     }
 
-    addProduct(productDetails).then(console.log).catch(console.log);
+    // addProduct(productDetails).then(console.log).catch(console.log);
   }
 
   return (

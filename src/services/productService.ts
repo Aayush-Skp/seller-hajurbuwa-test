@@ -99,11 +99,14 @@ export function getProductById(productId: string | number) {
   });
 }
 
-export function updateProduct(productId: string | number, updatedField: any) {
+export function updateProduct(
+  productId: string | number,
+  updatedField: FormData
+) {
   return httpClient
-    .put(`${productUrl}/${productId}`, updatedField, {
+    .post(`${productUrl}/${productId}`, updatedField, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
       },
     })
     .then((res) => res);
@@ -133,8 +136,11 @@ export function addProduct(productDetails: any) {
   formData.append('price_per_unit', productDetails.price_per_unit);
   formData.append('in_stock', `${Number(productDetails.in_stock)}`);
   formData.append('package_weight', String(productDetails.package_weight));
-  formData.append('cover_image', productDetails.cover_image);
   formData.append('is_bulk_price', `${Number(productDetails.is_bulk_price)}`);
+
+  if (typeof productDetails.cover_image !== 'string') {
+    formData.append('cover_image', productDetails.cover_image);
+  }
 
   formData.append(
     'featured_highlights',
