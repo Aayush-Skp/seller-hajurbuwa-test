@@ -1,18 +1,19 @@
 import React from 'react';
-import ReviewsManagementTable from '../components/reviews/ReviewManagementTable';
-import { reviews } from '../constants/review';
 import PageWrapper from '../components/PageWrapper';
 import authenticatedRoute from '../components/WithAuth';
+import Header from '../components/Header';
+import Reviews from '../components/reviews';
 
 function ReviewsManagement() {
   return (
-    <section className="flex flex-col justify-center items-center w-full">
-      <PageWrapper>
+    <PageWrapper>
+      <Header header="Review Management" />
+      <div className="flex justify-center">
         <div className="w-4/5">
-          <ReviewsManagementTable data={reviews} />
+          <Reviews />
         </div>
-      </PageWrapper>
-    </section>
+      </div>
+    </PageWrapper>
   );
 }
 

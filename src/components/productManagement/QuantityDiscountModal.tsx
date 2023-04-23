@@ -14,7 +14,10 @@ type ProductAttribute = {
 
 type QuantityDiscountProps = {
   productId: string | number;
-  quantityDiscountPrices: ProductAttribute[] | [];
+  quantityDiscountPrices: {
+    quantityDiscounts: ProductAttribute[] | [];
+    unit: '';
+  };
   isQuantityDiscountModalOpen: boolean;
   setIsQuantityDiscountModelOpen: (value: boolean) => void;
   updateProductAttribute: (
@@ -35,13 +38,15 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [bulkPrices, setBulkPrices] = useState<any>([]);
+  const [unit, setUnit] = useState('');
   const [bulkValidation, setBulkValidation] = useState({
     isValid: true,
     message: '',
   });
 
   useEffect(() => {
-    setBulkPrices(quantityDiscountPrices);
+    setBulkPrices(quantityDiscountPrices.quantityDiscounts);
+    setUnit(quantityDiscountPrices.unit);
   }, []);
 
   function addBulkPrice() {
@@ -118,6 +123,8 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
   }
 
   function handleFormSubmit() {
+    const formData = new FormData();
+
     if (
       bulkPrices.length === 1 &&
       (bulkPrices[0]?.price <= 0 || isNaN(bulkPrices[0]?.price))
@@ -132,14 +139,11 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
 
     if (!bulkValidation.isValid) return;
 
-    console.log('looking');
-
     setIsLoading(true);
 
-    let data = {
-      price_per_unit: '',
-      is_bulk_price: '1',
-    };
+    formData.append('price_per_unit', '');
+    formData.append('is_bulk_price', '1');
+    formData.append('_method', 'PUT');
 
     let updated = bulkPrices.map((price: any) => {
       return [price.quantity, price.price];
@@ -147,14 +151,11 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
 
     for (let i = 0; i < updated.length; i++) {
       for (let j = 0; j < updated[i].length; j++) {
-        data = {
-          ...data,
-          [`bulk_pricing[${i}][${j}]`]: `${updated[i][j]}`,
-        };
+        formData.append(`bulk_pricing[${i}][${j}]`, `${updated[i][j]}`);
       }
     }
 
-    updateProductAttribute(productId, new URLSearchParams(data))
+    updateProductAttribute(productId, formData)
       .then(() => setIsQuantityDiscountModelOpen(false))
       .catch((err) => {
         console.log(err);
@@ -181,7 +182,7 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
 
         overlay: {
           zIndex: 100,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backgroundColor: 'rgba(0, 0, 0, 0.1)',
         },
       }}
       ariaHideApp={false}
@@ -194,7 +195,7 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
         <div className="border border-gray-600">
           <div className="flex items-center justify-between bg-accent-primary py-2 px-8 text-white">
             <p className="">Quantity</p>
-            <p>Price Per Pc</p>
+            <p>Price per {unit}</p>
           </div>
           {bulkPrices?.map((price: any, i: number) => (
             <div key={i} className="relative flex justify-between px-2 py-2">
@@ -207,7 +208,7 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
                   onChange={(e) => onBulkChange(e, i)}
                   className="outline-none border border-gray-600 h-8 w-36 px-3"
                 />
-                <span className="flex items-center">+pcs</span>
+                <span className="flex items-center">+{unit}</span>
               </div>
               <div className="flex space-x-3">
                 <span className="flex items-center">NPR</span>

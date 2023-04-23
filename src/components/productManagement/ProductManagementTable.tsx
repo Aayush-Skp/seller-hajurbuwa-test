@@ -7,7 +7,9 @@ import QuantityDiscountModal from './QuantityDiscountModal';
 import ActionButtons from './ActionButtons';
 import { updateProduct } from '../../services/productService';
 import AddQuantityDiscountModal from './AddQuantityDiscountModal';
+import { MdContentCopy } from 'react-icons/md';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
+import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 
 type ITableData = {
   product_id: string;
@@ -69,13 +71,18 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   getAllProducts,
 }) => {
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+
   const [isQuantityDiscountModalOpen, setIsQuantityDiscountModalOpen] =
     useState(false);
+
   const [isAddQuantityDiscountModalOpen, setIsAddQuantityDiscountModalOpen] =
     useState(false);
 
   const [newQuantityDiscountsToBeAdded, setNewQuantityDiscountsToBeAdded] =
-    useState<any>([]);
+    useState<any>({
+      unit: '',
+      quantityDiscounts: [],
+    });
 
   const [quantityDiscountToBeEdited, setQuantityDiscountToBeEdited] =
     useState<any>({
@@ -102,9 +109,11 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
 
+  const [__, copyProductId] = useCopyToClipboard();
+
   function updateProductAttribute(
     productId: string | number,
-    updatedField: any
+    updatedField: FormData
   ) {
     return updateProduct(productId, updatedField).then((res) =>
       getAllProducts()
@@ -167,8 +176,19 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                             <p className="text-sm text-accent-primary">
                               {cell.value}
                             </p>
-                            <p className="text-sm">
-                              Id: {row.original.product_id}
+                            <p className="text-sm text-accent-primary">
+                              {row.original.included_items}
+                            </p>
+                            <p className="text-sm space-x-2 items-center">
+                              <span>Id: {row.original.product_id}</span>
+                              <button
+                                className="group"
+                                onClick={() =>
+                                  copyProductId(row.original.product_id)
+                                }
+                              >
+                                <MdContentCopy className="group-hover:scale-110 transition-transform" />
+                              </button>
                             </p>
                           </div>
                         </div>
@@ -293,11 +313,16 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                     id: row.original.id,
                                   });
                                   setNewQuantityDiscountsToBeAdded(() => {
-                                    return cell.value.map((val: any) => {
-                                      return {
-                                        ...val,
-                                      };
-                                    });
+                                    return {
+                                      unit: row.original.unit,
+                                      quantityDiscounts: cell.value.map(
+                                        (val: any) => {
+                                          return {
+                                            ...val,
+                                          };
+                                        }
+                                      ),
+                                    };
                                   });
                                   setIsQuantityDiscountModalOpen(true);
                                 }}

@@ -15,7 +15,7 @@ type PriceEditModalProps = {
   setIsPriceModalOpen: (value: boolean) => void;
   updateProductAttribute: (
     productId: string | number,
-    updatedField: Record<string, string>
+    updatedField: FormData
   ) => Promise<void>;
 };
 
@@ -39,11 +39,15 @@ export default function PriceEditModal(props: PriceEditModalProps) {
 
   function handleFormSubmit(data: any) {
     setIsLoading(true);
-    updateProductAttribute(productId, {
-      is_bulk_price: '0',
-      ...data,
-      bulk_price: '',
-    })
+
+    const formData = new FormData();
+
+    formData.append('is_bulk_price', '0');
+    formData.append('bulk_price', '');
+    formData.append('price_per_unit', data.price_per_unit.toString());
+    formData.append('_method', 'PUT');
+
+    updateProductAttribute(productId, formData)
       .then(() => setIsPriceModalOpen(false))
       .catch((err) => {
         console.log(err);

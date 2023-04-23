@@ -36,12 +36,12 @@ export default function StockAvailabilityModal(
       isIdle: false,
     });
 
-    updateProductAttribute(
-      `${productId}`,
-      new URLSearchParams({
-        in_stock: isStockAvailable.toString(),
-      })
-    )
+    const formData = new FormData();
+
+    formData.append('in_stock', isStockAvailable.toString());
+    formData.append('_method', 'PUT');
+
+    updateProductAttribute(`${productId}`, formData)
       .then((res) => {
         setIsModalOpen(false);
         setResponseState({
@@ -62,8 +62,6 @@ export default function StockAvailabilityModal(
         });
       });
   }
-
-  console.log(isStockAvailable);
 
   return (
     <div>

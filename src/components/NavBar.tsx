@@ -7,9 +7,21 @@ import Image from 'next/image';
 import Dropdown from './Dropdown';
 
 import { useClickAwayListener } from '../hooks/useClickAwayListener';
+import { useRouter } from 'next/router';
 
 const Navbar = () => {
   const { isNodeVisible, nodeRef, setIsNodeVisible } = useClickAwayListener();
+  const router = useRouter();
+
+  function handleLogoutAction() {
+    try {
+      localStorage.removeItem('token');
+      router.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <nav className="fixed top-0 left-0 z-20 w-full h-28 bg-white text-black border-accent-primary border-2">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +39,7 @@ const Navbar = () => {
                 </a>
               </Link>
             </div>
-            <div className="flex-shrink-0 flex items-center justify-center px-10 text-lg shadow-md h-7 w-28">
+            <div className="flex-shrink-0 flex items-center justify-center px-10 text-lg shadow-xl h-7 w-28 mx-5">
               <span className="font-bold text-sm whitespace-nowrap">
                 XYZ shop
               </span>
@@ -37,8 +49,8 @@ const Navbar = () => {
                 <Image
                   src={nepalFlag}
                   alt="Nepal Flag"
-                  width={100}
-                  height={50}
+                  width={46}
+                  height={31}
                 />
               </span>
             </div>
@@ -56,11 +68,11 @@ const Navbar = () => {
               {isNodeVisible ? (
                 <ul className="absolute flex flex-col top-10 px-5 py-2 shadow-2xl space-y-1 justify-center bg-white whitespace-nowrap">
                   <li>
-                    <Link href="/account-info">
+                    <Link href="/settings/account-info">
                       <a>Account Info</a>
                     </Link>
                   </li>
-                  <li>Logout?</li>
+                  <li onClick={handleLogoutAction}>Logout?</li>
                 </ul>
               ) : null}
             </li>

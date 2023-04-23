@@ -63,7 +63,7 @@ export default function ProductImagesAndVideos(props: any) {
         </div>
 
         <div className="flex items-center">
-          <div className="w-80 h-80 border border-gray-600">
+          <div className="flex items-center justify-center w-80 h-80 border border-gray-600">
             {productDetails.cover_image ? (
               <Image
                 width={500}
@@ -76,7 +76,9 @@ export default function ProductImagesAndVideos(props: any) {
                 }
                 alt=""
               />
-            ) : null}
+            ) : (
+              <span className="text-sm">Please select a cover image</span>
+            )}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 md:pl-24 lg:pl-24 gap-x-6 gap-y-5 md:gap-y-10 lg:gap-y-10">
             {productDetails?.images.first ? (

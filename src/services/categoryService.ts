@@ -30,7 +30,6 @@ export function searchCategory(keyword: string) {
 
 export function getCategoryListById(id: string | number | null) {
   return httpClient.get(`/category/child?id=${id}`).then((res) => {
-    console.log(res.data);
     return res.data.data;
   });
 }

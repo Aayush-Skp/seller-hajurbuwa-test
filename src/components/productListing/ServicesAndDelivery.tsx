@@ -79,7 +79,6 @@ export default function ServicesAndDelivery(props: any) {
       }
 
       for (const key in productDetails.images) {
-        // console.log(typeof productDetails.images[key]);
         if (typeof productDetails.images[key] === 'object') {
           params.append(`sub_images[]`, productDetails.images[key]);
         }
@@ -99,7 +98,7 @@ export default function ServicesAndDelivery(props: any) {
       return;
     }
 
-    // addProduct(productDetails).then(console.log).catch(console.log);
+    addProduct(productDetails).then(console.log).catch(console.log);
   }
 
   return (

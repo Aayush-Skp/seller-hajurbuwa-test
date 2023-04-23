@@ -1,11 +1,10 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { httpClient } from '../config/httpClient';
-import { publicRoutes } from '../constants/publicRoutes';
 
 export default function authenticatedRoute(Component: any = null) {
   function Auth() {
-    const [access, setAccess] = useState({
+    const [access, setAccess] = useState<any>({
       grantAccess: false,
       token: '',
     });
@@ -13,15 +12,18 @@ export default function authenticatedRoute(Component: any = null) {
     const router = useRouter();
 
     useEffect(() => {
-      // if (publicRoutes)
       try {
-        const token = localStorage.getItem('token');
+        let userDetails: any = localStorage.getItem('userDetails');
 
-        if (token) {
-          httpClient.defaults.headers.common.Authorization = `Bearer ${token}`;
+        if (typeof userDetails === 'string') {
+          userDetails = JSON.parse(userDetails);
+        }
+
+        if (userDetails?.token) {
+          httpClient.defaults.headers.common.Authorization = `Bearer ${userDetails?.token}`;
           setAccess({
             grantAccess: true,
-            token,
+            userDetails,
           });
         } else {
           router.push('/login');

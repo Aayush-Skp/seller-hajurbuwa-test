@@ -26,7 +26,6 @@ export default function ProductDetails(props: any) {
   useEffect(() => {
     setValue('included_items', productDetails.included_items);
     setValue('description', productDetails.description);
-    // setFeaturedHighlights(productDetails.featured_highlights);
   }, []);
 
   function handleOnChange(
@@ -149,7 +148,7 @@ export default function ProductDetails(props: any) {
 
         <div className="flex space-x-2">
           <div className="w-[165px]">
-            <InputLabel label="Description" required />
+            <InputLabel label="Description" />
           </div>
           <div className="w-full h-36">
             <textarea

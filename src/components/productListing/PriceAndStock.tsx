@@ -21,15 +21,18 @@ export default function PriceAndStock(props: any) {
     message: '',
   });
 
+  const [unitValidation, setUnitValidation] = useState({
+    isValid: true,
+    message: '',
+  });
+
   const [bulkValidation, setBulkValidation] = useState({
     isValid: true,
     message: '',
   });
 
   const { errors, register, setValue, handleSubmit, setError } =
-    useFormValidation(
-      ProductPriceSchema(defaultValues.units, productDetails.is_bulk_price)
-    );
+    useFormValidation(ProductPriceSchema(productDetails.is_bulk_price));
 
   useEffect(() => {
     if (productDetails.is_bulk_price) {
@@ -41,6 +44,35 @@ export default function PriceAndStock(props: any) {
   useEffect(() => {
     setValue('price_per_unit', productDetails.price_per_unit);
   }, []);
+
+  useEffect(() => {
+    if (productDetails.unit === '') {
+      setProductDetails((prev: any) => ({
+        ...prev,
+        is_bulk_price: false,
+        bulk_pricing: [{ quantity: prev.minimum_order, price: 0 }],
+      }));
+      setUnitValidation({
+        isValid: false,
+        message: 'Please select a unit',
+      });
+    }
+  }, [productDetails.unit]);
+
+  function handleUnitChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const value = e.target.value.split(',');
+
+    setProductDetails((prev: any) => ({
+      ...prev,
+      unit: value[0],
+      unitName: value[1] ?? '',
+    }));
+
+    setUnitValidation({
+      isValid: true,
+      message: '',
+    });
+  }
 
   function addBulkPrice() {
     if (productDetails.bulk_pricing.length <= 3)
@@ -153,7 +185,36 @@ export default function PriceAndStock(props: any) {
   }
 
   function handleIsBulkPricing() {
-    if (productDetails.bulk_pricing.length === 0) {
+    if (
+      productDetails.minimum_order < 1 ||
+      isNaN(productDetails.minimum_order)
+    ) {
+      setProductDetails((prev: any) => {
+        return {
+          ...prev,
+          is_bulk_price: false,
+        };
+      });
+
+      setMinOrderValidation({
+        isValid: false,
+        message: 'Please add minimum order',
+      });
+
+      return;
+    }
+
+    if (productDetails.unit === '') {
+      setProductDetails((prev: any) => {
+        return {
+          ...prev,
+          is_bulk_price: false,
+        };
+      });
+      return;
+    }
+
+    if (productDetails?.bulk_pricing?.length === 0) {
       setProductDetails((prev: any) => {
         return {
           ...prev,
@@ -187,26 +248,49 @@ export default function PriceAndStock(props: any) {
   }
 
   function handleFormSubmit(data: any) {
-    if (
-      isNaN(productDetails.bulk_pricing[0].price) ||
-      productDetails.bulk_pricing[0].price === 0
-    ) {
-      setBulkValidation({
+    if (productDetails.unit === '') {
+      setUnitValidation({
         isValid: false,
-        message: 'Entered price is invalid',
+        message: 'Please select a unit',
       });
 
-      if (
-        isNaN(productDetails.minimum_order) ||
-        productDetails.minimum_order === 0
-      ) {
-        setMinOrderValidation({
-          isValid: false,
-          message: 'Enter valid minimum order',
-        });
-      }
+      return;
+    }
 
-      if (!bulkValidation.isValid) return;
+    if (
+      productDetails.minimum_order < 1 ||
+      isNaN(productDetails.minimum_order)
+    ) {
+      setMinOrderValidation({
+        isValid: false,
+        message: 'Enter valid minimum order',
+      });
+
+      return;
+    }
+
+    if (productDetails.is_bulk_price) {
+      if (
+        isNaN(productDetails?.bulk_pricing[0]?.price) ||
+        productDetails.bulk_pricing[0].price === 0
+      ) {
+        setBulkValidation({
+          isValid: false,
+          message: 'Entered price is invalid',
+        });
+
+        if (
+          isNaN(productDetails.minimum_order) ||
+          productDetails.minimum_order === 0
+        ) {
+          setMinOrderValidation({
+            isValid: false,
+            message: 'Enter valid minimum order',
+          });
+        }
+
+        if (!bulkValidation.isValid) return;
+      }
     }
 
     setProductDetails((prev: any) => {
@@ -215,6 +299,7 @@ export default function PriceAndStock(props: any) {
         ...data,
       };
     });
+
     incStep();
   }
 
@@ -255,21 +340,21 @@ export default function PriceAndStock(props: any) {
             </div>
             <div className="flex flex-col">
               <select
-                {...register('unit')}
+                onChange={handleUnitChange}
                 className="w-56 h-10 outline-none border border-gray-600 rounded cursor-pointer"
               >
                 <option value="">Select Unit</option>
                 {defaultValues?.units?.map((unit: any) => (
                   <option
                     key={unit.id}
-                    value={unit.id}
-                    selected={unit.id === Number(productDetails.unit)}
+                    value={`${unit.id},${unit.name}`}
+                    selected={unit.name === productDetails.unit}
                   >
                     {unit?.name}
                   </option>
                 ))}
               </select>
-              <ErrorMessage message={errors?.unit?.message as string} />
+              <ErrorMessage message={unitValidation.message} />
             </div>
           </div>
         </div>
@@ -319,9 +404,9 @@ export default function PriceAndStock(props: any) {
               <div className="border border-gray-600">
                 <div className="flex items-center justify-between bg-accent-primary py-2 px-8 text-white">
                   <p className="">Quantity</p>
-                  <p>Price Per Pc</p>
+                  <p>Price Per {productDetails.unitName}</p>
                 </div>
-                {productDetails.bulk_pricing.map((price: any, i: number) => (
+                {productDetails?.bulk_pricing?.map((price: any, i: number) => (
                   <div
                     key={i}
                     className="relative flex justify-between px-2 py-2"
@@ -336,7 +421,9 @@ export default function PriceAndStock(props: any) {
                         onChange={(e) => onBulkChange(e, i)}
                         className="outline-none border border-gray-600 h-8 w-36 px-3"
                       />
-                      <span className="flex items-center">+pcs</span>
+                      <span className="flex items-center">
+                        +{productDetails.unitName}s
+                      </span>
                     </div>
                     <div className="flex space-x-3">
                       <span className="flex items-center">NPR</span>
@@ -344,6 +431,7 @@ export default function PriceAndStock(props: any) {
                         value={price.price}
                         type="number"
                         name="price"
+                        min={1}
                         onChange={(e) => onBulkChange(e, i)}
                         className="outline-none border border-gray-600 h-8 w-36 px-3"
                       />
@@ -362,7 +450,7 @@ export default function PriceAndStock(props: any) {
               <div className="flex w-full justify-between">
                 <ErrorMessage message={bulkValidation.message} />
                 <div className="w-36 flex space-x-2">
-                  <Button onClick={addBulkPrice}>Add</Button>
+                  <Button onClick={addBulkPrice}>Add Row</Button>
                 </div>
               </div>
             </div>

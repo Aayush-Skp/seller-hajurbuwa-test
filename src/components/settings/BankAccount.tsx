@@ -12,7 +12,8 @@ export default function BankAccount() {
   const [bankList, setBankList] = useState<
     { id: string | number; name: string }[]
   >([]);
-  const { register, errors, handleSubmit } = useFormValidation(
+
+  const { register, errors, handleSubmit, setValue } = useFormValidation(
     BankAccountSchema(bankList)
   );
 
@@ -22,8 +23,18 @@ export default function BankAccount() {
   }
 
   useEffect(() => {
+    const value = localStorage.getItem('userDetails');
+
     getBankList()
       .then((res) => setBankList(res))
+      .then(() => {
+        if (typeof value === 'string') {
+          const sellerDetails = JSON.parse(value);
+          setValue('account_name', sellerDetails?.account_name);
+          setValue('account_number', sellerDetails?.account_number);
+          setValue('bank_id', parseInt(sellerDetails?.bank_id));
+        }
+      })
       .catch(console.log);
   }, []);
 

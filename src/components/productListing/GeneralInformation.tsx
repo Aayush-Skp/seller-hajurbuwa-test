@@ -5,8 +5,6 @@ import TextInputField from '../common/TextInput';
 import Info from '../../../public/icons/info.svg';
 import cancelIcon from '../../../public/icons/cancel.svg';
 import RightIcon from '../../../public/icons/chevron-right.svg';
-import useFormValidation from '../../hooks/useFormValidation';
-import { ProductGeneralInfoSchema } from '../../validation/productListingSchema';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import DiscardModal from './DiscardModal';
@@ -19,14 +17,25 @@ import { useClickAwayListener } from '../../hooks/useClickAwayListener';
 export default function GeneralInformation(props: any) {
   const { productDetails, incStep, defaultValues, setProductDetails } = props;
 
-  const { errors, register, setValue, handleSubmit } = useFormValidation(
-    ProductGeneralInfoSchema
-  );
-
   const { isNodeVisible, nodeRef, setIsNodeVisible } = useClickAwayListener();
 
   const [categoryList, setCategoryList] = useState<any>([]);
-  const [selectedCategories, setSelectedCategories] = useState<any>([]);
+  const [categoryValidation, setCategoryValidation] = useState({
+    isValid: true,
+    message: '',
+  });
+
+  const [productNameValidation, setProductNameValidation] = useState({
+    isValid: true,
+    message: '',
+  });
+
+  const [selectedCategoryStringFromList, setSelectedCategoryStringFromList] =
+    useState<string>('');
+  const [
+    selectedCategoryStringFromSearch,
+    setSelectedCategoryStringFromSearch,
+  ] = useState<string>('');
   const [categoryKeyword, setCategoryKeyword] = useState('');
   const [categorySearchList, setCategorySearchList] = useState<any>([]);
   const [recentCategory, setRecentCategory] = useState<string | number | null>(
@@ -39,16 +48,26 @@ export default function GeneralInformation(props: any) {
   });
 
   useEffect(() => {
-    setValue('product_name', productDetails?.product_name);
-    setValue('product_type', productDetails?.category_id);
-    setValue('brand', productDetails?.brand);
-    setValue('unit', productDetails?.unit);
-    setValue('minimum_order', productDetails?.minimum_order);
-  }, [productDetails]);
-
-  useEffect(() => {
     fetchCategoryList();
   }, [recentCategory]);
+
+  useEffect(() => {
+    setSelectedCategoryStringFromSearch(productDetails.category_tree);
+  }, [productDetails]);
+
+  function handleProductNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setProductDetails((prev: any) => {
+      return {
+        ...prev,
+        product_name: e.target.value,
+      };
+    });
+
+    setProductNameValidation({
+      isValid: true,
+      message: '',
+    });
+  }
 
   function handleBrandChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setProductDetails((prev: any) => {
@@ -75,14 +94,43 @@ export default function GeneralInformation(props: any) {
   }
 
   function handleSelectedCategory(category: any) {
-    console.log(category.id);
-    setRecentCategory(category.id);
-    setSelectedCategories((prev: any) => [...prev, category]);
+    if (category.sub_categories.length === 0) {
+      setSelectedCategoryStringFromSearch(
+        selectedCategoryStringFromList === ''
+          ? `${category.name}`
+          : `${selectedCategoryStringFromList} > ${category.name}`
+      );
+      setSelectedCategoryStringFromList('');
+      setProductDetails((prev: any) => ({
+        ...prev,
+        category_id: category.id,
+      }));
+      setRecentCategory(null);
+      setCategoryKeyword('');
+      setCategorySearchList([]);
+      setCategoryValidation({
+        isValid: true,
+        message: '',
+      });
+    } else {
+      setSelectedCategoryStringFromList(
+        selectedCategoryStringFromList === ''
+          ? `${category.name}`
+          : `${selectedCategoryStringFromList} > ${category.name}`
+      );
+      setCategoryValidation({
+        isValid: true,
+        message: '',
+      });
+
+      category?.sub_categories?.length !== 0 && setRecentCategory(category.id);
+    }
   }
 
   function handleCategorySearch() {
     searchCategory(categoryKeyword)
       .then((res) => {
+        console.log(res);
         setCategorySearchList(res);
         res.length !== 0 && setIsNodeVisible(true);
       })
@@ -91,12 +139,16 @@ export default function GeneralInformation(props: any) {
       });
   }
 
-  function clearSelectedCategories() {
-    setSelectedCategories([]);
-    setRecentCategory(null);
-  }
+  function handleFormSubmit() {
+    if (productDetails.product_name === '') {
+      setProductNameValidation({
+        isValid: false,
+        message: 'Please enter product name',
+      });
 
-  function handleFormSubmit(data: any) {
+      return;
+    }
+
     if (productDetails.brand === '') {
       setBrandValidation({
         isValid: false,
@@ -105,12 +157,24 @@ export default function GeneralInformation(props: any) {
 
       return;
     }
+
+    if (productDetails.category_id === null) {
+      setCategoryValidation({
+        isValid: false,
+        message: 'Please select a category',
+      });
+
+      return;
+    }
+
     setProductDetails((prev: any) => {
       return {
         ...prev,
-        ...data,
+        category_tree: selectedCategoryStringFromSearch,
+        category_id: prev?.category_id ?? recentCategory,
       };
     });
+
     incStep();
   }
 
@@ -120,10 +184,7 @@ export default function GeneralInformation(props: any) {
         <Image src={Info} alt="" />
         <p>Fields with asterisks* should be filled.</p>
       </div>
-      <form
-        onSubmit={handleSubmit(handleFormSubmit)}
-        className="flex flex-col space-y-5"
-      >
+      <div className="flex flex-col space-y-5">
         <div className="flex space-x-5">
           <div className="w-[165px]">
             <InputLabel label="Product Name" required htmlFor="product_name" />
@@ -131,10 +192,34 @@ export default function GeneralInformation(props: any) {
           <div className="w-full flex flex-col">
             <TextInputField
               id="product_name"
-              error={errors.hasOwnProperty('product_name')}
-              {...register('product_name')}
+              error={!productNameValidation.isValid}
+              onChange={handleProductNameChange}
+              value={productDetails.product_name}
             />
-            <ErrorMessage message={errors?.product_name?.message as string} />
+            <ErrorMessage message={productNameValidation.message} />
+          </div>
+        </div>
+        <div className="flex items-center space-x-5">
+          <div className="w-[165px]">
+            <InputLabel label="Brand Specification" required />
+          </div>
+          <div className="w-full">
+            <select
+              onChange={handleBrandChange}
+              className="w-full h-10 outline-none border border-gray-600 rounded cursor-pointer"
+            >
+              <option value="">Select Brand</option>
+              {defaultValues?.brands?.map((brand: any) => (
+                <option
+                  key={brand.id}
+                  value={brand.id}
+                  selected={brand.name === productDetails.brand}
+                >
+                  {brand?.name}
+                </option>
+              ))}
+            </select>
+            <ErrorMessage message={brandValidation.message} />
           </div>
         </div>
         <div className="flex">
@@ -142,38 +227,34 @@ export default function GeneralInformation(props: any) {
             <InputLabel label="Select a product type" required />
           </div>
           <div className="w-full space-y-3">
-            <div className="flex items-center text-sm italic text-gray-500 space-x-2">
-              {selectedCategories.length !== 0 ? (
-                selectedCategories.map((item: any, index: number) => {
-                  if (index !== selectedCategories.length - 1) {
-                    return (
-                      <>
-                        <span key={item.id}>{item.name}</span>
-                        <span className="mx-1">&gt;</span>
-                      </>
-                    );
-                  }
-                  return <span key={item.id}>{item.name}</span>;
-                })
+            <div className="flex items-center space-x-2">
+              {selectedCategoryStringFromSearch !== '' ? (
+                <div className="flex items-center space-x-2">
+                  <span className="">{selectedCategoryStringFromSearch}</span>
+                  <button
+                    onClick={() => {
+                      setSelectedCategoryStringFromSearch('');
+                      setProductDetails((prev: any) => ({
+                        ...prev,
+                        category_id: null,
+                      }));
+                    }}
+                    className="w-6 flex items-center"
+                  >
+                    <Image src={cancelIcon} alt="" />
+                  </button>
+                </div>
               ) : (
                 <span
-                  className={`text-sm ${
-                    selectedCategories.length === 0
-                      ? 'italic text-gray-500'
-                      : ''
-                  } `}
+                  className={`italic ${
+                    !categoryValidation.isValid
+                      ? 'text-error-primary'
+                      : 'text-gray-500'
+                  }`}
                 >
                   Select a suitable category for your product
                 </span>
               )}
-              {selectedCategories.length !== 0 ? (
-                <button
-                  onClick={clearSelectedCategories}
-                  className="w-6 flex items-center"
-                >
-                  <Image src={cancelIcon} alt="" />
-                </button>
-              ) : null}
             </div>
             <div className="w-full space-y-3">
               <div className="flex space-x-3">
@@ -198,15 +279,26 @@ export default function GeneralInformation(props: any) {
                     <ul className="absolute z-20 bg-white px-5 py-3 whitespace-nowrap space-y-2 shadow-2xl rounded">
                       {categorySearchList?.map((item: any, idx: number) => (
                         <li
-                          className="cursor-pointer hover:scale-105 transition-transform text-sm"
+                          className="cursor-pointer hover:scale-105 transition-transform text-sm space-x-2"
                           key={item.id}
-                          onClick={() =>
-                            setCategoryKeyword(
+                          onClick={() => {
+                            setSelectedCategoryStringFromList('');
+                            setRecentCategory(null);
+                            setSelectedCategoryStringFromSearch(
                               categorySearchList[idx]?.tree_name
-                            )
-                          }
+                            );
+                            setProductDetails((prev: any) => {
+                              return {
+                                ...prev,
+                                category_id: item.id,
+                              };
+                            });
+                          }}
                         >
-                          {item.tree_name}
+                          <span>{item.tree_name}</span>
+                          <button className="border border-accent-primary rounded px-6 py-1 mr-2">
+                            Select
+                          </button>
 
                           <hr />
                         </li>
@@ -219,9 +311,30 @@ export default function GeneralInformation(props: any) {
                 </div>
               </div>
               <p>OR</p>
-              <div className="h-72 border border-gray-500 divide-y divide-gray-500">
-                <p className="px-4 py-1">Select a category</p>
-                <ul className="h-64 overflow-y-auto divide-y divide-gray-500">
+              <div className="h-56 border border-gray-500 divide-y divide-gray-500">
+                <p className="px-4 py-1">
+                  {selectedCategoryStringFromList !== '' ? (
+                    <div className="flex items-center space-x-2">
+                      <span>{selectedCategoryStringFromList}</span>
+                      <button
+                        onClick={() => {
+                          setSelectedCategoryStringFromList('');
+                          setRecentCategory(null);
+                        }}
+                        className="w-6 flex items-center"
+                      >
+                        <Image src={cancelIcon} alt="" />
+                      </button>
+                    </div>
+                  ) : (
+                    'Select a category'
+                  )}
+                </p>
+                <ul
+                  className={`${
+                    categoryList.length > 4 ? 'overflow-y-auto' : ''
+                  } h-44 divide-y divide-gray-500`}
+                >
                   {categoryList?.map((category: any) => (
                     <li
                       key={category.id}
@@ -245,38 +358,19 @@ export default function GeneralInformation(props: any) {
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-5">
-          <div className="w-[165px]">
-            <InputLabel label="Brand Specification" required />
-          </div>
-          <div className="w-full">
-            <select
-              onChange={handleBrandChange}
-              className="w-full h-10 outline-none border border-gray-600 rounded cursor-pointer"
-            >
-              <option value="">Select Brand</option>
-              {defaultValues?.brands?.map((brand: any) => (
-                <option
-                  key={brand.id}
-                  value={brand.id}
-                  selected={String(brand.id) === productDetails.brand}
-                >
-                  {brand?.name}
-                </option>
-              ))}
-            </select>
-            <ErrorMessage message={brandValidation.message} />
-          </div>
-        </div>
         <div className="flex justify-end space-x-3">
           <div className="w-96 flex items-center justify-center space-x-4">
             <DiscardModal />
-            <Button type="submit" className="py-3 text-sm">
+            <Button
+              type="button"
+              onClick={handleFormSubmit}
+              className="py-3 text-sm"
+            >
               Continue
             </Button>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

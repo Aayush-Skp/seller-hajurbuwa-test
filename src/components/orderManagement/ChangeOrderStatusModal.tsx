@@ -26,7 +26,6 @@ export default function ChangeOrderStatusModal(
   const [isLoading, setIsLoading] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
 
-  console.log(cancelReason);
   function handleStatusChange() {
     setIsLoading(true);
 
@@ -35,14 +34,13 @@ export default function ChangeOrderStatusModal(
       reason: cancelReason,
     })
       .then((res) => {
-        setIsLoading(false);
         getAllOrders();
         setIsOrderStatusModelOpen(false);
       })
-      .then((err) => {
+      .catch((err) => {
+        console.log(err);
         setIsLoading(false);
-      })
-      .catch(console.log);
+      });
   }
 
   return (
@@ -95,18 +93,16 @@ export default function ChangeOrderStatusModal(
           </div>
           <div className="space-x-4">
             <button
-              disabled={isLoading}
               onClick={() => setIsOrderStatusModelOpen(false)}
               className="px-5 py-2 border border-accent-primary rounded text-accent-primary"
             >
               No, Cancel
             </button>
             <button
-              disabled={isLoading}
               onClick={handleStatusChange}
               className="px-5 py-2 border border-accent-primary rounded text-white bg-accent-primary"
             >
-              {!isLoading ? 'Yes, Confirm' : 'Loading...'}
+              Yes, Confirm
             </button>
           </div>
         </div>

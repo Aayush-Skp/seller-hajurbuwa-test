@@ -51,9 +51,32 @@ export default function Login() {
           });
         }
         if (res.status === 'success') {
-          console.log(res);
-          localStorage.setItem('token', res?.token);
-          router.push('/dashboard');
+          const userDetails = {
+            id: '1',
+            first_name: 'Patrick',
+            last_name: 'Neupane',
+            phone: '9811111111',
+            email: 'itsmepatrick@gmail.com',
+            business_name: 'Pratik Trading Pvt. Ltd',
+            pan: '609941532',
+            pan_image: 'sjankt aodnkaksa.jpg',
+            account_name: 'Patrick Neupane',
+            account_number: '11111111111111',
+            bank_id: '1',
+            state: '1',
+            city: '2',
+            area: '1',
+            address_line1: 'asda',
+            address_line2: 'auououo',
+            token: res.token,
+          };
+
+          try {
+            localStorage.setItem('userDetails', JSON.stringify(userDetails));
+            router.push('/dashboard');
+          } catch (err) {
+            console.log(err);
+          }
         }
       })
       .catch((err) => {
@@ -79,7 +102,7 @@ export default function Login() {
           backgroundSize: 'cover',
         }}
       ></div>
-      <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:h-4/5 md:w-1/2 lg:w-1/3  2xl:h-fit 2xl:w-1/4 bg-white z-10 shadow-lg">
+      <div className="relative w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white z-10 shadow-lg">
         <div className="cursor-pointer" onClick={() => router.push('/')}>
           <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
         </div>
@@ -95,7 +118,7 @@ export default function Login() {
           </div>
 
           <div className="flex flex-col w-full space-y-5">
-            <div className="text-gray-400">
+            <div className="">
               <div className="space-y-4">
                 <div className="space-y-1">
                   <InputLabel
@@ -111,11 +134,7 @@ export default function Login() {
                   <ErrorMessage message={errors?.email?.message as string} />
                 </div>
                 <div className="space-y-1">
-                  <InputLabel
-                    className="text-gray-400"
-                    label="Password"
-                    htmlFor="password"
-                  />
+                  <InputLabel label="Password" htmlFor="password" />
                   <PasswordInput
                     id="password"
                     type="password"

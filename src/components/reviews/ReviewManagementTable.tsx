@@ -28,6 +28,8 @@ interface ITableData {
 
 type ProductManagementTableProps = {
   data: ITableData[];
+  isLoading: boolean;
+  getReviewsList: () => void;
 };
 
 type TableHeader = 'Order' | 'Product' | 'Content' | 'Rating' | 'Action';

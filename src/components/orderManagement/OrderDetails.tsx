@@ -4,6 +4,7 @@ import { BsArrowLeft } from 'react-icons/bs';
 import Link from 'next/link';
 import { getSingleOrderDetails } from '../../services/orderServices';
 import { useRouter } from 'next/router';
+import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 
 export default function OrderDetails() {
   const [isLoading, setIsLoading] = useState(true);
@@ -15,12 +16,15 @@ export default function OrderDetails() {
     product_id: '',
     quantity: '',
     sub_total: '',
-    customer_name: '',
+    buyer_company_name: '',
     pan_number: '',
     amount: '',
     seller_name: '',
     seller_pan_no: '',
   });
+
+  const [_, copyOrderId] = useCopyToClipboard();
+  const [__, copyProductId] = useCopyToClipboard();
 
   const { query } = useRouter();
 
@@ -69,7 +73,10 @@ export default function OrderDetails() {
               <span className="w-40 text-gray-400">Order ID</span>
               <div className="flex items-center justify-center space-x-2">
                 <span>{orderDetails?.order_id}</span>
-                <button className="group" onClick={() => {}}>
+                <button
+                  className="group"
+                  onClick={() => copyOrderId(orderDetails.order_id)}
+                >
                   <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
                 </button>
               </div>
@@ -114,7 +121,10 @@ export default function OrderDetails() {
               <span className="w-40 text-gray-400">Product Id</span>
               <div className="flex items-center justify-center space-x-2">
                 <span>{orderDetails.product_id}</span>
-                <button className="group" onClick={() => {}}>
+                <button
+                  className="group"
+                  onClick={() => copyProductId(orderDetails.product_id)}
+                >
                   <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
                 </button>
               </div>
@@ -135,7 +145,7 @@ export default function OrderDetails() {
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Customer Name</span>
-              <span>{orderDetails.seller_name}</span>
+              <span>{orderDetails.buyer_company_name}</span>
             </div>
           </li>
           <li className="border-b py-2 border-gray-300">

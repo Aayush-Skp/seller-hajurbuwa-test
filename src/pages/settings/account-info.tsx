@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import PageWrapper from '../../components/PageWrapper';
 import authenticatedRoute from '../../components/WithAuth';
 import AccountInfo from '../../components/settings/AccountInfo';
@@ -14,8 +15,16 @@ function AccountInfoPage() {
                 <li className="border-b-[5px] border-accent-primary">
                   Seller Info
                 </li>
-                <li>Bank Account</li>
-                <li>Warehouse Address</li>
+                <li className="cursor-pointer">
+                  <Link href="/settings/bank-account">
+                    <a>Bank Account</a>
+                  </Link>
+                </li>
+                <li className="cursor-pointer">
+                  <Link href="/settings/warehouse-address">
+                    <a>Warehouse Address</a>
+                  </Link>
+                </li>
               </ul>
             </div>
             <div className="flex py-10">

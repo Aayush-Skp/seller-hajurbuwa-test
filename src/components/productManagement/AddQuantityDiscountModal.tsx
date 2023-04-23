@@ -127,6 +127,7 @@ export default function AddQuantityDiscountModal(
   }
 
   function handleFormSubmit() {
+    const formData = new FormData();
     if (
       bulkPrices.length === 1 &&
       (bulkPrices[0]?.price <= 0 || isNaN(bulkPrices[0]?.price))
@@ -143,10 +144,9 @@ export default function AddQuantityDiscountModal(
 
     setIsLoading(true);
 
-    let data = {
-      price_per_unit: '',
-      is_bulk_price: '1',
-    };
+    formData.append('price_per_unit', '');
+    formData.append('is_bulk_price', '1');
+    formData.append('_method', 'PUT');
 
     let updated = bulkPrices.map((price: any) => {
       return [price.quantity, price.price];
@@ -154,14 +154,11 @@ export default function AddQuantityDiscountModal(
 
     for (let i = 0; i < updated.length; i++) {
       for (let j = 0; j < updated[i].length; j++) {
-        data = {
-          ...data,
-          [`bulk_pricing[${i}][${j}]`]: `${updated[i][j]}`,
-        };
+        formData.append(`bulk_pricing[${i}][${j}]`, `${updated[i][j]}`);
       }
     }
 
-    updateProductAttribute(productId, new URLSearchParams(data))
+    updateProductAttribute(productId, formData)
       .then(() => setIsQuantityDiscountModelOpen(false))
       .catch((err) => {
         console.log(err);

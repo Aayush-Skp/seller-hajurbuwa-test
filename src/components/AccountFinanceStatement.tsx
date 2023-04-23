@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getFinanceData } from '../services/getFinanceData';
+import Header from './Header';
 
 export default function AccountFinanceStatement() {
   const [paymentStatus, setPaymentStatus] = useState<string>('unpaid');
@@ -65,7 +66,7 @@ export default function AccountFinanceStatement() {
 
   return (
     <section>
-      <Header />
+      <Header header="Finance" />
       <div className="flex flex-col px-4 py-2 space-y-4">
         <p className="text-xl">Account Statement</p>
         <div className="flex items-center space-x-2 justify-start w-72">
@@ -138,7 +139,7 @@ export default function AccountFinanceStatement() {
                         >
                           Delivered Orders
                         </span>
-                        {toggleDeliveredOrders ? (
+                        {!toggleDeliveredOrders ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -189,7 +190,7 @@ export default function AccountFinanceStatement() {
                         className="flex items-center space-x-2 select-none cursor-pointer"
                       >
                         <span>Transaction Fees</span>
-                        {toggleTransactionFee ? (
+                        {!toggleTransactionFee ? (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -250,13 +251,5 @@ export default function AccountFinanceStatement() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Header() {
-  return (
-    <div className="flex items-end w-full bg-white h-[82px] px-4 pt-2 text-2xl border-b-[3px] border-gray-300">
-      <span className="">Finance</span>
-    </div>
   );
 }

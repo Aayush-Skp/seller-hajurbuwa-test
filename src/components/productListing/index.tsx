@@ -35,6 +35,7 @@ export default function ProductListing() {
     price_per_unit: '',
     package_weight: '',
     category_id: null,
+    unitName: '',
     is_bulk_price: false,
     bulk_pricing: [],
     product_name: '',
@@ -43,7 +44,8 @@ export default function ProductListing() {
     sub_images: [],
     in_stock: true,
     brand: '',
-    unit: null,
+    unit: '',
+    category_tree: '',
     images: {
       first: '',
       second: '',
@@ -61,7 +63,6 @@ export default function ProductListing() {
       setIsUpdate(true);
       getProductById(router.query.id as string)
         .then((res) => {
-          console.log(res);
           setProductDetails(res);
         })
         .catch(console.log);

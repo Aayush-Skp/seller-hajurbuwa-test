@@ -2,26 +2,34 @@ import React from 'react';
 import PageWrapper from '../../components/PageWrapper';
 import WarehouseAddress from '../../components/settings/WarehouseAddress';
 import authenticatedRoute from '../../components/WithAuth';
+import Link from 'next/link';
 
 function WarehouseAddressPage() {
   return (
     <PageWrapper>
-      <div>
-        <div className="flex space-x-10">
-          <div className="w-24 h-screen border-r border-black"></div>
-          <div className="mt-4">
+      <div className="border-l border-black max-h-max">
+        <div className="pl-24">
+          <div className="w-3/4">
             <div className="bg-gray-200 p-3">
               <ul className="flex w-full space-x-20 text-3xl">
-                <li>Seller Info</li>
-                <li>Bank Account</li>
+                <li className="cursor-pointer">
+                  <Link href="/settings/account-info">
+                    <a> Seller Info</a>
+                  </Link>
+                </li>
+                <li className="cursor-pointer">
+                  <Link href="/settings/bank-account">
+                    <a>Bank Account</a>
+                  </Link>
+                </li>
                 <li className="border-b-[5px] border-accent-primary">
                   Warehouse Address
                 </li>
               </ul>
             </div>
-            <div className="flex py-10">
-              <WarehouseAddress />
-            </div>
+          </div>
+          <div className="flex border-l border-black py-5 px-16">
+            <WarehouseAddress />
           </div>
         </div>
       </div>

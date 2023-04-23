@@ -11,7 +11,7 @@ export const ProductDetailsSchema = z.object({
     .min(1, { message: "Please mention what's in the package" }),
 });
 
-export function ProductPriceSchema(units: string[], isBulkPrice: boolean) {
+export function ProductPriceSchema(isBulkPrice: boolean) {
   return z.object({
     price_per_unit: z.string().refine(
       (price) => {
@@ -21,16 +21,6 @@ export function ProductPriceSchema(units: string[], isBulkPrice: boolean) {
         return true;
       },
       { message: `Please enter valid price of the product` }
-    ),
-    unit: z.string().refine(
-      (unit) => {
-        let isUnit = false;
-        units?.forEach((val: any) => {
-          if (Number(unit) === val?.id) isUnit = true;
-        });
-        return isUnit;
-      },
-      { message: 'please select a unit' }
     ),
   });
 }
