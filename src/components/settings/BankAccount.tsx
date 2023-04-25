@@ -7,19 +7,47 @@ import { BankAccountSchema } from '../../validation/sellerProfileSchema';
 import ErrorMessage from '../common/ErrorMessage';
 import { getBankList } from '../../services/getBankList';
 import { addBankDetails } from '../../services/profileService';
+import { useRouter } from 'next/router';
 
 export default function BankAccount() {
   const [bankList, setBankList] = useState<
     { id: string | number; name: string }[]
   >([]);
 
-  const { register, errors, handleSubmit, setValue } = useFormValidation(
-    BankAccountSchema(bankList)
-  );
+  const [apiResponse, setApiResponse] = useState({
+    isLoading: false,
+    isError: false,
+    message: '',
+  });
+
+  const { register, errors, handleSubmit, setValue, getValues } =
+    useFormValidation(BankAccountSchema(bankList));
+
+  const router = useRouter();
 
   function handleFormSubmit(data: any) {
-    console.log(data);
-    // addBankDetails(data).then(console.log).catch(console.log);
+    addBankDetails(data)
+      .then(() => {
+        const value = localStorage.getItem('userDetails');
+
+        if (typeof value === 'string') {
+          let updatedValue = JSON.parse(value);
+
+          localStorage.setItem(
+            'userDetails',
+            JSON.stringify({
+              ...updatedValue,
+              account_name: getValues('account_name'),
+              account_number: getValues('account_number'),
+              bank_id: getValues('bank_id'),
+            })
+          );
+        }
+      })
+      .then(() => {
+        router.reload();
+      })
+      .catch(console.log);
   }
 
   useEffect(() => {
@@ -32,7 +60,7 @@ export default function BankAccount() {
           const sellerDetails = JSON.parse(value);
           setValue('account_name', sellerDetails?.account_name);
           setValue('account_number', sellerDetails?.account_number);
-          setValue('bank_id', parseInt(sellerDetails?.bank_id));
+          setValue('bank_id', sellerDetails?.bank_id.toString());
         }
       })
       .catch(console.log);

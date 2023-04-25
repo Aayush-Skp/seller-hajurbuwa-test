@@ -290,7 +290,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                               ) : null}
                             </div>
                           ) : (
-                            <div className="text-sm flex space-x-3 justify-center">
+                            <div className="text-sm flex space-x-3 justify-center items-center">
                               <div>
                                 {cell?.value?.map((val: any) => {
                                   return (
@@ -300,14 +300,16 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                     >
                                       <div>
                                         <span>{val.price} NPR for </span>
-                                        <span>{val.quantity}+ Pcs</span>
+                                        <span>
+                                          {val.quantity}+ {row.original.unit}
+                                        </span>
                                       </div>
                                     </div>
                                   );
                                 })}
                               </div>
                               <button
-                                className="text-accent-primary"
+                                className="text-accent-primary hover:underline"
                                 onClick={() => {
                                   setQuantityDiscountToBeEdited({
                                     id: row.original.id,

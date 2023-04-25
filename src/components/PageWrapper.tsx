@@ -14,7 +14,6 @@ const PageWrapper = ({ children }: PageWrapperProps) => {
 
   useEffect(() => {
     const isRoutePublic = publicRoutes.includes(router.pathname);
-
     setIsRoutePublic(isRoutePublic);
   }, [router]);
 

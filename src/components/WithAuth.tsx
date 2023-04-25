@@ -6,7 +6,7 @@ export default function authenticatedRoute(Component: any = null) {
   function Auth() {
     const [access, setAccess] = useState<any>({
       grantAccess: false,
-      token: '',
+      userDetails: {},
     });
 
     const router = useRouter();

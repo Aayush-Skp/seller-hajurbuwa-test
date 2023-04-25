@@ -8,7 +8,7 @@ import {
   SetRegistrationData,
 } from './SellerRegistration';
 import Button from '../common/Button';
-import { emailVerificationService } from '../../services/emailVerificationService';
+import { verifyOTPSentToEmail } from '../../services/emailVerificationService';
 import ErrorMessage from '../common/ErrorMessage';
 
 type PhoneVerificationProps = {
@@ -26,10 +26,12 @@ export default function EmailVerification(props: PhoneVerificationProps) {
     message: '',
   });
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    emailVerificationService(registrationData.emailOtp)
-      .then((res) => incStep())
+  function handleSubmit() {
+    verifyOTPSentToEmail(registrationData.emailOtp)
+      .then((res) => {
+        console.log(res);
+        incStep();
+      })
       .catch(() => {
         setOtpValidation({
           status: false,
@@ -39,10 +41,7 @@ export default function EmailVerification(props: PhoneVerificationProps) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center  text-black h-full w-full"
-    >
+    <div className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center  text-black h-full w-full">
       <div className="flex items-center w-full space-x-24">
         <div className="cursor-pointer" onClick={decStep}>
           <BiArrowBack className="text-3xl cursor-pointer" />
@@ -59,7 +58,7 @@ export default function EmailVerification(props: PhoneVerificationProps) {
           </div>
           <div className="w-full text-sm">
             We have sent a One-Time-Password (OTP) to
-            <p className="text-accent-primary">hajurbuwab2b@gmail.com.</p>
+            <p className="text-accent-primary">{registrationData.email}</p>
           </div>
           <div className="mb-5 mt-4 flex flex-col">
             <OtpInput
@@ -87,9 +86,9 @@ export default function EmailVerification(props: PhoneVerificationProps) {
           </div>
         </div>
       </div>
-      <Button className="my-2" onClick={incStep}>
+      <Button className="my-2" onClick={handleSubmit}>
         Continue
       </Button>
-    </form>
+    </div>
   );
 }

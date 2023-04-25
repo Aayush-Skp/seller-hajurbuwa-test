@@ -43,7 +43,7 @@ export default function ChangePanOrVat(props: ChangePanOrVatProps) {
           className="bg-blue-700 text-white rounded-sm uppercase w-3/4 h-10 my-2 mb-10"
           onClick={incStep}
         >
-          Upload Document
+          CONTINUE
         </button>
       </div>
     </div>

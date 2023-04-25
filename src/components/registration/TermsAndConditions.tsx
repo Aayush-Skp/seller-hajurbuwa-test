@@ -7,7 +7,9 @@ import {
   SellerRegistrationDataType,
   SetRegistrationData,
 } from './SellerRegistration';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
+import { registerSeller } from '../../services/registrationService';
+import { sendOTPToPhone } from '../../services/phoneVerificationService';
 
 type TermsAndConditionsProps = {
   setRegistrationData: SetRegistrationData;
@@ -18,6 +20,9 @@ type TermsAndConditionsProps = {
 
 export default function TermsAndConditions(props: TermsAndConditionsProps) {
   const { decStep, incStep, registrationData, setRegistrationData } = props;
+
+  const [apiResponse, setApiResponse] = useState({});
+
   const {
     confirm_terms_and_conditions,
     confirm_business_name,
@@ -26,6 +31,7 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
 
   function handleOnChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, checked } = e.target;
+
     setRegistrationData((prev) => {
       return {
         ...prev,
@@ -34,8 +40,34 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
     });
   }
 
+  function handleFormSubmit() {
+    setApiResponse({
+      ...apiResponse,
+      isLoading: true,
+    });
+
+    registerSeller(registrationData)
+      .then((res) => {
+        if (res?.data?.status === 'error') {
+          setApiResponse({
+            ...apiResponse,
+            isError: true,
+            isLoading: false,
+            message: 'Error while requesting',
+          });
+        } else {
+          sendOTPToPhone(registrationData.phone)
+            .then((res) => {
+              incStep();
+            })
+            .catch(console.log);
+        }
+      })
+      .catch(console.log);
+  }
+
   return (
-    <form className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center md:justify-between text-black h-full w-full">
+    <div className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center md:justify-between text-black h-full w-full">
       <div className="cursor-pointer" onClick={decStep}>
         <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
       </div>
@@ -94,10 +126,10 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
       </div>
       <Button
         disabled={!(confirm_terms_and_conditions && confirm_business_name)}
-        onClick={incStep}
+        onClick={handleFormSubmit}
       >
         Continue
       </Button>
-    </form>
+    </div>
   );
 }

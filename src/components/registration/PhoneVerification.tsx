@@ -8,6 +8,7 @@ import {
   SetRegistrationData,
 } from './SellerRegistration';
 import Button from '../common/Button';
+import { verifyOTPSentToPhone } from '../../services/phoneVerificationService';
 
 type PhoneVerificationProps = {
   setRegistrationData: SetRegistrationData;
@@ -19,18 +20,33 @@ type PhoneVerificationProps = {
 export default function PhoneVerification(props: PhoneVerificationProps) {
   const { setRegistrationData, incStep, decStep, registrationData } = props;
   const [otpValidation, setOtpValidation] = useState({
-    status: true,
+    isValid: true,
     message: '',
   });
 
-  console.log(registrationData);
-
-  const handleSubmit = (data: any) => {
-    incStep();
+  const handleSubmit = () => {
+    verifyOTPSentToPhone(registrationData.phone, registrationData.phoneOtp)
+      .then((res) => {
+        if (res.status === 'error') {
+          setOtpValidation({
+            isValid: false,
+            message: 'invalid otp',
+          });
+        } else {
+          console.log(res);
+          incStep();
+        }
+      })
+      .catch((err) => {
+        setOtpValidation({
+          isValid: false,
+          message: 'invalid otp',
+        });
+      });
   };
 
   return (
-    <form className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center  text-black h-full w-full">
+    <div className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center  text-black h-full w-full">
       <div className="absolute top-0 flex flex-col items-center justify-center translate-y-1/2">
         <span className="font-bold text-md capitalize mb-2">Verification</span>
       </div>
@@ -57,7 +73,7 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
              text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
               containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
               inputStyle={`outline-none`}
-              numInputs={4}
+              numInputs={6}
               value={registrationData.phoneOtp}
               onChange={(value: string) =>
                 setRegistrationData((prev) => {
@@ -75,9 +91,9 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
           </div>
         </div>
       </div>
-      <Button className="my-2" type="submit">
+      <Button className="my-2" type="button" onClick={handleSubmit}>
         Next
       </Button>
-    </form>
+    </div>
   );
 }

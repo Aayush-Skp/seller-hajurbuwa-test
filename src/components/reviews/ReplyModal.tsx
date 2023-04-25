@@ -2,13 +2,14 @@ import Image from 'next/image';
 import Modal from 'react-modal';
 import checkMark from '../../../public/icons/check-mark.svg';
 import React, { useState } from 'react';
-import { replyToAnOrder } from '../../services/orderServices';
 import InputLabel from '../common/InputLabel';
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
+import { replyToReview } from '../../services/reviewService';
 
 export default function ReplyModal(props: any) {
-  const { isReplyModalOpen, setIsReplyModalOpen, orderId } = props;
+  const { isReplyModalOpen, setIsReplyModalOpen, orderId, getAllReviews } =
+    props;
 
   const [responseState, setResponseState] = useState({
     isLoading: false,
@@ -31,6 +32,7 @@ export default function ReplyModal(props: any) {
 
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     if (replyMessage === '') {
       setReplyMessageValidation({
         isValid: false,
@@ -39,11 +41,12 @@ export default function ReplyModal(props: any) {
       return;
     }
 
-    // replyToAnOrder(orderId, replyMessage).then((res) => {
-    //   setResponseState({
-    //     isLoading: false,
-    //   });
-    // });
+    replyToReview(orderId, replyMessage)
+      .then((res) => {
+        console.log(res);
+        setIsReplyModalOpen(false);
+      })
+      .catch(console.log);
   }
 
   return (

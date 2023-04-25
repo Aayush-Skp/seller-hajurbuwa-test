@@ -15,7 +15,7 @@ const Navbar = () => {
 
   function handleLogoutAction() {
     try {
-      localStorage.removeItem('token');
+      localStorage.removeItem('userDetails');
       router.reload();
     } catch (err) {
       console.log(err);

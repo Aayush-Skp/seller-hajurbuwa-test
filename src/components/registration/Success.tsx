@@ -1,16 +1,10 @@
-import { BiArrowBack } from 'react-icons/bi';
 import Image from 'next/image';
 import successImage from '/public/images/success.svg';
-import { useRouter } from 'next/router';
-import Button from '../common/Button';
+import Link from 'next/link';
 
 const Success = () => {
-  const router = useRouter();
   return (
     <div className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center text-black h-full w-full">
-      <div className="cursor-pointer" onClick={() => router.push('/')}>
-        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
-      </div>
       <div className="absolute top-0 flex flex-col items-center justify-center translate-y-1/2">
         <span className="font-bold text-md capitalize mb-2">Verification</span>
       </div>
@@ -26,7 +20,11 @@ const Success = () => {
           in next 1-2 days. Thank you.
         </p>
       </div>
-      <Button onClick={() => router.push("/")}> Next</Button>
+      <Link href="/login">
+        <a className="w-full text-white px-4 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity">
+          Next
+        </a>
+      </Link>
     </div>
   );
 };

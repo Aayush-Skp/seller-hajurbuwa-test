@@ -1,29 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTable } from 'react-table';
-import { BsSearch } from 'react-icons/bs';
 import Image from 'next/image';
 import Button from '../common/Button';
 import StarRating from '../StarRating';
-import { getAllReviews } from '../../services/getAllReviews';
 import ReplyModal from './ReplyModal';
+import { imageServerBaseUrl } from '../../constants/serverConstants';
 
 interface ITableData {
-  orderId: string;
-  content: {
-    comment: string;
-    commentDate: string;
-    isReplied: boolean;
-    reply: {
-      productImage: string;
-      message: string;
-    };
-  };
-  product: {
-    name: string;
-    size: string;
-  };
-  rating: number;
-  action: string;
+  order_id: string;
+  product_name: string;
+  id: string | number;
+  review: any;
+  action?: string;
 }
 
 type ProductManagementTableProps = {
@@ -34,63 +22,27 @@ type ProductManagementTableProps = {
 
 type TableHeader = 'Order' | 'Product' | 'Content' | 'Rating' | 'Action';
 
-type Accessor = 'orderId' | 'product' | 'content' | 'rating' | 'action';
+type Accessor = 'order_id' | 'product_name' | 'id' | 'action' | 'review';
 
 const columns: { Header: TableHeader; accessor: Accessor }[] = [
-  { Header: 'Order', accessor: 'orderId' },
-  { Header: 'Content', accessor: 'content' },
-  { Header: 'Product', accessor: 'product' },
-  { Header: 'Rating', accessor: 'rating' },
+  { Header: 'Order', accessor: 'order_id' },
+  { Header: 'Content', accessor: 'review' },
+  { Header: 'Product', accessor: 'product_name' },
+  { Header: 'Rating', accessor: 'id' },
   { Header: 'Action', accessor: 'action' },
 ];
 
 const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
   data,
+  getReviewsList,
 }) => {
-  const [pageSize, setPageSize] = useState(25);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [reviews, setReviews] = useState<any>([]);
   const [replyOrderId, setReplyOrderId] = useState('');
+
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
 
-  const [isLoading, setIsLoading] = useState(true);
-
-  const tableData = useMemo(() => {
-    const start = pageIndex * pageSize;
-    const end = (pageIndex + 1) * pageSize;
-    return data.slice(start, end);
-  }, [data, pageIndex, pageSize]);
-
-  const tableInstance = useTable({ columns, data: tableData });
+  const tableInstance = useTable({ columns, data });
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
-
-  const pageCount = Math.ceil(data.length / pageSize);
-
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPageSize(parseInt(e.target.value));
-    setPageIndex(0);
-  };
-
-  const handlePrevClick = () => {
-    setPageIndex((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleNextClick = () => {
-    setPageIndex((prev) => Math.min(prev + 1, pageCount - 1));
-  };
-
-  function getReviewsList() {
-    getAllReviews()
-      .then((res) => {
-        setIsLoading(false);
-        setReviews(res);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  }
 
   return (
     <div className="border-3">
@@ -135,22 +87,25 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                       {cell.column.Header === 'Content' ? (
                         <div className="flex flex-col items-center space-y-2 py-2">
                           <div>
-                            <p className="text-sm">{cell.value.comment}</p>
-                            <p className="text-xs max-w-max p-1 bg-gray-200 text-start">
-                              {cell.value.commentDate}
+                            <p className="text-sm">
+                              {row?.original?.review[0]?.review}
                             </p>
-                          </div>
-                          {cell.value.isReplied ? (
                             <div>
                               <Image
                                 height={80}
                                 width={80}
-                                src={cell.value.reply.productImage}
+                                src={`${imageServerBaseUrl}/${row?.original?.review[0]?.image}`}
                                 alt=""
                               />
-                              <p className="text-xs p-1 bg-gray-200">
-                                Seller Replied: {cell.value.reply.message}
-                              </p>
+                            </div>
+                            {/* <p className="text-xs max-w-max p-1 bg-gray-200 text-start">
+                              {cell.value.commentDate}
+                            </p> */}
+                          </div>
+                          {row?.original?.reply_message ? (
+                            <div className="flex items-center space-x-1 text-xs">
+                              <p className="p-1 bg-gray-200">Seller Replied:</p>
+                              <span>{row?.original?.reply_message}</span>
                             </div>
                           ) : (
                             ''
@@ -158,17 +113,19 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                         </div>
                       ) : cell.column.Header === 'Product' ? (
                         <div>
-                          <div className="flex flex-col justify-start text-xs text-blue-700">
-                            <span>{cell.value.name}</span>
-                            <span>{cell.value.size}</span>
+                          <div className="flex flex-col justify-start text-xs text-blue-700 space-y-1">
+                            <span>{row?.original?.product_name}</span>
+                            <span>{row?.original?.product_included_item}</span>
                           </div>
                         </div>
                       ) : cell.column.Header === 'Rating' ? (
                         <div className="flex items-center justify-center">
-                          <StarRating rating={cell.value} />
+                          <StarRating
+                            rating={row?.original?.review[0]?.rating}
+                          />
                         </div>
                       ) : cell.column.Header === 'Action' &&
-                        !row.values.content.isReplied ? (
+                        !row?.original?.reply_message ? (
                         <div>
                           <Button
                             onClick={() => {
@@ -184,6 +141,7 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                               isReplyModalOpen={isReplyModalOpen}
                               setIsReplyModalOpen={setIsReplyModalOpen}
                               orderId={replyOrderId}
+                              getAllReviews={getReviewsList}
                             />
                           ) : null}
                         </div>

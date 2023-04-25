@@ -32,10 +32,7 @@ export default function GeneralInformation(props: any) {
 
   const [selectedCategoryStringFromList, setSelectedCategoryStringFromList] =
     useState<string>('');
-  const [
-    selectedCategoryStringFromSearch,
-    setSelectedCategoryStringFromSearch,
-  ] = useState<string>('');
+
   const [categoryKeyword, setCategoryKeyword] = useState('');
   const [categorySearchList, setCategorySearchList] = useState<any>([]);
   const [recentCategory, setRecentCategory] = useState<string | number | null>(
@@ -50,10 +47,6 @@ export default function GeneralInformation(props: any) {
   useEffect(() => {
     fetchCategoryList();
   }, [recentCategory]);
-
-  useEffect(() => {
-    setSelectedCategoryStringFromSearch(productDetails.category_tree);
-  }, [productDetails]);
 
   function handleProductNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     setProductDetails((prev: any) => {
@@ -95,16 +88,21 @@ export default function GeneralInformation(props: any) {
 
   function handleSelectedCategory(category: any) {
     if (category.sub_categories.length === 0) {
-      setSelectedCategoryStringFromSearch(
-        selectedCategoryStringFromList === ''
-          ? `${category.name}`
-          : `${selectedCategoryStringFromList} > ${category.name}`
-      );
+      setProductDetails((prev: any) => ({
+        ...prev,
+        category_tree:
+          selectedCategoryStringFromList === ''
+            ? `${category.name}`
+            : `${selectedCategoryStringFromList} > ${category.name}`,
+      }));
+
       setSelectedCategoryStringFromList('');
+
       setProductDetails((prev: any) => ({
         ...prev,
         category_id: category.id,
       }));
+
       setRecentCategory(null);
       setCategoryKeyword('');
       setCategorySearchList([]);
@@ -170,7 +168,6 @@ export default function GeneralInformation(props: any) {
     setProductDetails((prev: any) => {
       return {
         ...prev,
-        category_tree: selectedCategoryStringFromSearch,
         category_id: prev?.category_id ?? recentCategory,
       };
     });
@@ -228,12 +225,15 @@ export default function GeneralInformation(props: any) {
           </div>
           <div className="w-full space-y-3">
             <div className="flex items-center space-x-2">
-              {selectedCategoryStringFromSearch !== '' ? (
+              {productDetails?.category_tree !== '' ? (
                 <div className="flex items-center space-x-2">
-                  <span className="">{selectedCategoryStringFromSearch}</span>
+                  <span className="">{productDetails?.category_tree}</span>
                   <button
                     onClick={() => {
-                      setSelectedCategoryStringFromSearch('');
+                      setProductDetails((prev: any) => ({
+                        ...prev,
+                        category_tree: '',
+                      }));
                       setProductDetails((prev: any) => ({
                         ...prev,
                         category_id: null,
@@ -284,9 +284,10 @@ export default function GeneralInformation(props: any) {
                           onClick={() => {
                             setSelectedCategoryStringFromList('');
                             setRecentCategory(null);
-                            setSelectedCategoryStringFromSearch(
-                              categorySearchList[idx]?.tree_name
-                            );
+                            setProductDetails((prev: any) => ({
+                              ...prev,
+                              category_tree: categorySearchList[idx]?.tree_name,
+                            }));
                             setProductDetails((prev: any) => {
                               return {
                                 ...prev,

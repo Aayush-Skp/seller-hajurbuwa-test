@@ -1,23 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReviewsManagementTable from './ReviewManagementTable';
-import { getAllReviews } from '../../services/getAllReviews';
-import { reviews } from '../../constants/review';
+import { getOrdersByStatus } from '../../services/orderServices';
 
 export default function Reviews() {
   const [isLoading, setIsLoading] = useState(true);
-  // const [reviews, setReviews] = useState<any>([]);
+  const [reviews, setReviews] = useState<any>([]);
 
   function getReviewsList() {
-    // getAllReviews()
-    //   .then((res) => {
-    //     setIsLoading(false);
-    //     setReviews(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     setIsLoading(false);
-    //   });
+    getOrdersByStatus('delivered')
+      .then((res) => {
+        setIsLoading(false);
+        setReviews(res.data);
+
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
   }
+
+  useEffect(() => {
+    getReviewsList();
+  }, []);
+
   return (
     <ReviewsManagementTable
       data={reviews}

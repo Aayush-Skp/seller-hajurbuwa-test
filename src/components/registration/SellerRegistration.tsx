@@ -6,7 +6,6 @@ import PhoneVerification from './PhoneVerification';
 import TermsAndConditions from './TermsAndConditions';
 import PanOrVatUpload from './PanOrVatUpload';
 import ChangePanOrVat from './ChangePanOrVat';
-import { registrationService } from '../../services/registrationService';
 import Success from './Success';
 import EmailVerification from './EmailVerification';
 import formBackground from '/public/images/form_background.svg';
@@ -74,12 +73,6 @@ export default function SellerRegistration() {
     setStep((prev) => prev - 1);
   }
 
-  function submitRegistrationData() {
-    registrationService(registrationData)
-      .then((res) => console.log(res))
-      .then((err) => console.log(err));
-  }
-
   return (
     <div className=" h-screen flex justify-center items-center relative w-full overflow-hidden">
       <div
@@ -88,7 +81,7 @@ export default function SellerRegistration() {
           backgroundImage: `url(${formBackground.src})`,
           backgroundPosition: 'bottom',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: "cover",
+          backgroundSize: 'cover',
         }}
       ></div>
       <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:h-4/5 md:w-1/2 lg:w-1/3  2xl:h-3/5 2xl:w-1/4  bg-white z-10 shadow-lg">

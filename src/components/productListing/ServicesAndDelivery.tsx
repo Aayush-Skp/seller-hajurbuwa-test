@@ -31,6 +31,7 @@ export default function ServicesAndDelivery(props: any) {
 
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
     if (productDetails.package_weight === '') {
       setPackageWeightValidation({
         isValid: false,
@@ -39,6 +40,7 @@ export default function ServicesAndDelivery(props: any) {
 
       return;
     }
+
     if (
       isNaN(Number(productDetails.package_weight)) ||
       Number(productDetails.package_weight) <= 0
@@ -56,6 +58,7 @@ export default function ServicesAndDelivery(props: any) {
 
       params.append('product_name', productDetails.product_name);
       params.append('category_id', productDetails.category_id);
+      params.append('category_tree', productDetails.category_tree);
       params.append('brand', productDetails.brand);
       params.append('minimum_order', productDetails.minimum_order);
       params.append('description', productDetails.description);

@@ -25,7 +25,7 @@ export function getProductDescription(productId: string | number) {
 }
 
 export function getProductById(productId: string | number) {
-  return httpClient.get(`${productUrl}/${productId}`).then((res) => {
+  return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
     console.log(res);
     const productDetails = {
       productId: '',
@@ -163,7 +163,8 @@ export function addProduct(productDetails: any) {
   }
 
   for (const key in productDetails.images) {
-    formData.append('sub_images[]', productDetails.images[key]);
+    if (productDetails.images[key] !== '')
+      formData.append('sub_images[]', productDetails.images[key]);
   }
 
   return httpClient.post(productUrl, formData, {

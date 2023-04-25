@@ -1,66 +1,96 @@
 import React, { useEffect, useState } from 'react';
-import { getFinanceData } from '../services/getFinanceData';
+import {
+  getFinanceDetails,
+  getFinancePeriod,
+} from '../services/financeService';
 import Header from './Header';
 
 export default function AccountFinanceStatement() {
-  const [paymentStatus, setPaymentStatus] = useState<string>('unpaid');
   const [toggleTransactionFee, setToggleTransactionFee] = useState(false);
   const [toggleDeliveredOrders, setToggleDeliveredOrders] = useState(false);
-  const [financeData, setFinanceData] = useState({
+  const [financeData, setFinanceData] = useState<any>({
     paymentStatus: 'paid',
   });
 
+  const [sellerId, setSellerId] = useState('');
+
   const [dateList, setDateList] = useState<
     {
-      firstDate: string;
-      secondDate: string;
+      start_date: string;
+      end_date: string;
     }[]
-  >([
-    {
-      firstDate: '12 May 2022',
-      secondDate: '19 May 2022',
-    },
-    {
-      firstDate: '2 Jun 2022',
-      secondDate: '9 Jun 2022',
-    },
-    {
-      firstDate: '12 May 2022',
-      secondDate: '19 May 2022',
-    },
-  ]);
+  >([]);
 
-  const [pickedDate, setPickedDate] = useState<{
-    firstDate: string;
-    secondDate: string;
-  }>({ firstDate: '', secondDate: '' });
+  const [selectedDate, setSelectedDate] = useState<any>({
+    start_date: '',
+    end_date: '',
+  });
 
   const [isLoading, setIsLoading] = useState(true);
 
   function handleDateSelection(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value.split(',');
 
-    setPickedDate({
-      firstDate: value[0],
-      secondDate: value[1],
+    setSelectedDate({
+      start_date: value[0],
+      end_date: value[1],
     });
+
+    getFinanceDetails({
+      sellerId,
+      start_date: value[0],
+      end_date: value[1],
+    })
+      .then((res) => {
+        setFinanceData(res);
+        console.log(res);
+      })
+      .catch(console.log);
   }
 
   useEffect(() => {
-    // getFinanceData()
-    //   .then((res) => {
-    //     setFinanceData(res);
-    //     setIsLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     setIsLoading(false);
-    //   });
-    setIsLoading(false);
+    try {
+      const userDetails = localStorage.getItem('userDetails');
 
-    // setDateList([]);
-  }, [pickedDate]);
+      if (typeof userDetails === 'string') {
+        const details = JSON.parse(userDetails);
 
-  console.log(pickedDate);
+        let response: any;
+
+        getFinancePeriod(1)
+          .then((res) => {
+            response = res;
+            setDateList(res);
+            setSellerId(details.id);
+            setIsLoading(false);
+          })
+          .then(() => {
+            if (response[0]?.start_date)
+              getFinanceDetails({
+                sellerId,
+                start_date: response[0]?.start_date,
+                end_date: response[0]?.end_date,
+              })
+                .then((res) => {
+                  setFinanceData(res);
+                  console.log(res);
+                })
+                .catch(console.log);
+          });
+      }
+    } catch (err) {
+      setIsLoading(false);
+      console.log(err);
+    }
+  }, []);
+
+  function formatDate(date: string) {
+    return new Date(date).toLocaleDateString('en-us', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -77,12 +107,11 @@ export default function AccountFinanceStatement() {
           >
             {dateList.map((date) => (
               <option
-                selected={pickedDate.firstDate === date.firstDate}
-                key={date.firstDate}
-                value={`${date.firstDate},${date.secondDate}`}
+                key={date.end_date}
+                value={`${date.start_date},${date.end_date}`}
               >
                 <span>
-                  {date.firstDate} - {date.secondDate}
+                  {formatDate(date.start_date)} - {formatDate(date.end_date)}
                 </span>
               </option>
             ))}
@@ -93,16 +122,18 @@ export default function AccountFinanceStatement() {
             <div className="space-x-3">
               <span
                 className={`${
-                  financeData.paymentStatus === 'paid'
+                  financeData?.status === 'paid'
                     ? 'text-white bg-success-primary'
                     : 'text-red-200 bg-gray-200'
                 } px-2 py-1 capitalize`}
               >
-                {financeData.paymentStatus}
+                {financeData?.status}
               </span>
-              {financeData.paymentStatus === 'unpaid' ? (
+              {financeData?.status === 'unpaid' ? (
                 <span className="px-2 py-1 ">
-                  Estimated Date of Payout: 24 May 2022 - 25 May 2022
+                  Estimated Date of Payout:{' '}
+                  {formatDate(selectedDate.start_date)} -
+                  {formatDate(selectedDate.end_date)}
                 </span>
               ) : (
                 ''
@@ -110,7 +141,7 @@ export default function AccountFinanceStatement() {
             </div>
             <div className="flex flex-col items-center justify-center">
               <div className="w-3/4 space-y-3">
-                {financeData.paymentStatus === 'paid' ? (
+                {financeData?.status === 'paid' ? (
                   <div>
                     <div className="flex items-center justify-between">
                       <span>Payment was completed on:</span>

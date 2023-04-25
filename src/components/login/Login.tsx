@@ -51,24 +51,28 @@ export default function Login() {
           });
         }
         if (res.status === 'success') {
+          const { user, token, seller } = res;
+
+          const [details, location] = seller;
+
           const userDetails = {
-            id: '1',
-            first_name: 'Patrick',
-            last_name: 'Neupane',
-            phone: '9811111111',
-            email: 'itsmepatrick@gmail.com',
-            business_name: 'Pratik Trading Pvt. Ltd',
-            pan: '609941532',
-            pan_image: 'sjankt aodnkaksa.jpg',
-            account_name: 'Patrick Neupane',
-            account_number: '11111111111111',
-            bank_id: '1',
-            state: '1',
-            city: '2',
-            area: '1',
-            address_line1: 'asda',
-            address_line2: 'auououo',
-            token: res.token,
+            id: details?.user_id,
+            first_name: user?.fname,
+            last_name: user?.lname,
+            phone: user?.phone,
+            email: user?.email,
+            business_name: details?.company_name,
+            pan: details?.pan_number,
+            pan_image: details?.pan_image,
+            account_name: details?.account_name ?? '',
+            account_number: details?.account_no ?? '',
+            bank_id: details?.bank ?? '',
+            state: location?.state_name ?? '',
+            city: location?.city_name ?? '',
+            area: location?.area_name ?? '',
+            address_line1: location?.address_line_1 ?? '',
+            address_line2: location?.address_line_2 ?? '',
+            token,
           };
 
           try {

@@ -42,6 +42,7 @@ export default function SellerDetails(props: SellerDetailsProps) {
 
   function handleFormValidation(data: SellerDetailsType) {
     setIsLoading(true);
+
     checkIfEmailExist(data.email)
       .then((res) => {
         if (
@@ -55,7 +56,10 @@ export default function SellerDetails(props: SellerDetailsProps) {
           });
         }
 
-        emailVerificationService(data.email)
+        emailVerificationService(
+          data.email,
+          `${data.first_name} ${data.last_name}`
+        )
           .then((res) => {
             setRegistrationData((prev) => {
               return {
@@ -66,7 +70,9 @@ export default function SellerDetails(props: SellerDetailsProps) {
             console.log(res);
           })
           .then(() => incStep())
-          .catch(console.log);
+          .catch(() => {
+            setIsLoading(false);
+          });
       })
       .catch((err) => {
         setIsLoading(false);

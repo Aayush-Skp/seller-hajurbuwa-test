@@ -348,7 +348,7 @@ export default function PriceAndStock(props: any) {
                   <option
                     key={unit.id}
                     value={`${unit.id},${unit.name}`}
-                    selected={unit.name === productDetails.unit}
+                    selected={unit.name === productDetails.unitName}
                   >
                     {unit?.name}
                   </option>
