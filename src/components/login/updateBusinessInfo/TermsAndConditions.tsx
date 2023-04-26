@@ -1,20 +1,12 @@
 import Image from 'next/image';
 import termsConditions from '/public/images/terms_conditions.svg';
 import { BiArrowBack } from 'react-icons/bi';
-// import CheckboxInput from '../common/CheckboxInput';
-// import Button from '../common/Button';
-// import {
-//   SellerRegistrationDataType,
-//   SetRegistrationData,
-// } from './SellerRegistration';
 import { ChangeEvent, useState } from 'react';
 import { SellerRegistrationDataType, SetRegistrationData } from '.';
-import { registerSeller } from '../../../services/registrationService';
-import { sendOTPToPhone } from '../../../services/phoneVerificationService';
 import CheckboxInput from '../../common/CheckboxInput';
 import Button from '../../common/Button';
-// import { registerSeller } from '../../services/registrationService';
-// import { sendOTPToPhone } from '../../services/phoneVerificationService';
+import { updatePersonalDetails } from '../../../services/profileService';
+import Spinner from '../../loader/Spinner';
 
 type TermsAndConditionsProps = {
   setRegistrationData: SetRegistrationData;
@@ -26,7 +18,11 @@ type TermsAndConditionsProps = {
 export default function TermsAndConditions(props: TermsAndConditionsProps) {
   const { decStep, incStep, registrationData, setRegistrationData } = props;
 
-  const [apiResponse, setApiResponse] = useState({});
+  const [apiResponse, setApiResponse] = useState({
+    isLoading: false,
+    isError: false,
+    errorMsg: '',
+  });
 
   const {
     confirm_terms_and_conditions,
@@ -51,24 +47,20 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
       isLoading: true,
     });
 
-    registerSeller(registrationData)
+    updatePersonalDetails(registrationData)
       .then((res) => {
-        if (res?.data?.status === 'error') {
-          setApiResponse({
-            ...apiResponse,
-            isError: true,
-            isLoading: false,
-            message: 'Error while requesting',
-          });
-        } else {
-          //   sendOTPToPhone(registrationData.phone)
-          //     .then((res) => {
-          //       incStep();
-          //     })
-          //     .catch(console.log);
-        }
+        incStep();
+        console.log(res);
       })
-      .catch(console.log);
+      .catch((err) => {
+        setApiResponse({
+          isLoading: false,
+          isError: true,
+          errorMsg: '',
+        });
+
+        console.log(err);
+      });
   }
 
   return (
@@ -129,11 +121,15 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
           </div>
         </div>
       </div>
-      <Button
-        disabled={!(confirm_terms_and_conditions && confirm_business_name)}
-        onClick={handleFormSubmit}
-      >
-        Continue
+      <Button type="button" onClick={handleFormSubmit}>
+        {apiResponse.isLoading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <span>Please wait...</span>
+            <Spinner />
+          </div>
+        ) : (
+          'Continue'
+        )}
       </Button>
     </div>
   );

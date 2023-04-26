@@ -29,3 +29,20 @@ export function addWarehouseInfo(data: any) {
     },
   });
 }
+
+export function updatePersonalDetails(data: any) {
+  const formData = new FormData();
+
+  formData.append('first_name', data.first_name);
+  formData.append('last_name', data.last_name);
+  formData.append('email', data.email);
+  formData.append('business_name', data.business_name);
+  formData.append('pan_number', data.pan_number);
+  formData.append('pan_image', data.pan_image);
+
+  return httpClient.post('/seller/update-seller-info', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

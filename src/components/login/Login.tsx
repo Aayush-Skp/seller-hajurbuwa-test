@@ -18,6 +18,7 @@ import formBackground from '/public/images/form_background.svg';
 import { BiArrowBack } from 'react-icons/bi';
 import UnderReview from './UnderReview';
 import Rejected from './Rejected';
+import Spinner from '../loader/Spinner';
 
 export default function Login() {
   const [apiResponse, setApiResponse] = useState({
@@ -196,8 +197,15 @@ export default function Login() {
                 </p>
               </div>
               <div>
-                <Button type="submit">
-                  {apiResponse.loading ? 'Signing in...' : 'Login'}
+                <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
+                  {apiResponse.loading ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <span>Please wait...</span>
+                      <Spinner />
+                    </div>
+                  ) : (
+                    'Continue'
+                  )}
                 </Button>
               </div>
               <div className="flex items-center space-x-4 text-sm">
