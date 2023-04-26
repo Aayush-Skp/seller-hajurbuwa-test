@@ -24,7 +24,7 @@ export default function Login() {
     loading: false,
   });
 
-  const [verificationStatus, setVerificationStatus] = useState('rejected');
+  const [verificationStatus, setVerificationStatus] = useState('');
 
   const [sellerData, setSellerData] = useState<any>({ first_name: 'Bishal' });
 
