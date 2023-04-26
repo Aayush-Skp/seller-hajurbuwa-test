@@ -1,29 +1,22 @@
-import { Dispatch, SetStateAction, useState } from 'react';
-import PhoneValidation from './PhoneValidation';
-import SellerDetails from './SellerDetails';
-import BusinessDetails from './BusinessDetails';
-import PhoneVerification from './PhoneVerification';
-import TermsAndConditions from './TermsAndConditions';
-import PanOrVatUpload from './PanOrVatUpload';
-import ChangePanOrVat from './ChangePanOrVat';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Success from './Success';
-import EmailVerification from './EmailVerification';
-import formBackground from '/public/images/form_background.svg';
+import TermsAndConditions from './TermsAndConditions';
+import ChangePanOrVat from './ChangePanOrVat';
+import BusinessDetails from './BusinessDetailsUpdate';
+import formBackground from '../../../../public/images/form_background.svg';
+import { useRouter } from 'next/router';
 
 export type SellerRegistrationDataType = {
   phone: string;
+  email: string;
   first_name: string;
   last_name: string;
-  password: string;
-  email: string;
   pan_number: string;
   business_name: string;
-  pan_image: File | null;
+  pan_image: File | null | string;
   confirm_terms_and_conditions: boolean;
-  receive_updates_on_whatsapp: boolean;
-  confirm_business_name: boolean;
-  phoneOtp: string;
-  emailOtp: string;
+  receive_updates_on_whatsapp?: boolean;
+  confirm_business_name?: boolean;
 };
 
 export type SetRegistrationData = Dispatch<
@@ -43,28 +36,43 @@ export type PhoneVerificationProps = {
   decStep: () => void;
 };
 
-export default function SellerRegistration() {
+export default function UpdateBusinessDetails() {
+  const router = useRouter();
+
   const [registrationData, setRegistrationData] =
     useState<SellerRegistrationDataType>({
-      phone: '',
       first_name: '',
       last_name: '',
-      email: '',
       pan_number: '',
+      phone: '',
+      email: '',
       business_name: '',
-      password: '',
       pan_image: null,
       confirm_terms_and_conditions: false,
       receive_updates_on_whatsapp: true,
       confirm_business_name: false,
-      phoneOtp: '',
-      emailOtp: '',
     });
+
+  useEffect(() => {
+    setRegistrationData({
+      email: '',
+      phone: '',
+      first_name: 'Bishal',
+      last_name: 'kandel',
+      pan_number: '123456789',
+      business_name: 'Bishal Cosmetics',
+      pan_image:
+        'https://dipencompany.com/images/company-registration-certificate-of-nepal.webp',
+      confirm_terms_and_conditions: false,
+      receive_updates_on_whatsapp: true,
+      confirm_business_name: false,
+    });
+  }, []);
 
   const [step, setStep] = useState<number>(1);
 
   function incStep() {
-    if (step >= 9) return;
+    if (step >= 4) return;
     setStep((prev) => prev + 1);
   }
 
@@ -72,8 +80,6 @@ export default function SellerRegistration() {
     if (step <= 1) return;
     setStep((prev) => prev - 1);
   }
-
-  console.log(registrationData);
 
   return (
     <div className=" h-screen flex justify-center items-center relative w-full overflow-hidden">
@@ -88,59 +94,27 @@ export default function SellerRegistration() {
       ></div>
       <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:h-4/5 md:w-1/2 lg:w-1/3  2xl:h-3/5 2xl:w-1/4  bg-white z-10 shadow-lg">
         {step === 1 ? (
-          <PhoneValidation
-            setRegistrationData={setRegistrationData}
-            registrationData={registrationData}
-            incStep={incStep}
-          />
-        ) : step === 2 ? (
-          <SellerDetails
-            setRegistrationData={setRegistrationData}
-            incStep={incStep}
-            registrationData={registrationData}
-            decStep={decStep}
-          />
-        ) : step === 3 ? (
-          <EmailVerification
-            registrationData={registrationData}
-            setRegistrationData={setRegistrationData}
-            incStep={incStep}
-            decStep={decStep}
-          />
-        ) : step === 4 ? (
           <BusinessDetails
             setRegistrationData={setRegistrationData}
             incStep={incStep}
             registrationData={registrationData}
             decStep={decStep}
           />
-        ) : step === 5 ? (
-          <PanOrVatUpload
+        ) : step === 2 ? (
+          <ChangePanOrVat
+            registrationData={registrationData}
             setRegistrationData={setRegistrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step === 6 ? (
-          <ChangePanOrVat
-            registrationData={registrationData}
-            incStep={incStep}
-            decStep={decStep}
-          />
-        ) : step === 7 ? (
+        ) : step === 3 ? (
           <TermsAndConditions
             setRegistrationData={setRegistrationData}
             registrationData={registrationData}
             incStep={incStep}
             decStep={decStep}
           />
-        ) : step === 8 ? (
-          <PhoneVerification
-            registrationData={registrationData}
-            setRegistrationData={setRegistrationData}
-            incStep={incStep}
-            decStep={decStep}
-          />
-        ) : step === 9 ? (
+        ) : step === 4 ? (
           <Success />
         ) : null}
       </div>

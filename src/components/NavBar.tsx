@@ -85,7 +85,7 @@ const Navbar = () => {
         </div>
         <ul className="flex items-center justify-center space-x-5">
           <li className="">
-            <Link href="/">
+            <Link href="/dashboard">
               <a className="font-bold text-lg">Dashboard</a>
             </Link>
           </li>
@@ -108,7 +108,7 @@ const Navbar = () => {
             />
           </li>
           <li className="">
-            <Link href="/">
+            <Link href="">
               <a className="font-bold text-lg">Voucher Manager</a>
             </Link>
           </li>

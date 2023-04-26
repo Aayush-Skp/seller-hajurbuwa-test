@@ -28,7 +28,19 @@ export const businessDetailsSchema = z.object({
   pan_number: z
     .string()
     .min(1, { message: 'Please enter your business PAN' })
-    .max(15, { message: 'Please enter a valid PAN' }),
+    .min(9, { message: 'PAN number must be of 9 digits' })
+    .max(9, { message: 'PAN number must be of 9 digits' }),
+  // .refine(
+  //   (value) => {
+  //     let isValid = true;
+  //     if (isNaN(Number(value))) isValid = false;
+
+  //     return isValid;
+  //   },
+  //   {
+  //     message: 'Enter valid PAN',
+  //   }
+  // ),
 });
 
 export type BusinessDetailsType = z.infer<typeof businessDetailsSchema>;

@@ -55,7 +55,6 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
               }
             });
         }
-
         if (res === 'success') {
           setError('email', { message: 'Email not registered' });
           setApiResponse({

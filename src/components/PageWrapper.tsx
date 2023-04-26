@@ -27,6 +27,7 @@ const PageWrapper = ({ children }: PageWrapperProps) => {
       ) : (
         <div>{children}</div>
       )}
+      <span className="text-black">© 2023, Hajurbuwa.com</span>
     </div>
   );
 };

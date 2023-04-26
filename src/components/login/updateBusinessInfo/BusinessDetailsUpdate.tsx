@@ -2,21 +2,18 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import businessSetup from '/public/images/business_setup.svg';
 import { BiArrowBack } from 'react-icons/bi';
-import Button from '../common/Button';
-import ErrorMessage from '../common/ErrorMessage';
-import useFormValidation from '../../hooks/useFormValidation';
-import TextInput from '../common/TextInput';
+import { SellerRegistrationDataType, SetRegistrationData } from '.';
+import useFormValidation from '../../../hooks/useFormValidation';
 import {
-  businessDetailsSchema,
   BusinessDetailsType,
-} from '../../validation/sellerRegistrationSchema';
-
-import { checkIfPANExist } from '../../services/checkPANService';
-import Spinner from '../loader/Spinner';
-import {
-  SellerRegistrationDataType,
-  SetRegistrationData,
-} from './SellerRegistration';
+  businessDetailsSchema,
+} from '../../../validation/sellerRegistrationSchema';
+import { checkIfPANExist } from '../../../services/checkPANService';
+import TextInput from '../../common/TextInput';
+import ErrorMessage from '../../common/ErrorMessage';
+import Button from '../../common/Button';
+import Spinner from '../../loader/Spinner';
+import Link from 'next/link';
 
 type BusinessDetailsProps = {
   registrationData: SellerRegistrationDataType;
@@ -36,7 +33,7 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
   useEffect(() => {
     setValue('business_name', registrationData.business_name);
     setValue('pan_number', registrationData.pan_number);
-  }, []);
+  }, [registrationData]);
 
   function handleFormSubmit(data: BusinessDetailsType) {
     setIsLoading(true);
@@ -48,7 +45,7 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
       .then((res) => {
         if (
           res.status === 'error' &&
-          res?.message === 'Pan number already exist.'
+          res?.message === 'Pan number already exits.'
         ) {
           setError('pan_number', {
             type: 'custom',
@@ -82,9 +79,11 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col pt-5 px-2 md:px-5 lg:px-10 pb-5 items-center justify-center text-black h-full w-full"
     >
-      <div className="cursor-pointer" onClick={decStep}>
-        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
-      </div>
+      <Link href="/login">
+        <a>
+          <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+        </a>
+      </Link>
       <div className="flex flex-col px-5 md:px-10 pt-0 items-center justify-center w-full">
         <Image src={businessSetup} alt="Business Setup Illustration" />
         <div className="justify-start">

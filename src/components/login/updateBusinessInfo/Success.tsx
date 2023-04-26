@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import successImage from '/public/images/success.svg';
+import successImage from '../../../../public/images/success.svg';
 import Link from 'next/link';
 
 const Success = () => {
