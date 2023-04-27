@@ -49,6 +49,16 @@ export default function WarehouseAddress() {
     message: '',
   });
 
+  const [addressLine1Validation, setAddressLine1Validation] = useState({
+    isValid: true,
+    message: '',
+  });
+
+  const [addressLine2Validation, setAddressLine2Validation] = useState({
+    isValid: true,
+    message: '',
+  });
+
   const [locationDetails, setLocationDetails] = useState({
     state: '',
     city: '',
@@ -165,6 +175,24 @@ export default function WarehouseAddress() {
       return;
     }
 
+    if (addressLine1 === '') {
+      setAddressLine1Validation({
+        isValid: false,
+        message: 'Please select address line 2',
+      });
+
+      return;
+    }
+
+    if (addressLine1 === '') {
+      setAddressLine2Validation({
+        isValid: false,
+        message: 'Please select address line 1',
+      });
+
+      return;
+    }
+
     setIsLoading(true);
 
     addWarehouseInfo({
@@ -174,6 +202,7 @@ export default function WarehouseAddress() {
     })
       .then((res) => {
         const value = localStorage.getItem('userDetails');
+
         if (typeof value === 'string') {
           let updatedValue = JSON.parse(value);
           localStorage.setItem(
@@ -188,6 +217,8 @@ export default function WarehouseAddress() {
             })
           );
         }
+
+        console.log(res);
       })
       .then(() => {
         router.reload();
@@ -329,24 +360,38 @@ export default function WarehouseAddress() {
           </div>
           <div className="flex space-x-10 items-center">
             <div className="w-36">
-              <InputLabel className="text-xl" label="Address Line 1" />
+              <InputLabel required className="text-xl" label="Address Line 1" />
             </div>
             <div className="w-80">
               <TextInput
                 value={addressLine1}
-                onChange={(e) => setAddressLine1(e.target.value)}
+                onChange={(e) => {
+                  setAddressLine1Validation({
+                    isValid: true,
+                    message: '',
+                  });
+                  setAddressLine1(e.target.value);
+                }}
               />
+              <ErrorMessage message={addressLine1Validation.message} />
             </div>
           </div>
           <div className="flex space-x-10 items-center">
             <div className="w-36">
-              <InputLabel className="text-xl" label="Address Line 2" />
+              <InputLabel required className="text-xl" label="Address Line 2" />
             </div>
             <div className="w-80">
               <TextInput
                 value={addressLine2}
-                onChange={(e) => setAddressLine2(e.target.value)}
+                onChange={(e) => {
+                  setAddressLine2Validation({
+                    isValid: true,
+                    message: '',
+                  });
+                  setAddressLine2(e.target.value);
+                }}
               />
+              <ErrorMessage message={addressLine2Validation.message} />
             </div>
           </div>
           <div className="w-full flex justify-end">

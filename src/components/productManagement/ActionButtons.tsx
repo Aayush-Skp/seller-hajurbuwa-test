@@ -249,6 +249,7 @@ export default function ActionButtons({
             backgroundColor: 'rgba(0, 0, 0, 0.3)',
           },
         }}
+        ariaHideApp={false}
       >
         <div className="flex flex-col items-center justify-center space-y-4">
           <div className="flex items-center space-x-1">

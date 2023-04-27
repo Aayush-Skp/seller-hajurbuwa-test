@@ -108,9 +108,12 @@ const Navbar = () => {
             />
           </li>
           <li className="">
-            <Link href="">
+            {/* <Link href="/#">
               <a className="font-bold text-lg">Voucher Manager</a>
-            </Link>
+            </Link> */}
+            <span className="font-bold text-lg cursor-pointer">
+              Voucher Manager
+            </span>
           </li>
           <li className="">
             <Link href="/finance">
