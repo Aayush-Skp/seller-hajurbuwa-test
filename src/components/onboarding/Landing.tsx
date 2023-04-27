@@ -6,7 +6,7 @@ const Landing = () => {
   return (
     <div className="h-[800px] lg:h-[990px] xl:h-[1090px] pb-96 w-full bg-blue-700 z-0">
       <Navbar />
-      <Hero />
+      <Hero/>
     </div>
   );
 };

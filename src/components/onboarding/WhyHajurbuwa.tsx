@@ -65,7 +65,7 @@ type FeatureProps = {
 const Feature = (props: FeatureProps) => {
   const { name, icon } = props;
   return (
-    <div className="flex justify-start items-center">
+      <div className="flex justify-start items-center">
       <Image src={icon} alt={name} />
       <div className="ml-4 font-bold text-lg lg:text-2xl py-8">{name}</div>
     </div>
