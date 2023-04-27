@@ -13,6 +13,7 @@ import { forgotPasswordService } from '../../services/forgotPasswordService';
 import { useState } from 'react';
 import Link from 'next/link';
 import { checkIfEmailExist } from '../../services/emailVerificationService';
+import { BiArrowBack } from 'react-icons/bi';
 
 type EnterEmailOrPasswordProps = {
   incStep: () => void;
@@ -69,8 +70,14 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
   }
 
   return (
-    <div className="bg-gray-150 h-screen w-full flex justify-center items-center">
-      <div className="h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white">
+    <div className="bg-gray-150 h-screen w-full flex justify-center items-center mt-10">
+      <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white">
+        <Link href="/login">
+          <a>
+            <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+          </a>
+        </Link>
+
         <form
           onSubmit={handleSubmit(handleFormSubmit)}
           className="px-6 py-4 w-full space-y-4 my-5"
