@@ -3,6 +3,7 @@ import Hero from './Hero';
 import HotSellingProducts from './HotSellingProducts';
 import DashboardStats from './DashboardStats';
 import { getLandingPageData } from '../services/landingPageService';
+import AddProductSection from './AddProductSection';
 // import { getLandingPageData } from '@/services/landingPageService';
 
 export default function LandingPage() {
@@ -41,6 +42,7 @@ export default function LandingPage() {
         unshippedOrders={landingPageData?.order_status_array[1]?.count}
         newReviews={landingPageData?.data?.new_review}
       />
+      <AddProductSection/>
       {/* <HotSellingProducts products={[]} /> */}
     </div>
   );

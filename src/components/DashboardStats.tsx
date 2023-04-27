@@ -1,4 +1,8 @@
-import Link from 'next/link';
+import Link from "next/link";
+import { MdInsights } from "react-icons/md";
+import { HiOutlineDocumentText } from "react-icons/hi";
+import { FaShippingFast } from "react-icons/fa";
+import { MdOutlineRateReview } from "react-icons/md";
 
 type DashboardStatsProps = {
   pendingOrders: number;
@@ -12,57 +16,60 @@ const DashboardStats = ({
   newReviews,
 }: DashboardStatsProps) => {
   return (
-    <div className="">
-      <div
-        className="flex flex-col justify-center items-start w-1/2 m-10 rounded-lg bg-[#f2f2f2]"
-        style={{ boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.25)' }}
-      >
-        <div className="border-b-[4px] border-gray-500 w-full pl-7 pr-3 py-1 text-center font-medium">
-          Important! To increase visibility and buyer satisfaction, you need to
-          check them regularly.
-        </div>
-        <div className="flex items-center justify-between w-full p-10">
-          <div className="w-32 h-32 bg-gray-300 text-black text-center rounded-full flex flex-col items-center justify-center">
-            <div className="uppercase flex flex-col text-sm">
-              <span>Pending</span>
-              <span>Orders</span>
-            </div>
-            <span>{pendingOrders}</span>
-          </div>
-          <div className="w-32 h-32 bg-gray-300 text-black text-center rounded-full flex flex-col items-center justify-center">
-            <div className="uppercase flex flex-col text-sm">
-              <span>Unshipped</span>
-              <span>Orders</span>
-            </div>
-            <span>{unshippedOrders}</span>
-          </div>
-          <div className="w-32 h-32 bg-gray-300 text-black text-center rounded-full flex flex-col items-center justify-center">
-            <div className="uppercase flex flex-col text-sm">
-              <span>New</span>
-              <span>Reviews</span>
-            </div>
-            <span>{newReviews}</span>
-          </div>
+    <div
+      className="flex flex-col justify-center items-start space-x-8 w-1/2 m-10 rounded-lg"
+      style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}
+    >
+      <div className="row py-4 w-full flex items-center justify-start px-10 text-xxl">
+        <MdInsights /> <span className="ml-4">Key Insights </span>
+      </div>
+      <div className="border-t-2 w-11/12 pt-2 text-xl">
+        Important! To increase buyer satisfaction, you need to check them
+        reguralry.
+        <div className="row py-4 w-full flex items-start justify-start">
+          <DashboardElements
+            number={pendingOrders}
+            text="Pending Orders"
+            icon={<HiOutlineDocumentText />}
+          />
+          <DashboardElements
+            number={unshippedOrders}
+            text="Unshipped Orders"
+            icon={<FaShippingFast />}
+          />
+          <DashboardElements
+            number={newReviews}
+            text="New Reviews"
+            icon={<MdOutlineRateReview />}
+          />
         </div>
       </div>
-      <div
-        className="flex flex-col w-1/2 m-10 rounded-lg bg-[#f2f2f2] py-5"
-        style={{ boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.25)' }}
-      >
-        <div className="px-10 border-b-[4px] border-gray-500 w-full font-medium">
-          Get started with your product listing.
-        </div>
-        <div className="flex items-center justify-between w-full p-10">
-          Easy to list a product system steps through all the requirements for
-          creating your listing.
-        </div>
+    </div>
+  );
+};
 
-        <div className="w-full pl-10">
-          <Link href="/product/add">
-            <a className="px-5 py-2 bg-blue-700 text-white">Add Product</a>
-          </Link>
-        </div>
-      </div>
+type dashboardProp = {
+  number: number;
+  text: string;
+  icon: any;
+};
+const DashboardElements = (DashboardProp: dashboardProp) => {
+  const { number, text, icon } = DashboardProp;
+  return (
+    <div
+      className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg"
+      style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}
+    >
+      <span
+        className="ml-6 h-14 w-14 rounded-full text-brand-600 text-xxl flex justify-center items-center opacity-1 border-2 border-brand-600"
+        style={{ backgroundColor: "rgba(199,1,1,0.25" }}
+      >
+        {icon}
+      </span>
+      <span className="ml-5 text-gray-700">{text}</span>
+      <Link href="/orders">
+        <a href="/orders" className="text-3xl text-black underline">{number}</a>
+      </Link>
     </div>
   );
 };
