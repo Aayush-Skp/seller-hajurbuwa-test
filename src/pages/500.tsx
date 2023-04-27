@@ -2,11 +2,15 @@ import Navbar from '../components/onboarding/Navbar';
 import Wifi from '/public/images/wifi.svg';
 import hajurbuwaNotFound from '/public/images/Old_Man_Network.svg';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 const NetworkErrorPage = () => {
+  const [toggle, setToggle] = useState(false)
+  const router = useRouter();
   return (
     <div className="h-screen w-screen relative bg-blue-900 overflow-hidden">
-      <Navbar />
+      <Navbar toggle={toggle} setToggle={setToggle} />
       <div className="w-full flex flex-col lg:flex-row justify-center items-center lg:items-start lg:px-[100px] xl:pl-[0px] 2xl:px-[200px] 3xl:px-[0px] lg:pt-[30px] lg:justify-start">
         <div className="flex justify-center lg:justify-start lg:items-start lg:w-4/5 2xl:w-1/2 items-center flex-col text-center lg:text-left mt-20 md:mt-0 px-8 md:px-[100px] lg:px-[0px] xl:px-[100px] ">
           <div className="font-bold text-[20px] md:text-[30px] 2xl:text-[40px] text-white leading-none my-2">
@@ -23,7 +27,7 @@ const NetworkErrorPage = () => {
           </div>
           <div className="flex flex-row items-center justify-start bg-black text-white px-[35px] py-[14px] mt-4 lg:mt-8 rounded-full border-white border-2">
             <div className="flex flex-col px-4">
-              <div className="text-[20px] font-medium">Refresh</div>
+              <div className="text-[20px] font-medium cursor-pointer" onClick={() => router.reload()}>Refresh</div>
             </div>
           </div>
         </div>
