@@ -5,10 +5,13 @@ import authenticatedRoute from '../../components/WithAuth';
 
 function ProductAddPage() {
   return (
-    <div>
+    <div className="w-full h-full">
       <PageWrapper>
         <ProductListing />
       </PageWrapper>
+      <div className="flex justify-center w-full h-full mt-56 mb-5">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
+      </div>
     </div>
   );
 }

@@ -9,6 +9,12 @@ function ProductUpdatePage() {
       <PageWrapper>
         <ProductListing />
       </PageWrapper>
+      <div className="flex justify-center w-full h-full mt-56 mb-5">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
+      </div>
+      <div className="flex justify-center my-6">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
+      </div>
     </div>
   );
 }

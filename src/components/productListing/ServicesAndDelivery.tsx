@@ -6,6 +6,8 @@ import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
 import DiscardModal from './DiscardModal';
+import Spinner from '../loader/Spinner';
+import ProductAddSuccessModal from './ProductAddSuccessModal';
 
 export default function ServicesAndDelivery(props: any) {
   const { productDetails, setProductDetails, decStep, isUpdate } = props;
@@ -13,6 +15,15 @@ export default function ServicesAndDelivery(props: any) {
   const [packageWeightValidation, setPackageWeightValidation] = useState({
     isValid: true,
     message: '',
+  });
+
+  const [isProductAddSuccessModalOpen, setIsProductAddSuccessModalOpen] =
+    useState(false);
+
+  const [apiResponse, setApiResponse] = useState({
+    isLoading: false,
+    isError: false,
+    errorMsg: '',
   });
 
   function handlePackageWeightChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -30,6 +41,12 @@ export default function ServicesAndDelivery(props: any) {
   }
 
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    setApiResponse({
+      isLoading: true,
+      isError: false,
+      errorMsg: '',
+    });
+
     e.preventDefault();
 
     if (productDetails.package_weight === '') {
@@ -95,17 +112,53 @@ export default function ServicesAndDelivery(props: any) {
       params.append('_method', 'PUT');
 
       updateProduct(productDetails.productId, params)
-        .then(console.log)
-        .catch(console.log);
+        .then((res) => {
+          setApiResponse({
+            isLoading: false,
+            isError: false,
+            errorMsg: '',
+          });
+
+          setIsProductAddSuccessModalOpen(true);
+        })
+        .catch((err) => {
+          setApiResponse({
+            isLoading: false,
+            isError: true,
+            errorMsg: '',
+          });
+        });
 
       return;
     }
 
-    addProduct(productDetails).then(console.log).catch(console.log);
+    addProduct(productDetails)
+      .then((res) => {
+        setApiResponse({
+          isLoading: false,
+          isError: false,
+          errorMsg: '',
+        });
+        setIsProductAddSuccessModalOpen(true);
+      })
+      .catch((err) => {
+        setApiResponse({
+          isLoading: false,
+          isError: false,
+          errorMsg: '',
+        });
+      });
   }
 
   return (
     <div className="px-8 py-2 space-y-5">
+      {isProductAddSuccessModalOpen ? (
+        <ProductAddSuccessModal
+          isUpdate={isUpdate}
+          isProductAddSuccessModalOpen={isProductAddSuccessModalOpen}
+          setIsProductAddSuccessModalOpen={setIsProductAddSuccessModalOpen}
+        />
+      ) : null}
       <div className="flex items-center space-x-3">
         <Image src={Info} alt="" />
         <p>Fields with asterisks* should be filled.</p>
@@ -136,8 +189,15 @@ export default function ServicesAndDelivery(props: any) {
               Back
             </Button>
             <DiscardModal />
-            <Button type="submit" className="py-3 text-sm">
-              Submit
+            <Button type="submit">
+              {apiResponse.isLoading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <span className="text-xs">Submitting...</span>
+                  <Spinner />
+                </div>
+              ) : (
+                'Submit'
+              )}
             </Button>
           </div>
         </div>

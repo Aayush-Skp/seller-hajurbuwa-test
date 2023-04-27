@@ -20,16 +20,18 @@ const PageWrapper = ({ children }: PageWrapperProps) => {
   return (
     <div className="">
       {!isRoutePublic ? (
-        <>
+        <div className="flex flex-col justify-between w-full">
           <Navbar />
           <div className="mt-[112px]">{children}</div>
-        </>
+        </div>
       ) : (
-        <div>{children}</div>
+        <div>
+          {children}
+          {/* <div className="flex justify-center w-full">
+            <span className="text-black">© 2023, Hajurbuwa.com</span>
+          </div> */}
+        </div>
       )}
-      <div className="flex justify-center w-full my-5">
-        <span className="text-black">© 2023, Hajurbuwa.com</span>
-      </div>
     </div>
   );
 };

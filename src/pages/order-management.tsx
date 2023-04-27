@@ -6,10 +6,15 @@ import Header from '../components/Header';
 
 function OrderManagement() {
   return (
-    <PageWrapper>
-      <Header header="Order Management" />
-      <Orders />
-    </PageWrapper>
+    <div>
+      <PageWrapper>
+        <Header header="Order Management" />
+        <Orders />
+      </PageWrapper>
+      <div className="flex justify-center my-5">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
+      </div>
+    </div>
   );
 }
 

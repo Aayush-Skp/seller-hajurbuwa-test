@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import Image from 'next/image';
 import Info from '../../../public/icons/info.svg';
 import AddIcon from '../../../public/icons/addIcon.svg';
@@ -57,9 +56,9 @@ export default function ProductImagesAndVideos(props: any) {
               </div>
             </label>
           </div>
-          <p className="text-sm tracking-tight">
+          {/* <p className="text-sm tracking-tight">
             Or drag and drop 1 or more files below.
-          </p>
+          </p> */}
         </div>
 
         <div className="flex items-center">
