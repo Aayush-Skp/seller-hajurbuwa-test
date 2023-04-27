@@ -40,9 +40,9 @@ const features = [
   },
 ];
 
-const WhyHajurbuwa = () => {
+const WhyHajurbuwa = ({toggle}: {toggle: boolean}) => {
   return (
-    <div id="why" className="relative h-[1017px] md:h-[500px] lg:h-[500px] px-[40px] mt-[112px] md:mt-[250px] xl:mt-0 z-20 text-black">
+   !toggle? <div id="why" className="relative h-[1017px] md:h-[500px] lg:h-[500px] px-[40px] mt-[112px] md:mt-[250px] xl:mt-0 z-20 text-black">
       <div className="text-center xl:text-left font-medium text-3xl md:px-[100px]">
         Why Sell on <span className="font-bold xl:font-medium">Hajurbuwa?</span>
       </div>
@@ -52,7 +52,7 @@ const WhyHajurbuwa = () => {
           return <Feature key={id} icon={image} name={name} />;
         })}
       </div>
-    </div>
+    </div>: null
   );
 };
 

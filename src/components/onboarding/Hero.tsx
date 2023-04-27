@@ -16,7 +16,7 @@ const Hero = (buttonref: any) => {
       <CTA />
       <div className="flex flex-row items-center justify-start text-white hover:text-black hover:bg-white px-[35px] py-[14px] mt-2 lg:mt-4 rounded-full">
         <div className="flex flex-col px-4">
-          <div className="text-[20px] font-medium z-30">
+          <div className="text-[20px] font-medium z-20">
             <button className='cursor-pointer'>Learn More</button>
           </div>
         </div>

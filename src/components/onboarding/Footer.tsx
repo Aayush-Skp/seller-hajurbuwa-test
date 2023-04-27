@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { getAllPolicies } from '../../services/policyService';
 import Link from 'next/link';
 
-const Footer = () => {
+const Footer = ({toggle}: {toggle: boolean}) => {
   const [policies, setPolicies] = useState<any>();
   useEffect(() => {
     getAllPolicies()
@@ -19,7 +19,7 @@ const Footer = () => {
       .catch((err) => console.log(err));
   }, []);
   return (
-    <>
+    !toggle ? <>
       <div className="relative h-[400px] lg:h-[459px] xl:h-[381px] md:h-[520px] 3xl:h-[381px] 3xl:px-[200px] w-full bg-blue-800 text-white p-10 md:px-[100px] z-20">
         <div className="absolute flex justify-end bottom-14 lg:bottom-15 xl:bottom-0 3xl:bottom-0 md:bottom-4 right-2 lg:right-10 h-[167px] w-[167px] md:h-[300px] md:w-[300px] lg:h-[375px] lg:w-[375px] ">
           <Image src={hajurbuwaVector} alt={'hajurbuwa vector image'} />
@@ -43,9 +43,11 @@ const Footer = () => {
               {policies &&
                 policies.map((policy: any) => {
                   return (
-                    <div key={policy.id} className="mb-2 text-xs md:text-xl">
+                    <Link key={policy.id} href={`https://hajurbuwa.com/policies/${policy.slug}`}>
+                    <div className="mb-2 text-xs md:text-xl cursor-pointer">
                       {policy.name}
                     </div>
+                    </Link>
                   );
                 })}
             </div>
@@ -112,7 +114,7 @@ const Footer = () => {
           Copyright 2023 &copy; Hajurbuwa , All Rights Reserved.
         </div>
       </div>
-    </>
+    </>: null
   );
 };
 

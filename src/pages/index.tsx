@@ -4,21 +4,21 @@ import Landing from '../components/onboarding/Landing';
 import Intersection from '../components/onboarding/Intersection';
 import Footer from '../components/onboarding/Footer';
 import WhyHajurbuwa from '../components/onboarding/WhyHajurbuwa';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 const Home: NextPage = () => {
-  const buttonRef = useRef(null);
+  const [toggle, setToggle] = useState(false);
   return (
     <div className="">
       <Head>
-        <title>Hajurbuwa</title>
+        <title>Sell on Hajurbuwa | Build Your Wholesale Store</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="relative overflow-hidden">
-        <Landing/>
-        <Intersection />
-        <WhyHajurbuwa />
-        <Footer />
+        <Landing toggle={toggle} setToggle={setToggle} />
+        <Intersection toggle={toggle} />
+        <WhyHajurbuwa toggle={toggle} />
+        <Footer toggle={toggle} />
       </div>
     </div>
   )
