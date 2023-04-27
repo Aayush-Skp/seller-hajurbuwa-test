@@ -20,12 +20,12 @@ const Navbar = () => {
       </div>
       <div className="hidden xl:flex justify-end items-center lg:w-2/5 xl:w-1/3 ">
         <Link href="/login">
-          <a className="flex flex-row ml-4 text-[16px] font-medium items-center justify-start bg-transparent whitespace-nowrap text-white px-[35px] py-[14px] my-1 cursor-pointer">
+          <a className="flex flex-row ml-4 text-[16px] font-medium items-center justify-start bg-transparent whitespace-nowrap text-white px-[35px] hover:text-black hover:bg-white rounded-full py-[14px] my-1 cursor-pointer">
             Login
           </a>
         </Link>
         <Link href="/register">
-          <a className="flex flex-row ml-4 text-[16px] font-medium items-center justify-start bg-transparent whitespace-nowrap text-white px-[35px] py-[14px] my-1 rounded-full border-white border-2 cursor-pointer">
+          <a className="flex flex-row ml-4 text-[16px] font-medium items-center justify-start bg-transparent whitespace-nowrap text-white px-[35px] py-[14px] my-1 rounded-full border-white border-2 cursor-pointer hover:bg-black hover:text-white">
             Register
           </a>
         </Link>
