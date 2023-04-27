@@ -193,6 +193,9 @@ export default function WarehouseAddress() {
       return;
     }
 
+    console.log(addressLine1);
+    console.log(addressLine2);
+
     setIsLoading(true);
 
     addWarehouseInfo({
@@ -212,8 +215,8 @@ export default function WarehouseAddress() {
               state: location.stateName,
               city: location.cityName,
               area: location.areaName,
-              addressLine1,
-              addressLine2,
+              address_line1: addressLine1,
+              address_line2: addressLine2,
             })
           );
         }
@@ -286,22 +289,23 @@ export default function WarehouseAddress() {
         </div>
       </div>
       <div className="space-y-5">
-        <div className="flex justify-center">
-          <span className="text-2xl text-accent-primary bg-gray-200 p-2">
+        <div className="">
+          <span className="text-xl text-black bg-gray-200 p-2">
             Update Your Warehouse Details
           </span>
         </div>
         <form className="flex flex-col space-y-5">
           <div className="flex space-x-10 items-center">
             <div className="w-36">
-              <InputLabel required className="text-xl" label="State" />
+              {/* <InputLabel className="text-lg" required label="State" /> */}
+              <span className="w-36">State</span>
             </div>
             <div className="w-80">
               <select
                 onChange={(e) => handleStateChange(e.target.value)}
                 className="w-full h-10 outline-none border border-black rounded cursor-pointer select-none"
               >
-                <option value="">select a state</option>
+                <option value="">Select a state</option>
                 {stateList.map((state: State) => (
                   <option
                     key={state.state_id}
@@ -316,14 +320,14 @@ export default function WarehouseAddress() {
           </div>
           <div className="flex space-x-10 items-center">
             <div className="w-36">
-              <InputLabel required className="text-xl" label="City" />
+              <span className="w-36">City</span>
             </div>
             <div className="w-80">
               <select
                 onChange={(e) => handleCityChange(e.target.value)}
                 className="w-full h-10 outline-none border border-black rounded cursor-pointer select-none"
               >
-                <option value="">select a city</option>
+                <option value="">Select a city</option>
                 {cityList.map((city: City) => (
                   <option
                     key={city.city_id}
@@ -333,19 +337,19 @@ export default function WarehouseAddress() {
                   </option>
                 ))}
               </select>
+              <ErrorMessage message={cityValidation.message} />
             </div>
-            <ErrorMessage message={cityValidation.message} />
           </div>
           <div className="flex space-x-10 items-center">
             <div className="w-36">
-              <InputLabel required className="text-xl" label="Area" />
+              <span className="w-36">Area</span>
             </div>
             <div className="w-80">
               <select
                 onChange={(e) => handleAreaChange(e.target.value)}
                 className="w-full h-10 outline-none border border-black rounded cursor-pointer select-none"
               >
-                <option value="">select a area</option>
+                <option value="">Select an area</option>
                 {areaList.map((area: Area) => (
                   <option
                     key={area.area_id}
@@ -360,7 +364,7 @@ export default function WarehouseAddress() {
           </div>
           <div className="flex space-x-10 items-center">
             <div className="w-36">
-              <InputLabel required className="text-xl" label="Address Line 1" />
+              <span className="w-36">Address Line 1</span>
             </div>
             <div className="w-80">
               <TextInput
@@ -376,29 +380,29 @@ export default function WarehouseAddress() {
               <ErrorMessage message={addressLine1Validation.message} />
             </div>
           </div>
-          <div className="flex space-x-10 items-center">
-            <div className="w-36">
-              <InputLabel required className="text-xl" label="Address Line 2" />
-            </div>
-            <div className="w-80">
-              <TextInput
-                value={addressLine2}
-                onChange={(e) => {
-                  setAddressLine2Validation({
-                    isValid: true,
-                    message: '',
-                  });
-                  setAddressLine2(e.target.value);
-                }}
-              />
-              <ErrorMessage message={addressLine2Validation.message} />
-            </div>
-          </div>
-          <div className="w-full flex justify-end">
-            <div className="w-36">
-              <Button type="button" onClick={submitLocationData}>
-                {isLoading ? 'Updating...' : 'Submit'}
-              </Button>
+          <div className="flex flex-col space-y-3 items-center">
+            <div className="w-full flex space-x-10">
+              <div className="w-36">
+                <span className="w-36">Address Line 2</span>
+              </div>
+              <div className="w-80 flex flex-col space-y-3 items-center">
+                <TextInput
+                  value={addressLine2}
+                  onChange={(e) => {
+                    setAddressLine2Validation({
+                      isValid: true,
+                      message: '',
+                    });
+                    setAddressLine2(e.target.value);
+                  }}
+                />
+                <ErrorMessage message={addressLine2Validation.message} />
+                <div className="flex items-center justify-center w-36">
+                  <Button type="button" onClick={submitLocationData}>
+                    {isLoading ? 'Updating...' : 'Submit'}
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </form>

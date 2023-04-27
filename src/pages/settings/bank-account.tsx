@@ -12,14 +12,14 @@ function BankAccountPage() {
           <div className="flex space-x-10">
             <div className="w-24 h-screen border-r border-black"></div>
             <div className="mt-4">
-              <div className="bg-gray-200 p-3">
-                <ul className="flex w-full space-x-20 text-3xl">
+              <div className="bg-gray-100 px-3 pt-3">
+                <ul className="flex w-full space-x-20 text-xl">
                   <li className="cursor-pointer">
                     <Link href="/settings/account-info">
                       <a> Seller Info</a>
                     </Link>
                   </li>
-                  <li className="border-b-[5px] border-accent-primary">
+                  <li className="border-b-[5px] border-blue-700">
                     Bank Account
                   </li>
                   <li className="cursor-pointer">

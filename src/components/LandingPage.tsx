@@ -29,9 +29,12 @@ export default function LandingPage() {
   return (
     <div>
       <Hero
-        openOrders={5}
+        openOrders={
+          landingPageData.order_status_array[0].count +
+          landingPageData.order_status_array[0].count
+        }
         todaysSales={landingPageData?.data?.today_sells}
-        onlineProducts={landingPageData.product_status_array[0].count}
+        onlineProducts={landingPageData.product_status_array[1].count}
       />
       <DashboardStats
         pendingOrders={landingPageData?.order_status_array[0]?.count}

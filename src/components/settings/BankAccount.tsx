@@ -111,7 +111,9 @@ export default function BankAccount() {
         </div>
         <div className="w-full flex justify-end">
           <div className="w-36">
-            <Button type="submit">Submit</Button>
+            <Button type="submit">
+              {getValues('account_name') !== '' ? 'Update' : 'Submit'}
+            </Button>
           </div>
         </div>
       </form>

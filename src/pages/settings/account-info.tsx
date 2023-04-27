@@ -11,9 +11,9 @@ function AccountInfoPage() {
           <div className="flex space-x-10">
             <div className="w-24 h-screen border-r border-black"></div>
             <div className="mt-4">
-              <div className="bg-gray-200 p-3">
-                <ul className="flex w-full space-x-20 text-3xl">
-                  <li className="border-b-[5px] border-accent-primary">
+              <div className="bg-gray-100 px-3 pt-3">
+                <ul className="flex w-full space-x-20 text-xl">
+                  <li className="border-b-[5px] border-blue-700">
                     Seller Info
                   </li>
                   <li className="cursor-pointer">

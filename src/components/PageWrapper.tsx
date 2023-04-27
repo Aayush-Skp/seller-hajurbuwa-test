@@ -25,12 +25,7 @@ const PageWrapper = ({ children }: PageWrapperProps) => {
           <div className="mt-[112px]">{children}</div>
         </div>
       ) : (
-        <div>
-          {children}
-          {/* <div className="flex justify-center w-full">
-            <span className="text-black">© 2023, Hajurbuwa.com</span>
-          </div> */}
-        </div>
+        <div>{children}</div>
       )}
     </div>
   );

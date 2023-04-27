@@ -56,9 +56,9 @@ export default function AccountInfo() {
           <a
             href={`${imageServerBaseUrl}${sellerDetails?.pan_image}`}
             target="_blank"
-            className="px-2 py-1 border border-black w-56"
+            className="px-2 py-1 w-56 text-blue-700 hover:underline"
           >
-            Pan image
+            Show pan image
           </a>
         </div>
       </div>

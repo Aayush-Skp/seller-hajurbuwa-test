@@ -76,11 +76,11 @@ const Navbar = () => {
                 </ul>
               ) : null}
             </li>
-            <li className="flex-shrink-0 flex items-center justify-center px-5 text-lg">
+            {/* <li className="flex-shrink-0 flex items-center justify-center px-5 text-lg">
               <Link href="/">
                 <a className="font-bold text-lg">Help</a>
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
         <ul className="flex items-center justify-center space-x-5">
@@ -107,14 +107,14 @@ const Navbar = () => {
               ]}
             />
           </li>
-          <li className="">
-            {/* <Link href="/#">
+          {/* <li className="">
+            <Link href="/#">
               <a className="font-bold text-lg">Voucher Manager</a>
-            </Link> */}
+            </Link>
             <span className="font-bold text-lg cursor-pointer">
               Voucher Manager
             </span>
-          </li>
+          </li> */}
           <li className="">
             <Link href="/finance">
               <a className="font-bold text-lg">Finance</a>
