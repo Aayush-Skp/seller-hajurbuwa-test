@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { FaChevronDown } from 'react-icons/fa';
 
 type HeroProps = {
@@ -28,20 +29,30 @@ const Hero = ({ openOrders, todaysSales, onlineProducts }: HeroProps) => {
           Welcome, Bishal!
         </h1>
         <div className="detailsCTA flex items-start justify-start w-1/2">
-          <div className="flex flex-col items-start justify-start whitespace-nowrap bg-white m-2 p-2">
-            <h1 className="text-base text-black">Open Orders</h1>
-            <div className="w-full flex items-center justify-between pr-2">
-              <h1 className="text-xxxl w-full text-center text-black">
-                {openOrders}
-              </h1>
-            </div>
-          </div>
-          <div className="flex flex-col items-start justify-start whitespace-nowrap bg-white m-2 p-2">
-            <h1 className="text-base text-black">Today&apos;s Sales</h1>
-            <div className="w-full flex items-center justify-between pr-2">
-              <h1 className="text-xxxl text-center w-full text-black">{`NPR ${todaysSales}`}</h1>
-            </div>
-          </div>
+          <Link href="/order-management">
+            <a>
+              <div className="flex flex-col items-start justify-start whitespace-nowrap bg-white m-2 p-2">
+                <h1 className="text-base text-black">Open Orders</h1>
+                <div className="w-full flex items-center justify-between pr-2">
+                  <h1 className="text-xxxl w-full text-center text-black">
+                    {openOrders}
+                  </h1>
+                </div>
+              </div>
+            </a>
+          </Link>
+          <Link href="/finance">
+            <a>
+              <div className="flex flex-col items-start justify-start whitespace-nowrap bg-white m-2 p-2">
+                <h1 className="text-base text-black">Today&apos;s Sales</h1>
+                <div className="w-full flex items-center justify-between pr-2">
+                  <h1 className="text-xxxl text-center w-full text-black">{`NPR ${todaysSales}`}</h1>
+                </div>
+              </div>
+            </a>
+          </Link>
+          <Link href="/product-management">
+            <a>
           <div className="flex flex-col items-start justify-start whitespace-nowrap bg-white m-2 p-2">
             <h1 className="w-full text-base text-black">
               Total Products Online
@@ -52,6 +63,8 @@ const Hero = ({ openOrders, todaysSales, onlineProducts }: HeroProps) => {
               </h1>
             </div>
           </div>
+          </a>
+          </Link>
         </div>
       </div>
     </div>
