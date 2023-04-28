@@ -43,7 +43,6 @@ export default function PhoneValidation(props: PhoneValidationProps) {
     phoneVerificationService(data)
       .then((res) => {
         if (res.status === 'success') {
-          setIsLoading(false);
           setRegistrationData((prev) => {
             return {
               ...prev,
@@ -60,7 +59,6 @@ export default function PhoneValidation(props: PhoneValidationProps) {
         }
       })
       .catch((err) => {
-        console.log(err);
         setError('phone', {
           type: 'custom',
           message: 'Network Error. Check if your internet is working properly',
@@ -101,7 +99,6 @@ export default function PhoneValidation(props: PhoneValidationProps) {
               <Image src={antMobile} alt="Ant Mobile Icon" />
               <span className="text-gray-875">+977</span>
             </div>
-
             <TextInput
               className="pl-20"
               type="number"

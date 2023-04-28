@@ -69,12 +69,11 @@ export default function EmailVerification(props: PhoneVerificationProps) {
   }
 
   function handleSendOTP() {
+    setOtpTimeOut(59);
     emailVerificationService(
       registrationData.email,
       `${registrationData.first_name} ${registrationData.last_name}`
-    )
-      .then((res) => setOtpTimeOut(59))
-      .catch(console.log);
+    ).catch(console.log);
   }
 
   return (

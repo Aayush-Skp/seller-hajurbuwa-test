@@ -3,16 +3,16 @@ import otp from '/public/images/otp.svg';
 import OtpInput from 'react-otp-input';
 import { BiArrowBack } from 'react-icons/bi';
 import { useEffect, useState } from 'react';
+import Button from '../common/Button';
+import ErrorMessage from '../common/ErrorMessage';
 import {
   SellerRegistrationDataType,
   SetRegistrationData,
 } from './SellerRegistration';
-import Button from '../common/Button';
 import {
   sendOTPToPhone,
   verifyOTPSentToPhone,
 } from '../../services/phoneVerificationService';
-import ErrorMessage from '../common/ErrorMessage';
 
 type PhoneVerificationProps = {
   setRegistrationData: SetRegistrationData;
@@ -75,11 +75,8 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
   }
 
   function handleSendOTP() {
-    sendOTPToPhone(registrationData.phone)
-      .then((res) => {
-        setOtpTimeout(59);
-      })
-      .catch(console.log);
+    setOtpTimeout(59);
+    sendOTPToPhone(registrationData.phone).catch(console.log);
   }
 
   return (
