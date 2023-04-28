@@ -2,13 +2,17 @@ import Image from 'next/image';
 import otp from '/public/images/otp.svg';
 import OtpInput from 'react-otp-input';
 import { BiArrowBack } from 'react-icons/bi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   SellerRegistrationDataType,
   SetRegistrationData,
 } from './SellerRegistration';
 import Button from '../common/Button';
-import { verifyOTPSentToPhone } from '../../services/phoneVerificationService';
+import {
+  sendOTPToPhone,
+  verifyOTPSentToPhone,
+} from '../../services/phoneVerificationService';
+import ErrorMessage from '../common/ErrorMessage';
 
 type PhoneVerificationProps = {
   setRegistrationData: SetRegistrationData;
@@ -19,10 +23,21 @@ type PhoneVerificationProps = {
 
 export default function PhoneVerification(props: PhoneVerificationProps) {
   const { setRegistrationData, incStep, decStep, registrationData } = props;
+  const [otpTimeout, setOtpTimeout] = useState(59);
   const [otpValidation, setOtpValidation] = useState({
     isValid: true,
     message: '',
   });
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    if (otpTimeout !== 0) {
+      timeout = setTimeout(() => setOtpTimeout((prev) => prev - 1), 1000);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [otpTimeout]);
 
   const handleSubmit = () => {
     verifyOTPSentToPhone(registrationData.phone, registrationData.phoneOtp)
@@ -44,6 +59,28 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
         });
       });
   };
+
+  function handleOtpChange(value: string) {
+    setRegistrationData((prev) => {
+      return {
+        ...prev,
+        phoneOtp: value,
+      };
+    });
+
+    setOtpValidation({
+      isValid: true,
+      message: '',
+    });
+  }
+
+  function handleSendOTP() {
+    sendOTPToPhone(registrationData.phone)
+      .then((res) => {
+        setOtpTimeout(59);
+      })
+      .catch(console.log);
+  }
 
   return (
     <div className="flex relative flex-col pt-14 px-10 pb-5 items-center justify-center  text-black h-full w-full">
@@ -75,19 +112,21 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
               inputStyle={`outline-none`}
               numInputs={6}
               value={registrationData.phoneOtp}
-              onChange={(value: string) =>
-                setRegistrationData((prev) => {
-                  return {
-                    ...prev,
-                    phoneOtp: value,
-                  };
-                })
-              }
+              onChange={handleOtpChange}
               separator={<span></span>}
             />
-            {/* {otpCode !== registrationData.otp && (
-                <ErrorMessage message={'Invalid OTP'} />
-              )} */}
+            <span>
+              <ErrorMessage message={otpValidation.message} />
+            </span>
+            <div className="text-xs text-accent-primary flex justify-between">
+              <button onClick={decStep}>Change phone</button>
+              <button
+                disabled={otpTimeout === 0 ? false : true}
+                onClick={handleSendOTP}
+              >
+                Resend OTP {!!otpTimeout ? `(${otpTimeout})` : ''}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -73,8 +73,6 @@ export default function SellerRegistration() {
     setStep((prev) => prev - 1);
   }
 
-  console.log(registrationData);
-
   return (
     <div className=" h-screen flex justify-center items-center relative w-full overflow-hidden">
       <div
@@ -143,7 +141,6 @@ export default function SellerRegistration() {
         ) : step === 9 ? (
           <Success />
         ) : null}
-
       </div>
       <div className="absolute justify-center bottom-4">
         <p className="text-black">© 2023, Hajurbuwa.com</p>

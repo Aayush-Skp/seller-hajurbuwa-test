@@ -2,13 +2,16 @@ import Image from 'next/image';
 import otp from '/public/images/otp.svg';
 import OtpInput from 'react-otp-input';
 import { BiArrowBack } from 'react-icons/bi';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   SellerRegistrationDataType,
   SetRegistrationData,
 } from './SellerRegistration';
 import Button from '../common/Button';
-import { verifyOTPSentToEmail } from '../../services/emailVerificationService';
+import {
+  emailVerificationService,
+  verifyOTPSentToEmail,
+} from '../../services/emailVerificationService';
 import ErrorMessage from '../common/ErrorMessage';
 
 type PhoneVerificationProps = {
@@ -26,10 +29,35 @@ export default function EmailVerification(props: PhoneVerificationProps) {
     message: '',
   });
 
+  const [otpTimeOut, setOtpTimeOut] = useState(59);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    if (otpTimeOut !== 0) {
+      timeout = setTimeout(() => setOtpTimeOut((prev) => prev - 1), 1000);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [otpTimeOut]);
+
+  function handleOtpChange(value: string) {
+    setRegistrationData((prev) => {
+      return {
+        ...prev,
+        emailOtp: value,
+      };
+    });
+
+    setOtpValidation({
+      status: true,
+      message: '',
+    });
+  }
+
   function handleSubmit() {
     verifyOTPSentToEmail(registrationData.emailOtp)
       .then((res) => {
-        console.log(res);
         incStep();
       })
       .catch(() => {
@@ -38,6 +66,15 @@ export default function EmailVerification(props: PhoneVerificationProps) {
           message: '',
         });
       });
+  }
+
+  function handleSendOTP() {
+    emailVerificationService(
+      registrationData.email,
+      `${registrationData.first_name} ${registrationData.last_name}`
+    )
+      .then((res) => setOtpTimeOut(59))
+      .catch(console.log);
   }
 
   return (
@@ -68,21 +105,21 @@ export default function EmailVerification(props: PhoneVerificationProps) {
               inputStyle={`outline-none`}
               numInputs={4}
               separator={<span></span>}
-              onChange={(value: string) =>
-                setRegistrationData((prev) => {
-                  return {
-                    ...prev,
-                    emailOtp: value,
-                  };
-                })
-              }
+              onChange={handleOtpChange}
               value={registrationData.emailOtp}
             />
-            {!otpValidation.status ? (
+            <span>
               <ErrorMessage message={otpValidation.message} />
-            ) : (
-              <p>{otpValidation.message}</p>
-            )}
+            </span>
+            <div className="text-xs text-accent-primary flex justify-between">
+              <button onClick={decStep}>Change email</button>
+              <button
+                disabled={otpTimeOut === 0 ? false : true}
+                onClick={handleSendOTP}
+              >
+                Resend OTP {!!otpTimeOut ? `(${otpTimeOut})` : ''}
+              </button>
+            </div>
           </div>
         </div>
       </div>
