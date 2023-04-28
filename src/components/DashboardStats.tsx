@@ -27,21 +27,33 @@ const DashboardStats = ({
         Important! To increase buyer satisfaction, you need to check them
         reguralry.
         <div className="row py-4 w-full flex items-start justify-start">
-          <DashboardElements
-            number={pendingOrders}
-            text="Pending Orders"
-            icon={<HiOutlineDocumentText />}
-          />
-          <DashboardElements
-            number={unshippedOrders}
-            text="Unshipped Orders"
-            icon={<FaShippingFast />}
-          />
-          <DashboardElements
-            number={newReviews}
-            text="New Reviews"
-            icon={<MdOutlineRateReview />}
-          />
+          <Link href="/order-management">
+            <a style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }} className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg" >
+              <DashboardElements
+                number={pendingOrders}
+                text="Pending Orders"
+                icon={<HiOutlineDocumentText />}
+              />
+            </a>
+          </Link>
+          <Link href="/order-management">
+            <a style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }} className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
+              <DashboardElements
+                number={unshippedOrders}
+                text="Unshipped Orders"
+                icon={<FaShippingFast />}
+              />
+            </a>
+          </Link>
+          <Link href={"/review-management"}>
+            <a  style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }} className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
+              <DashboardElements
+                number={newReviews}
+                text="New Reviews"
+                icon={<MdOutlineRateReview />}
+              />
+            </a>
+          </Link>
         </div>
       </div>
     </div>
@@ -58,7 +70,6 @@ const DashboardElements = (DashboardProp: dashboardProp) => {
   return (
     <div
       className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg"
-      style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}
     >
       <span
         className="ml-6 h-14 w-14 rounded-full text-brand-600 text-xxl flex justify-center items-center opacity-1 border-2 border-brand-600"

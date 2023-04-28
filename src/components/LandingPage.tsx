@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Hero from './Hero';
+// import HotSellingProducts from './HotSellingProducts';
 import DashboardStats from './DashboardStats';
 import { getLandingPageData } from '../services/landingPageService';
 import AddProductSection from './AddProductSection';
@@ -29,7 +30,7 @@ export default function LandingPage() {
       <Hero
         openOrders={
           landingPageData.order_status_array[0].count +
-          landingPageData.order_status_array[0].count
+          landingPageData.order_status_array[1].count
         }
         todaysSales={landingPageData?.data?.today_sells}
         onlineProducts={landingPageData.product_status_array[1].count}
@@ -40,6 +41,7 @@ export default function LandingPage() {
         newReviews={landingPageData?.data?.new_review}
       />
       <AddProductSection />
+      {/* <HotSellingProducts products={[]} /> */}
     </div>
   );
 }

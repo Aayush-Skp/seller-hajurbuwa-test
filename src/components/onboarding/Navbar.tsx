@@ -9,18 +9,6 @@ const Navbar = ({ toggle, setToggle }: { toggle: boolean, setToggle: React.Dispa
   const handleToggle = () => {
     setToggle(!toggle)
   }
-  const item = {
-    exit: {
-      opacity: 0,
-      x: '100vw',
-      transition: {
-        ease: "easeInOut",
-        duration: 0.3,
-        delay: .3,
-      }
-
-    }
-  }
   return (
     <><div className="pt-[66px] pb-[20px] lg:px-[100px] lg:pt-[25px] px-8 flex justify-between items-center">
       <div
@@ -54,15 +42,18 @@ const Navbar = ({ toggle, setToggle }: { toggle: boolean, setToggle: React.Dispa
         </div>
       </div>
 
-    </div><div className={`z-30 flex ${!toggle && "absolute"} md:hidden`}>
+    </div><div className={`z-30 flex md:hidden ${toggle ? "left-0" : "left-[120vw] absolute"}`}>
         <AnimatePresence>
           {toggle &&
             <motion.div
-              variants={item}
               initial={{ x: '100vw', opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '100vw', opacity: 0 }}
+              variants={{
+                enter: { x: 0, opacity: 1 },
+                exit: { x: '100vw', opacity: 0 }
+              }}
               transition={{ duration: .3, delay: .3 }}
-              exit="exit"
               className='menu-item absolute top-0 bg-blue-800 z-30  right-0 w-full h-full '>
               <div
                 className='flex justify-center items-center flex-col h-full w-full'>
