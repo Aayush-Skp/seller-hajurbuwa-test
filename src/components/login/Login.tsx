@@ -108,7 +108,7 @@ export default function Login() {
   }
 
   return (
-    <div className="flex flex-col py-4 justify-center items-center relative w-full overflow-hidden">
+    <div className=" h-screen flex justify-center items-center relative w-full overflow-hidden">
       <div
         className="absolute h-full w-full z-0 opacity-20"
         style={{
@@ -118,7 +118,6 @@ export default function Login() {
           backgroundSize: 'cover',
         }}
       ></div>
-
       <div className="relative w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white z-10 shadow-lg">
         <div className="cursor-pointer" onClick={() => router.push('/')}>
           <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
@@ -222,7 +221,9 @@ export default function Login() {
           </form>
         )}
       </div>
-      <span className="text-black">© 2023, Hajurbuwa.com</span>
+      <div className="absolute justify-center bottom-4">
+          <p className="text-black">© 2023, Hajurbuwa.com</p>
+        </div>
     </div>
   );
 }

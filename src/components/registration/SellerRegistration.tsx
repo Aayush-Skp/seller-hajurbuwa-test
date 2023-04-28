@@ -143,6 +143,10 @@ export default function SellerRegistration() {
         ) : step === 9 ? (
           <Success />
         ) : null}
+
+      </div>
+      <div className="absolute justify-center bottom-4">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
       </div>
     </div>
   );
