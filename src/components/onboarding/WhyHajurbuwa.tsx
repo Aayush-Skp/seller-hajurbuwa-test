@@ -40,9 +40,20 @@ const features = [
   },
 ];
 
-const WhyHajurbuwa = ({toggle}: {toggle: boolean}) => {
-  return (
-   !toggle? <div id="why" className="relative h-[1017px] md:h-[500px] lg:h-[500px] px-[40px] mt-[112px] md:mt-[250px] xl:mt-0 z-20 text-black">
+const WhyHajurbuwa = React.forwardRef<any, any>(function WhyHajurbuwa(
+  {
+    toggle,
+  }: {
+    toggle: boolean;
+  },
+  ref
+) {
+  return !toggle ? (
+    <div
+      ref={ref}
+      id="why"
+      className="relative h-[1017px] md:h-[500px] lg:h-[500px] px-[40px] mt-[112px] md:mt-[250px] xl:mt-0 z-20 text-black"
+    >
       <div className="text-center xl:text-left font-medium text-3xl md:px-[100px]">
         Why Sell on <span className="font-bold xl:font-medium">Hajurbuwa?</span>
       </div>
@@ -52,9 +63,9 @@ const WhyHajurbuwa = ({toggle}: {toggle: boolean}) => {
           return <Feature key={id} icon={image} name={name} />;
         })}
       </div>
-    </div>: null
-  );
-};
+    </div>
+  ) : null;
+});
 
 type FeatureProps = {
   key: number;
@@ -65,7 +76,7 @@ type FeatureProps = {
 const Feature = (props: FeatureProps) => {
   const { name, icon } = props;
   return (
-      <div className="flex justify-start items-center">
+    <div className="flex justify-start items-center">
       <Image src={icon} alt={name} />
       <div className="ml-4 font-bold text-lg lg:text-2xl py-8">{name}</div>
     </div>

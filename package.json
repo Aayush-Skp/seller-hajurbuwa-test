@@ -10,6 +10,8 @@
     "prettier": "prettier --write ."
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^37.1.0",
+    "@ckeditor/ckeditor5-react": "^6.0.0",
     "@hookform/resolvers": "^2.9.11",
     "@react-pdf/renderer": "^3.1.9",
     "@reduxjs/toolkit": "^1.9.3",

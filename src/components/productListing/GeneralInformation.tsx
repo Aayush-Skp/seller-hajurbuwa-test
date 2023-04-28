@@ -210,7 +210,7 @@ export default function GeneralInformation(props: any) {
                 <option
                   key={brand.id}
                   value={brand.id}
-                  selected={brand.name === productDetails.brand}
+                  selected={`${brand.id}` === productDetails.brand}
                 >
                   {brand?.name}
                 </option>

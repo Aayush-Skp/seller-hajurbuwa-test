@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react';
-import Pdf from '../components/Pdf';
+import dynamic from 'next/dynamic';
 
-export default function Test() {
-  const [time, setTime] = useState(5);
+const MyComp = () => {
+  const Editor = dynamic(() => import('../components/Editor'), { ssr: false });
+  return <Editor />;
+};
 
-  useEffect(() => {
-    if (time !== 0) {
-      console.log('inside');
-      const timer = setInterval(() => setTime(time - 1), 1000);
-      return () => clearInterval(timer);
-    }
-  }, [time]);
-  console.log(time);
-  return <div className="flex justify-center mt-96">{time}</div>;
-}
+export default MyComp;

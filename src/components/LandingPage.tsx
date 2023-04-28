@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Hero from './Hero';
-import HotSellingProducts from './HotSellingProducts';
 import DashboardStats from './DashboardStats';
 import { getLandingPageData } from '../services/landingPageService';
 import AddProductSection from './AddProductSection';
-// import { getLandingPageData } from '@/services/landingPageService';
 
 export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(true);
@@ -13,7 +11,6 @@ export default function LandingPage() {
   useEffect(() => {
     getLandingPageData()
       .then((res) => {
-        console.log(res);
         setIsLoading(false);
         setLandingPageData(res);
       })
@@ -42,8 +39,7 @@ export default function LandingPage() {
         unshippedOrders={landingPageData?.order_status_array[1]?.count}
         newReviews={landingPageData?.data?.new_review}
       />
-      <AddProductSection/>
-      {/* <HotSellingProducts products={[]} /> */}
+      <AddProductSection />
     </div>
   );
 }
