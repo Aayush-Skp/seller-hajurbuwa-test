@@ -189,9 +189,6 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                             <p className="text-sm text-accent-primary">
                               {cell.value}
                             </p>
-                            <p className="text-sm text-accent-primary">
-                              {row.original.included_items}
-                            </p>
                             <p className="text-sm space-x-2 items-center">
                               <span>Id: {row.original.product_id}</span>
                               <button
