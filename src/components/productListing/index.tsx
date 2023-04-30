@@ -89,7 +89,7 @@ export default function ProductListing() {
   }
 
   return (
-    <section className="h-full w-full pb-5">
+    <section className=" w-full min-h-[75vh]">
       <div className="flex flex-col justify-between h-28 space-y-5 bg-white">
         <div className="max-w-max px-4 pt-4 text-xl font-medium underline decoration-gray-400 underline-offset-8">
           Add Product
@@ -109,9 +109,9 @@ export default function ProductListing() {
           ))}
         </ul>
       </div>
-      <div className="flex h-full divide-x divide-gray-400">
-        <aside className="w-44 h-full border-r border-gray-300"></aside>
-        <div className="w-full px-5 py-5 h-96 space-y-5">
+      <div className="flex">
+        <div className="w-44 min-h-full "></div>
+        <div className="w-full min-h-full px-5 py-5 space-y-5 border-l-2">
           {currentStep === 1 && (
             <GeneralInformation
               setProductDetails={setProductDetails}

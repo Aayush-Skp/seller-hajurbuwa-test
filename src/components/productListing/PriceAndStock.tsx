@@ -134,9 +134,8 @@ export default function PriceAndStock(props: any) {
       ) {
         setBulkValidation({
           isValid: false,
-          message: `Quantity must me greater than ${
-            productDetails.bulk_pricing[index - 1].quantity
-          }`,
+          message: `Quantity must me greater than ${productDetails.bulk_pricing[index - 1].quantity
+            }`,
         });
       } else {
         setBulkValidation({
@@ -153,9 +152,8 @@ export default function PriceAndStock(props: any) {
       ) {
         setBulkValidation({
           isValid: false,
-          message: `Price must me less than ${
-            productDetails.bulk_pricing[index - 1].price
-          }`,
+          message: `Price must me less than ${productDetails.bulk_pricing[index - 1].price
+            }`,
         });
       } else {
         setBulkValidation({
@@ -306,7 +304,7 @@ export default function PriceAndStock(props: any) {
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="px-8 py-2 space-y-5"
+      className="px-8 py-16 h-full min-h-full max-h-screen space-y-5"
     >
       <div className="flex items-center space-x-3">
         <Image src={Info} alt="" />
@@ -375,11 +373,10 @@ export default function PriceAndStock(props: any) {
               <input
                 disabled={productDetails.is_bulk_price}
                 id="price_per_unit"
-                className={`h-10 pl-3 border border-gray-600 rounded-r outline-none ${
-                  productDetails.is_bulk_price
+                className={`h-10 pl-3 border border-gray-600 rounded-r outline-none ${productDetails.is_bulk_price
                     ? 'cursor-not-allowed'
                     : 'cursor-pointer'
-                }`}
+                  }`}
                 {...register('price_per_unit')}
               />
             </div>
@@ -483,13 +480,16 @@ export default function PriceAndStock(props: any) {
       </div>
       <div className="flex justify-end pr-8 pb-10 space-x-3">
         <div className="w-96 flex items-center justify-center space-x-4">
+          <DiscardModal />
           <Button className="py-3 text-sm" onClick={decStep}>
             Back
           </Button>
-          <DiscardModal />
-          <Button type="submit" className="py-3 text-sm">
+          <button
+            className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
+            type="submit"
+          >
             Continue
-          </Button>
+          </button>
         </div>
       </div>
     </form>

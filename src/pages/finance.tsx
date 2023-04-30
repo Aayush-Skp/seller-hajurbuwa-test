@@ -8,9 +8,6 @@ function Finance() {
       <PageWrapper>
         <AccountFinanceStatement />
       </PageWrapper>
-      <div className="flex justify-center my-5">
-        <p className="text-black">© 2023, Hajurbuwa.com</p>
-      </div>
     </>
   );
 }

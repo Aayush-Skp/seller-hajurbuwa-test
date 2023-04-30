@@ -35,9 +35,6 @@ function AccountInfoPage() {
           </div>
         </div>
       </PageWrapper>
-      <div className="flex justify-center my-6">
-        <p className="text-black">© 2023, Hajurbuwa.com</p>
-      </div>
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default function TabsHeader({
   orderListWithCount,
 }: NavigationHeaderProps) {
   return (
-    <div className="sticky top-28 z-10 bg-white w-full border border-gray-300 rounded">
+    <div className="sticky top-28 z-10 bg-white w-full border border-[#e6e6e6] rounded">
       <ul className="flex justify-between space-x-4 px-4 pt-4">
         {tabs.map((header) => {
           let badge;
@@ -30,17 +30,16 @@ export default function TabsHeader({
             <li
               key={header.id}
               onClick={() => onTabClick(header)}
-              className={`${
-                currentTab.id === header.id
-                  ? 'border-blue-700 border-b-[3px]'
-                  : 'text-gray-400'
-              } tracking-wide cursor-pointer`}
+              className={`${currentTab.id === header.id
+                  ? "border-blue-700 border-b-[3px]"
+                  : "text-gray-800"
+                } tracking-wide cursor-pointer`}
             >
-              <div className="relative">
-                <span>{header.label}</span>
-                <span className="absolute -top-1 -left-3 text-lg text-error-primary font-semibold">
-                  {badge}
+              <div className="relative flex justify-center items-center">
+                <span className=" text-sm bg-[#e50131] w-5 mr-1 h-5 rounded-full text-white flex justify-center items-center font-semibold">
+                  {orderListWithCount && badge}
                 </span>
+                <span>{header.label}</span>
               </div>
             </li>
           );

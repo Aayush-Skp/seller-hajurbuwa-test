@@ -134,9 +134,9 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   }
 
   return (
-    <div className="">
+    <div className="border-3 border-gray-150">
       <table {...getTableProps()} className="w-full border-x-4">
-        <thead className="border-b-4 h-5 font-bold bg-gray-150">
+        <thead className="border-b-2 h-5 font-bold bg-[#f5f5f5]">
           {headerGroups.map((headerGroup: any, i: number) => (
             <tr
               className="text-center"
@@ -150,7 +150,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                     className="py-2 text-base uppercase text-black opacity-50"
                     key={i}
                   >
-                    {column.render('Header')}
+                    {column.render("Header")}
                   </th>
                 );
               })}
@@ -174,7 +174,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                       key={i}
                     >
                       {cell.column.Header === 'Product' ? (
-                        <div className="flex items-center space-x-2 py-2 px-2">
+                        <div className="flex items-center justify-start space-x-2 py-2 px-2">
                           {row?.original?.cover_image ? (
                             <div>
                               <Image
@@ -185,7 +185,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                               />
                             </div>
                           ) : null}
-                          <div className="flex flex-col items-start space-y-1">
+                          <div className="flex flex-col items-start justify-center space-y-1">
                             <p className="text-sm text-accent-primary">
                               {cell.value}
                             </p>
@@ -260,7 +260,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                           />
                         </div>
                       ) : cell.column.Header === 'Price' ? (
-                        <div className="flex items-center justify-center">
+                        <div className="flex items-center justify-start">
                           {row.original.is_bulk_pricing ? (
                             <div className="flex space-x-1 items-center">
                               <button
@@ -304,7 +304,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                           ) : null}
                         </div>
                       ) : cell.column.Header === 'Business Price' ? (
-                        <div>
+                        <div className='flex flex-col justify-start items-center'>
                           {!row?.original?.is_bulk_pricing ? (
                             <div>
                               <button

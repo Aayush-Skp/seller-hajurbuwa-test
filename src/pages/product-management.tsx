@@ -8,12 +8,15 @@ function ProductManagementPage() {
   return (
     <div>
       <PageWrapper>
-        <Header header="Product Management" />
-        <ProductManagement />
+        <section className="flex flex-col justify-center items-center w-full">
+          <div className="flex items-end w-full bg-white h-[82px] px-4 pt-2 text-2xl border-b-[3px] border-gray-150">
+            <span className="">Product Management</span>
+          </div>
+          <div className="w-4/5">
+            <ProductManagement />
+          </div>
+        </section>
       </PageWrapper>
-      <div className="flex justify-center my-5">
-        <p className="text-black">© 2023, Hajurbuwa.com</p>
-      </div>
     </div>
   );
 }

@@ -176,7 +176,7 @@ export default function GeneralInformation(props: any) {
   }
 
   return (
-    <div className="px-8 py-2 space-y-5">
+    <div className="px-8 space-y-5">
       <div className="flex items-center space-x-3">
         <Image src={Info} alt="" />
         <p>Fields with asterisks* should be filled.</p>
@@ -246,11 +246,10 @@ export default function GeneralInformation(props: any) {
                 </div>
               ) : (
                 <span
-                  className={`italic ${
-                    !categoryValidation.isValid
-                      ? 'text-error-primary'
-                      : 'text-gray-500'
-                  }`}
+                  className={`italic ${!categoryValidation.isValid
+                    ? 'text-error-primary'
+                    : 'text-gray-500'
+                    }`}
                 >
                   Select a suitable category for your product
                 </span>
@@ -332,9 +331,8 @@ export default function GeneralInformation(props: any) {
                   )}
                 </p>
                 <ul
-                  className={`${
-                    categoryList.length > 4 ? 'overflow-y-auto' : ''
-                  } h-44 divide-y divide-gray-500`}
+                  className={`${categoryList.length > 4 ? 'overflow-y-auto' : ''
+                    } h-44 divide-y divide-gray-500`}
                 >
                   {categoryList?.map((category: any) => (
                     <li
@@ -362,13 +360,13 @@ export default function GeneralInformation(props: any) {
         <div className="flex justify-end space-x-3">
           <div className="w-96 flex items-center justify-center space-x-4">
             <DiscardModal />
-            <Button
-              type="button"
+            <button
               onClick={handleFormSubmit}
-              className="py-3 text-sm"
+              className={`w-full text-white px-10 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
+              type={'button'}
             >
               Continue
-            </Button>
+            </button>
           </div>
         </div>
       </div>

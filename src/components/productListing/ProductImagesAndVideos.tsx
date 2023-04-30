@@ -31,7 +31,7 @@ export default function ProductImagesAndVideos(props: any) {
   }
 
   return (
-    <form className="px-8 py-2 space-y-5">
+    <form className="px-8 py-10 space-y-5">
       <div className="flex items-center space-x-3">
         <Image src={Info} alt="" />
         <p>Fields with asterisks* should be filled.</p>
@@ -662,13 +662,16 @@ export default function ProductImagesAndVideos(props: any) {
       </div>
       <div className="flex justify-end space-x-3">
         <div className="w-96 flex items-center justify-center space-x-4">
+          <DiscardModal />
           <Button className="py-3 text-sm" onClick={decStep}>
             Back
           </Button>
-          <DiscardModal />
-          <Button onClick={handleSubmit} className="py-3 text-sm">
-            Continue
-          </Button>
+          <button
+              className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
+              onClick={handleSubmit}
+            >
+              Continue
+            </button>
         </div>
       </div>
     </form>

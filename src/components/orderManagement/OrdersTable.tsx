@@ -80,9 +80,9 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
   }
 
   return (
-    <div className="border-3">
+    <div className="border-3 border-gray-150">
       <table {...getTableProps()} className="w-full border-x-4">
-        <thead className="border-b-4 h-5 font-bold bg-gray-150">
+        <thead className="border-b-2 h-5 font-bold bg-[#f5f5f5]">
           {headerGroups.map((headerGroup: any, i: number) => (
             <tr
               className="text-center"
@@ -96,7 +96,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                     className="py-2 text-base uppercase text-black opacity-50"
                     key={i}
                   >
-                    {column.render('Header')}
+                    {column.render("Header")}
                   </th>
                 );
               })}
@@ -320,7 +320,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                       ) : cell.column.Header === 'Time Left' ? (
                         <div className="flex flex-col text-xs">
                           {row.original.order_status === 'unshipped' ||
-                          row.original.order_status === 'pending' ? (
+                            row.original.order_status === 'pending' ? (
                             <div>
                               <p className="">
                                 For packing and scheduling for pickup
