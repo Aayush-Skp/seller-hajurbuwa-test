@@ -1,6 +1,5 @@
 import React from 'react';
 import CTA from './CTA';
-import Link from 'next/link';
 
 const Hero = React.forwardRef<any, any>(function Hero(_, ref) {
 
