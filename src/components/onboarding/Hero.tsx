@@ -1,14 +1,8 @@
 import React from 'react';
 import CTA from './CTA';
+import Link from 'next/link';
 
 const Hero = React.forwardRef<any, any>(function Hero(_, ref) {
-  function handleLearnMoreClick() {
-    if (typeof ref === 'object') {
-      ref?.current?.scrollIntoView({
-        // behavior: 'smooth',
-      });
-    }
-  }
 
   return (
     <div className=" w-full flex justify-evenly h-full items-center lg:items-start flex-col px-[60px] lg:px-[100px]">
@@ -21,15 +15,19 @@ const Hero = React.forwardRef<any, any>(function Hero(_, ref) {
         business price?
       </div>
       <CTA />
-      <div className="flex flex-row items-center justify-start text-white hover:text-black hover:bg-white px-[35px] py-[14px] mt-2 lg:mt-4 rounded-full">
-        <div className="flex flex-col px-4">
-          <div className="text-[20px] font-medium z-20">
-            <button className="cursor-pointer" onClick={handleLearnMoreClick}>
-              Learn More
-            </button>
+      {/* <Link href="/login">
+        <a>
+          <div className="flex flex-row items-center justify-start text-white hover:text-black hover:bg-white px-[35px] py-[14px] mt-2 lg:mt-4 rounded-full">
+            <div className="flex flex-col px-4">
+              <div className="text-[20px] font-medium z-20">
+                <button className="cursor-pointer">
+                  Login
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </a>
+      </Link> */}
     </div>
   );
 });
