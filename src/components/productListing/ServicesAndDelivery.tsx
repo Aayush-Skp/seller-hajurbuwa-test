@@ -151,7 +151,7 @@ export default function ServicesAndDelivery(props: any) {
   }
 
   return (
-    <div className="px-8 py-2 space-y-5">
+    <div className="px-8 py-2 pb-[60vh] space-y-5">
       {isProductAddSuccessModalOpen ? (
         <ProductAddSuccessModal
           isUpdate={isUpdate}
@@ -185,11 +185,14 @@ export default function ServicesAndDelivery(props: any) {
         </div>
         <div className="flex justify-end space-x-3">
           <div className="w-96 flex items-center justify-center space-x-4">
+            <DiscardModal />
             <Button className="py-3 text-sm" onClick={decStep}>
               Back
             </Button>
-            <DiscardModal />
-            <Button type="submit">
+            <button
+              className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
+              type="submit"
+            >
               {apiResponse.isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <span className="text-xs">Submitting...</span>
@@ -198,7 +201,8 @@ export default function ServicesAndDelivery(props: any) {
               ) : (
                 'Submit'
               )}
-            </Button>
+
+            </button>
           </div>
         </div>
       </form>

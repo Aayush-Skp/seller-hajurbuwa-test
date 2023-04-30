@@ -15,7 +15,7 @@ type ProductStatus =
 export function getProductByStatus(productStatus: ProductStatus) {
   return httpClient
     .get(`${productUrl}?status=${productStatus}`)
-    .then((res) => res.data.data);
+    .then((res) => res.data);
 }
 
 export function getProductDescription(productId: string | number) {

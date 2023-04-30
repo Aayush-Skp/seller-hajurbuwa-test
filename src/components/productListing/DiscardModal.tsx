@@ -14,7 +14,7 @@ export default function DiscardModal() {
         <button
           onClick={() => setIsOpen(true)}
           type="button"
-          className="py-3 px-16 text-sm border border-blue-700 rounded bg-blue-700 text-white"
+          className="py-3 px-8 text-sm border border-red-700 rounded bg-red-700 text-white"
         >
           Discard
         </button>

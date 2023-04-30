@@ -99,7 +99,7 @@ export default function ProductDetails(props: any) {
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
-      className="px-8 py-2 space-y-5 w-full"
+      className="px-8 py-10 h-full space-y-5 w-full"
     >
       <div className="flex items-center space-x-3">
         <Image src={Info} alt="" />
@@ -179,13 +179,16 @@ export default function ProductDetails(props: any) {
       </div>
       <div className="flex justify-end pr-8 pb-10 space-x-3">
         <div className="w-96 flex items-center justify-center space-x-4">
+          <DiscardModal />
           <Button className="py-3 text-sm" onClick={decStep}>
             Back
           </Button>
-          <DiscardModal />
-          <Button type="submit" className="py-3 text-sm">
-            Continue
-          </Button>
+          <button
+              className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
+              type="submit"
+            >
+              Continue
+            </button>
         </div>
       </div>
     </form>

@@ -5,30 +5,45 @@ type NavigationHeaderProps = {
   currentTab: Tab;
   tabs: Tab[];
   onTabClick: (tab: Tab) => void;
+  statusArray?: any;
 };
 
 export default function TabsHeader({
   currentTab,
   tabs,
   onTabClick,
+  statusArray,
 }: NavigationHeaderProps) {
+  console.log(statusArray)
   return (
-    <div className="sticky top-28 z-10 h-[40px] bg-white w-full">
-      <ul className="flex space-x-[109.38px] h-full pl-[26.44px] pt-[11.27px] pb-[7.85px] bg-gray-200">
-        {tabs.map((header) => (
-          <li
-            key={header.id}
-            onClick={() => onTabClick(header)}
-            className="tracking-wide cursor-pointer"
-          >
-            <span>{header.label}</span>
-            {currentTab.id === header.id ? (
-              <div className="h-[5px] bg-blue-700" />
-            ) : null}
-          </li>
-        ))}
+    <div className="sticky top-28 z-10 bg-white w-full border border-[#e6e6e6] rounded">
+      <ul className="flex justify-between space-x-4 px-4 pt-4">
+        {tabs.map((header) => {
+          let badge;
+          if (statusArray) {
+            badge = statusArray.filter(
+              (status: any) => status.status === header.id
+            )[0]?.count;
+          }
+          return (
+            <li
+              key={header.id}
+              onClick={() => onTabClick(header)}
+              className={`${currentTab.id === header.id
+                  ? "border-blue-700 border-b-[3px]"
+                  : "text-gray-800"
+                } tracking-wide cursor-pointer`}
+            >
+              <div className="relative flex justify-center items-center">
+                <span className=" text-sm bg-[#e50131] w-5 mr-1 h-5 rounded-full text-white flex justify-center items-center font-semibold">
+                  {statusArray && badge}
+                </span>
+                <span>{header.label}</span>
+              </div>
+            </li>
+          );
+        })}
       </ul>
-      <div className="h-[5px]" />
     </div>
   );
 }
