@@ -75,19 +75,17 @@ export default function ProductManagement() {
   }, [currentTab]);
 
   return (
-    <section className="flex flex-col justify-center items-center w-full">
-      <div className="w-4/5">
-        <Header
-          tabs={tabs}
-          currentTab={currentTab}
-          onTabClick={handleTabChange}
-        />
-        <ProductManagementTable
-          data={productList}
-          productStatus={currentTab}
-          getAllProducts={getAllProducts}
-        />
-      </div>
+    <section className="">
+      <Header
+        tabs={tabs}
+        currentTab={currentTab}
+        onTabClick={handleTabChange}
+      />
+      <ProductManagementTable
+        data={productList}
+        productStatus={currentTab}
+        getAllProducts={getAllProducts}
+      />
     </section>
   );
 }

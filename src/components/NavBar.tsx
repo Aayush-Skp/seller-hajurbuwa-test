@@ -8,10 +8,27 @@ import Dropdown from './Dropdown';
 
 import { useClickAwayListener } from '../hooks/useClickAwayListener';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 const Navbar = () => {
   const { isNodeVisible, nodeRef, setIsNodeVisible } = useClickAwayListener();
   const router = useRouter();
+
+  const [sellerDetails, setSellerDetails] = useState<any>({});
+
+  useEffect(() => {
+    try {
+      const details = localStorage.getItem('userDetails');
+
+      if (typeof details === 'string') {
+        setSellerDetails(JSON.parse(details));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
+
+  console.log(sellerDetails, 'from navigation bar');
 
   function handleLogoutAction() {
     try {
@@ -41,7 +58,7 @@ const Navbar = () => {
             </div>
             <div className="flex-shrink-0 flex items-center justify-center px-10 text-lg shadow-xl h-7 w-28 mx-5">
               <span className="font-bold text-sm whitespace-nowrap">
-                XYZ shop
+                {sellerDetails?.business_name}
               </span>
             </div>
             <div>

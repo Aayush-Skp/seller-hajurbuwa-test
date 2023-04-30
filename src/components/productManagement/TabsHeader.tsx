@@ -13,22 +13,22 @@ export default function TabsHeader({
   onTabClick,
 }: NavigationHeaderProps) {
   return (
-    <div className="sticky top-28 z-10 bg-white w-full border border-gray-300 rounded">
-      <ul className="flex justify-between space-x-4 px-4 pt-4">
+    <div className="sticky top-28 z-10 h-[40px] bg-white w-full">
+      <ul className="flex space-x-[109.38px] h-full pl-[26.44px] pt-[11.27px] pb-[7.85px] bg-gray-200">
         {tabs.map((header) => (
           <li
             key={header.id}
             onClick={() => onTabClick(header)}
-            className={`${
-              currentTab.id === header.id
-                ? 'border-blue-700 border-b-[3px]'
-                : 'text-gray-400'
-            } tracking-wide cursor-pointer`}
+            className="tracking-wide cursor-pointer"
           >
-            {header.label}
+            <span>{header.label}</span>
+            {currentTab.id === header.id ? (
+              <div className="h-[5px] bg-blue-700" />
+            ) : null}
           </li>
         ))}
       </ul>
+      <div className="h-[5px]" />
     </div>
   );
 }

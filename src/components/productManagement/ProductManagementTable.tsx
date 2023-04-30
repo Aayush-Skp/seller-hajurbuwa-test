@@ -134,7 +134,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   }
 
   return (
-    <div className="border-3">
+    <div className="">
       <table {...getTableProps()} className="w-full border-x-4">
         <thead className="border-b-4 h-5 font-bold bg-gray-150">
           {headerGroups.map((headerGroup: any, i: number) => (

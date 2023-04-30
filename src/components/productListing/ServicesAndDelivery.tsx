@@ -41,12 +41,6 @@ export default function ServicesAndDelivery(props: any) {
   }
 
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
-    setApiResponse({
-      isLoading: true,
-      isError: false,
-      errorMsg: '',
-    });
-
     e.preventDefault();
 
     if (productDetails.package_weight === '') {
@@ -69,6 +63,12 @@ export default function ServicesAndDelivery(props: any) {
 
       return;
     }
+
+    setApiResponse({
+      isLoading: true,
+      isError: false,
+      errorMsg: '',
+    });
 
     if (isUpdate) {
       const params = new FormData();
