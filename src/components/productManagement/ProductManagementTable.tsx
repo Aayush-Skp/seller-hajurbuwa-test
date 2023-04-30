@@ -10,6 +10,8 @@ import AddQuantityDiscountModal from './AddQuantityDiscountModal';
 import { MdContentCopy } from 'react-icons/md';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
+import InputLabel from '../common/InputLabel';
+import CheckboxInput from '../common/CheckboxInput';
 
 type ITableData = {
   product_id: string;
@@ -71,6 +73,17 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   getAllProducts,
 }) => {
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+
+  const [isStockAvailabilityModalOpen, setIsStockAvailabilityModalOpen] =
+    useState(false);
+
+  const [stockToBeUpdated, setStockToBeUpdated] = useState<{
+    id: string | number;
+    value: number | null;
+  }>({
+    id: '',
+    value: null,
+  });
 
   const [isQuantityDiscountModalOpen, setIsQuantityDiscountModalOpen] =
     useState(false);
@@ -194,11 +207,52 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                         </div>
                       ) : cell.column.Header === 'Stock Availability' ? (
                         <div>
-                          <StockAvailabilityModal
-                            in_stock={cell.value}
-                            productId={row.original.id}
-                            updateProductAttribute={updateProductAttribute}
-                          />
+                          <div className="flex flex-col items-center space-y-2">
+                            <div className="flex justify-center items-center space-x-1">
+                              <InputLabel label="Yes" />
+                              <CheckboxInput
+                                checked={cell.value === 1 ? true : false}
+                                onChange={() => {
+                                  if (cell.value === 0) {
+                                    setStockToBeUpdated({
+                                      id: `${row.original.id}`,
+                                      value: 1,
+                                    });
+
+                                    setIsStockAvailabilityModalOpen(true);
+                                  }
+                                }}
+                              />
+                            </div>
+                            <div className="flex justify-center items-center space-x-1">
+                              <InputLabel label="No" />
+                              <CheckboxInput
+                                checked={cell.value === 0 ? true : false}
+                                onChange={() => {
+                                  if (cell.value === 1) {
+                                    setStockToBeUpdated({
+                                      id: `${row.original.id}`,
+                                      value: 0,
+                                    });
+
+                                    setIsStockAvailabilityModalOpen(true);
+                                  }
+                                }}
+                              />
+                            </div>
+                          </div>
+                          {isStockAvailabilityModalOpen ? (
+                            <StockAvailabilityModal
+                              isStockAvailabilityModalOpen={
+                                isStockAvailabilityModalOpen
+                              }
+                              setIsStockAvailabilityModalOpen={
+                                setIsStockAvailabilityModalOpen
+                              }
+                              stockToBeUpdated={stockToBeUpdated}
+                              updateProductAttribute={updateProductAttribute}
+                            />
+                          ) : null}
                         </div>
                       ) : cell.column.Header === 'Action' ? (
                         <div className="relative">

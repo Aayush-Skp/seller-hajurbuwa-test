@@ -60,6 +60,8 @@ export default function ProductManagement() {
   function getAllProducts() {
     getProductByStatus(currentTab.id)
       .then((res) => {
+        console.log(currentTab.id);
+        console.log(res);
         setProductList(res);
       })
       .catch((err) => {

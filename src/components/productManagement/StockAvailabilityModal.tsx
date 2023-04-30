@@ -2,12 +2,14 @@ import Image from 'next/image';
 import { useState } from 'react';
 import Modal from 'react-modal';
 import checkMark from '../../../public/icons/check-mark.svg';
-import InputLabel from '../common/InputLabel';
-import RadioInput from '../common/RadioInput';
 
 type StockAvailabilityModalProps = {
-  in_stock: number;
-  productId?: string | number;
+  isStockAvailabilityModalOpen: boolean;
+  setIsStockAvailabilityModalOpen: (value: boolean) => void;
+  stockToBeUpdated: {
+    id: string | number;
+    value: number | null;
+  };
   updateProductAttribute: (
     productId: string | number,
     updatedField: any
@@ -17,17 +19,19 @@ type StockAvailabilityModalProps = {
 export default function StockAvailabilityModal(
   props: StockAvailabilityModalProps
 ) {
-  const { in_stock, productId, updateProductAttribute } = props;
+  const {
+    stockToBeUpdated,
+    updateProductAttribute,
+    isStockAvailabilityModalOpen,
+    setIsStockAvailabilityModalOpen,
+  } = props;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [responseState, setResponseState] = useState({
     isLoading: false,
     isIdle: true,
     isError: false,
     message: '',
   });
-
-  const [isStockAvailable, setIsStockAvailable] = useState(0);
 
   function handleStockStatusChange() {
     setResponseState({
@@ -38,12 +42,12 @@ export default function StockAvailabilityModal(
 
     const formData = new FormData();
 
-    formData.append('in_stock', isStockAvailable.toString());
+    formData.append('in_stock', stockToBeUpdated.value!.toString());
     formData.append('_method', 'PUT');
 
-    updateProductAttribute(`${productId}`, formData)
+    updateProductAttribute(`${stockToBeUpdated.id}`, formData)
       .then((res) => {
-        setIsModalOpen(false);
+        setIsStockAvailabilityModalOpen(false);
         setResponseState({
           ...responseState,
           isLoading: false,
@@ -63,38 +67,14 @@ export default function StockAvailabilityModal(
       });
   }
 
+  console.log(stockToBeUpdated);
+
   return (
     <div>
-      <div className="flex flex-col items-center space-y-2">
-        <div className="flex justify-center items-center space-x-1">
-          <InputLabel label="Yes" />
-          <RadioInput
-            name={productId as string}
-            checked={in_stock === 1 ? true : false}
-            onClick={() => {
-              console.log(productId);
-              setIsStockAvailable(1);
-              !in_stock && setIsModalOpen(true);
-            }}
-          />
-        </div>
-        <div className="flex justify-center items-center space-x-1">
-          <InputLabel label="No" />
-          <RadioInput
-            checked={in_stock === 0 ? true : false}
-            name={productId as string}
-            onClick={() => {
-              console.log(productId);
-              setIsStockAvailable(0);
-              in_stock && setIsModalOpen(true);
-            }}
-          />
-        </div>
-      </div>
       <Modal
-        isOpen={isModalOpen}
+        isOpen={isStockAvailabilityModalOpen}
         onRequestClose={() => {
-          setIsModalOpen(false);
+          setIsStockAvailabilityModalOpen(false);
         }}
         className="w-2/3 h-1/4 bg-white rounded-md flex flex-col justify-center items-center"
         style={{
@@ -107,16 +87,17 @@ export default function StockAvailabilityModal(
 
           overlay: {
             zIndex: 100,
-            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            backgroundColor: 'rgba(0, 0, 0, 0.05)',
           },
         }}
+        ariaHideApp={false}
       >
         <div className="flex flex-col items-center justify-center space-y-2">
           <div className="flex items-center space-x-1">
             <Image src={checkMark} alt="" />
             <span>
               {`Are you sure you want to change stock status from ${
-                in_stock
+                !!stockToBeUpdated.value
                   ? 'In Stock to Out of stock'
                   : 'Out of Stock stock to In Stock'
               }
@@ -126,7 +107,7 @@ export default function StockAvailabilityModal(
           <div className="space-x-4">
             <button
               className="text-error-primary border border-error-primary hover:text-error-secondary hover:border-error-secondary transition-colors px-5 py-1 rounded"
-              onClick={() => setIsModalOpen(false)}
+              onClick={() => setIsStockAvailabilityModalOpen(false)}
             >
               No, Cancel
             </button>

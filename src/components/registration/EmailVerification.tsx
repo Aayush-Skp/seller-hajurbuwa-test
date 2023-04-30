@@ -56,20 +56,34 @@ export default function EmailVerification(props: PhoneVerificationProps) {
   }
 
   function handleSubmit() {
+    if (registrationData.emailOtp === '') {
+      setOtpValidation({
+        status: false,
+        message: 'Please enter otp',
+      });
+    }
+
     verifyOTPSentToEmail(registrationData.emailOtp)
       .then((res) => {
+        console.log(res);
         incStep();
       })
-      .catch(() => {
-        setOtpValidation({
-          status: false,
-          message: '',
-        });
+      .catch((err) => {
+        if (err.response.status === 400)
+          setOtpValidation({
+            status: false,
+            message: 'OTP you entered is invalid',
+          });
       });
   }
 
   function handleSendOTP() {
     setOtpTimeOut(59);
+    setOtpValidation({
+      status: true,
+      message: '',
+    });
+
     emailVerificationService(
       registrationData.email,
       `${registrationData.first_name} ${registrationData.last_name}`
@@ -113,7 +127,8 @@ export default function EmailVerification(props: PhoneVerificationProps) {
             <div className="text-xs text-accent-primary flex justify-between">
               <button onClick={decStep}>Change email</button>
               <button
-                disabled={otpTimeOut === 0 ? false : true}
+                className={`${!!otpTimeOut ? 'cursor-not-allowed' : ''}`}
+                disabled={otpTimeOut !== 0}
                 onClick={handleSendOTP}
               >
                 Resend OTP {!!otpTimeOut ? `(${otpTimeOut})` : ''}
@@ -122,7 +137,11 @@ export default function EmailVerification(props: PhoneVerificationProps) {
           </div>
         </div>
       </div>
-      <Button className="my-2" onClick={handleSubmit}>
+      <Button
+        disabled={registrationData.emailOtp === ''}
+        className="my-2"
+        onClick={handleSubmit}
+      >
         Continue
       </Button>
     </div>
