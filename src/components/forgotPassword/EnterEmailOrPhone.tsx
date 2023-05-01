@@ -14,6 +14,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { checkIfEmailExist } from '../../services/emailVerificationService';
 import { BiArrowBack } from 'react-icons/bi';
+import Spinner from '../loader/Spinner';
 
 type EnterEmailOrPasswordProps = {
   incStep: () => void;
@@ -40,9 +41,10 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
 
     checkIfEmailExist(data.email)
       .then((res) => {
-        if (res === 'error') {
+        if (res.status === 'error') {
           forgotPasswordService(data)
             .then((res) => {
+              console.log(res);
               incStep();
             })
             .catch((err) => {
@@ -112,8 +114,15 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
               </div>
             </div>
             <div>
-              <Button type="submit">
-                {apiResponse.loading ? 'Loading...' : 'Continue'}
+              <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
+                {apiResponse.loading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <span>Please wait...</span>
+                    <Spinner />
+                  </div>
+                ) : (
+                  'Continue'
+                )}
               </Button>
             </div>
             <div className="flex items-center space-x-4 text-sm">

@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import PageWrapper from '../../components/PageWrapper';
 import authenticatedRoute from '../../components/WithAuth';
+import { imageServerBaseUrl } from '../../constants/serverConstants';
 
 function ProductDescriptionPage() {
   const [product, setProduct] = useState<any>({});
@@ -60,7 +61,7 @@ function ProductDescriptionPage() {
               <p className="text-sm underline">General Information</p>
               <div className="flex items-center border-b border-gray-900 py-1">
                 <p className="w-36 text-gray-800">Category</p>
-                <p>{product.product_type}</p>
+                <p>{product.category_tree}</p>
               </div>
               <div className="flex items-center border-b border-gray-900 py-1">
                 <p className="w-36 text-gray-800">Brand</p>
@@ -143,7 +144,7 @@ function ProductDescriptionPage() {
                     <Image
                       width={100}
                       height={100}
-                      src={`https://hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com${product.cover_image}`}
+                      src={`${imageServerBaseUrl}${product.cover_image}`}
                       alt=""
                     />
                   )}
@@ -171,7 +172,7 @@ function ProductDescriptionPage() {
               <p className="text-sm underline">Services and Delivery </p>
               <div className="flex items-center py-1">
                 <p className="w-36 text-gray-800">Package Weight</p>
-                <p>{product.package_weight}</p>
+                <p>{product.package_weight} kg</p>
               </div>
             </div>
           </div>

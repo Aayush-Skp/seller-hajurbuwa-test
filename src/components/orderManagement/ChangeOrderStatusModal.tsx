@@ -34,6 +34,7 @@ export default function ChangeOrderStatusModal(
       reason: cancelReason,
     })
       .then((res) => {
+        console.log(res);
         getAllOrders();
         setIsOrderStatusModelOpen(false);
       })
@@ -63,6 +64,7 @@ export default function ChangeOrderStatusModal(
             backgroundColor: 'rgba(0, 0, 0, 0.3)',
           },
         }}
+        ariaHideApp={false}
       >
         <div className="flex flex-col items-center justify-center space-y-2">
           <div className="flex items-center space-x-1">
@@ -102,7 +104,7 @@ export default function ChangeOrderStatusModal(
               onClick={handleStatusChange}
               className="px-5 py-2 border border-accent-primary rounded text-white bg-accent-primary"
             >
-              Yes, Confirm
+              {isLoading ? 'Loading...' : 'Yes, Confirm'}
             </button>
           </div>
         </div>

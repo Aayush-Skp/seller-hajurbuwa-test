@@ -28,8 +28,6 @@ const Navbar = () => {
     }
   }, []);
 
-  console.log(sellerDetails, 'from navigation bar');
-
   function handleLogoutAction() {
     try {
       localStorage.removeItem('userDetails');

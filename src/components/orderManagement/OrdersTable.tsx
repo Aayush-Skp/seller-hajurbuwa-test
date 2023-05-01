@@ -71,11 +71,12 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
     tableInstance;
 
   function formatDate(date: string) {
-    return new Date(date).toLocaleDateString('en-us', {
-      weekday: 'short',
-      year: '2-digit',
+    return new Date(date).toLocaleTimeString('en-us', {
+      year: 'numeric',
       month: 'short',
       day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
     });
   }
 
@@ -96,7 +97,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                     className="py-2 text-base uppercase text-black opacity-50"
                     key={i}
                   >
-                    {column.render("Header")}
+                    {column.render('Header')}
                   </th>
                 );
               })}
@@ -244,12 +245,12 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                             </div>
                           ) : null}
                           <ChangeOrderStatusModal
-                            getAllOrders={getAllOrders}
-                            isOrderStatusModelOpen={isOrderStatusModelOpen}
                             orderStatus={orderStatus}
+                            getAllOrders={getAllOrders}
                             setIsOrderStatusModelOpen={
                               setIsOrderStatusModelOpen
                             }
+                            isOrderStatusModelOpen={isOrderStatusModelOpen}
                           />
                           <div className="absolute w-full flex justify-center top-0 left-0 z-50">
                             {isPrintSlip ? (
@@ -320,7 +321,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                       ) : cell.column.Header === 'Time Left' ? (
                         <div className="flex flex-col text-xs">
                           {row.original.order_status === 'unshipped' ||
-                            row.original.order_status === 'pending' ? (
+                          row.original.order_status === 'pending' ? (
                             <div>
                               <p className="">
                                 For packing and scheduling for pickup

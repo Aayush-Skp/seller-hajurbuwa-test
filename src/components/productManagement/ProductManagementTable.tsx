@@ -12,6 +12,7 @@ import { imageServerBaseUrl } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 import InputLabel from '../common/InputLabel';
 import CheckboxInput from '../common/CheckboxInput';
+import Link from 'next/link';
 
 type ITableData = {
   product_id: string;
@@ -21,6 +22,7 @@ type ITableData = {
   in_stock?: string;
   action?: string;
   suspension_reason?: string;
+  violation_description?: string;
 };
 
 type ProductManagementTableProps = {
@@ -38,6 +40,7 @@ type TableHeader =
   | 'Business Price'
   | 'Stock Availability'
   | 'Suspension Reason'
+  | 'Violation Description'
   | 'Action';
 
 type Accessor =
@@ -45,7 +48,7 @@ type Accessor =
   | 'price_per_unit'
   | 'bulk_pricing'
   | 'in_stock'
-  | 'suspension_reason'
+  | 'violation_description'
   | 'action';
 
 const columns: { Header: TableHeader; accessor: Accessor }[] = [
@@ -63,7 +66,18 @@ const columnsWithSuspensionReason: {
   { Header: 'Product', accessor: 'product_name' },
   { Header: 'Price', accessor: 'price_per_unit' },
   { Header: 'Business Price', accessor: 'bulk_pricing' },
-  { Header: 'Suspension Reason', accessor: 'suspension_reason' },
+  { Header: 'Violation Description', accessor: 'violation_description' },
+  { Header: 'Action', accessor: 'action' },
+];
+
+const columnsWithViolationDescription: {
+  Header: TableHeader;
+  accessor: Accessor;
+}[] = [
+  { Header: 'Product', accessor: 'product_name' },
+  { Header: 'Price', accessor: 'price_per_unit' },
+  { Header: 'Business Price', accessor: 'bulk_pricing' },
+  { Header: 'Violation Description', accessor: 'violation_description' },
   { Header: 'Action', accessor: 'action' },
 ];
 
@@ -115,7 +129,11 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
 
   const tableInstance = useTable({
     columns:
-      productStatus.id === 'suspended' ? columnsWithSuspensionReason : columns,
+      productStatus.id === 'suspended'
+        ? columnsWithSuspensionReason
+        : productStatus.id === 'locked'
+        ? columnsWithViolationDescription
+        : columns,
     data,
   });
 
@@ -132,6 +150,8 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
       getAllProducts()
     );
   }
+
+  console.log(productStatus);
 
   return (
     <div className="border-3 border-gray-150">
@@ -150,7 +170,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                     className="py-2 text-base uppercase text-black opacity-50"
                     key={i}
                   >
-                    {column.render("Header")}
+                    {column.render('Header')}
                   </th>
                 );
               })}
@@ -186,9 +206,16 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                             </div>
                           ) : null}
                           <div className="flex flex-col items-start justify-center space-y-1">
-                            <p className="text-sm text-accent-primary">
-                              {cell.value}
-                            </p>
+                            <Link
+                              href={`/product/description/?id=${row.original.id}`}
+                            >
+                              <a
+                                target="_blank"
+                                className="text-sm text-accent-primary"
+                              >
+                                {cell.value}
+                              </a>
+                            </Link>
                             <p className="text-sm space-x-2 items-center">
                               <span>Id: {row.original.product_id}</span>
                               <button
@@ -273,7 +300,11 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                 }}
                                 className="text-sm text-accent-primary hover:underline"
                               >
-                                Add Singular Price
+                                {productStatus.id !== 'locked' ? (
+                                  'Add Singular Price'
+                                ) : (
+                                  <span className="text-black text-xl">-</span>
+                                )}
                               </button>
                             </div>
                           ) : (
@@ -289,7 +320,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                 }}
                                 className="text-accent-primary hover:underline"
                               >
-                                Edit
+                                {productStatus.id !== 'locked' ? 'Edit' : null}
                               </button>
                             </div>
                           )}
@@ -304,7 +335,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                           ) : null}
                         </div>
                       ) : cell.column.Header === 'Business Price' ? (
-                        <div className='flex flex-col justify-start items-center'>
+                        <div className="flex flex-col justify-start items-center">
                           {!row?.original?.is_bulk_pricing ? (
                             <div>
                               <button
@@ -317,7 +348,11 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                 }}
                                 className="text-xs text-blue-700 hover:underline decoration-blue-700 cursor-pointer"
                               >
-                                Add Quantity Discounts
+                                {productStatus.id !== 'locked' ? (
+                                  'Add Quantity Discounts'
+                                ) : (
+                                  <span className="text-black text-xl">-</span>
+                                )}
                               </button>
 
                               {isAddQuantityDiscountModalOpen ? (
@@ -380,7 +415,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                   setIsQuantityDiscountModalOpen(true);
                                 }}
                               >
-                                Edit
+                                {productStatus.id !== 'locked' ? 'Edit' : null}
                               </button>
                             </div>
                           )}

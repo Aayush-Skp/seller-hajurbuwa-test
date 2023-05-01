@@ -116,7 +116,7 @@ export default function ActionButtons({
         <div className="absolute -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
             className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Activate')}
+            onClick={() => handleAction('Deactivate')}
           >
             Deactivate
           </button>
@@ -134,7 +134,7 @@ export default function ActionButtons({
         <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
             className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Activate')}
+            onClick={() => handleAction('Deactivate')}
           >
             Deactivate
           </button>
@@ -154,7 +154,7 @@ export default function ActionButtons({
             className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
             onClick={() => handleAction('Activate')}
           >
-            Deactivate
+            Activate
           </button>
           <button
             className="text-xs border border-error-primary text-error-primary px-5 py-2"
@@ -169,7 +169,7 @@ export default function ActionButtons({
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
-            className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
+            className="text-xs border border-error-primary text-error-primary px-5 py-2"
             onClick={() => handleAction('Delete')}
           >
             Delete
@@ -181,10 +181,10 @@ export default function ActionButtons({
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
-            className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Deactivate')}
+            className="text-xs border border-error-primary text-error-primary px-5 py-2"
+            onClick={() => handleAction('Delete')}
           >
-            Deactivate
+            Delete
           </button>
         </div>
       );
@@ -193,10 +193,10 @@ export default function ActionButtons({
       return (
         <div className="absolute top-10 z-30 flex flex-col space-y-2 w-32 bg-white border border-gray-300 rounded shadow-sm">
           <button
-            className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Deactivate')}
+            className="text-xs border border-error-primary text-error-primary px-5 py-2"
+            onClick={() => handleAction('Delete')}
           >
-            Deactivate
+            Delete
           </button>
         </div>
       );

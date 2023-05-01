@@ -5,19 +5,19 @@ import { getProductByStatus } from '../../services/productService';
 
 export type Tab = {
   id:
-  | 'online'
-  | 'pending'
-  | 'out_of_stock'
-  | 'deactivated'
-  | 'suspended'
-  | 'locked';
+    | 'online'
+    | 'pending'
+    | 'out_of_stock'
+    | 'deactivated'
+    | 'suspended'
+    | 'locked';
   label:
-  | 'Online'
-  | 'Pending QC'
-  | 'Out of stock'
-  | 'Inactive'
-  | 'Suspended'
-  | 'Locked';
+    | 'Online'
+    | 'Pending QC'
+    | 'Out of stock'
+    | 'Inactive'
+    | 'Suspended'
+    | 'Locked';
 };
 
 const tabs: Tab[] = [
@@ -61,6 +61,7 @@ export default function ProductManagement() {
   function getAllProducts() {
     getProductByStatus(currentTab.id)
       .then((res) => {
+        console.log(res);
         setProductList(res.data);
         console.log(res.statusCount);
         setStatusArray(res.statusCount);

@@ -63,6 +63,7 @@ export default function AccountFinanceStatement() {
             setDateList(res);
             setSellerId(details.id);
             setIsLoading(false);
+            console.log(res);
           })
           .then(() => {
             if (response[0]?.start_date)

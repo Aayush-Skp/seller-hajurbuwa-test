@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getOrdersByStatus } from '../../services/orderServices';
 import OrdersTable from './OrdersTable';
 import TabsHeader from './TabsHeader';
+import { current } from '@reduxjs/toolkit';
 
 export type OrderState =
   | 'pending'
@@ -78,14 +79,16 @@ export default function Orders() {
   function getAllOrders() {
     setOrderList([]);
     setIsLoading(true);
+    console.log(currentTab.id);
     getOrdersByStatus(currentTab.id)
       .then((res) => {
+        console.log(res);
         setOrderList(res.data);
         setOrderListWithCount(res.status_array);
         setIsLoading(false);
       })
       .catch((err) => {
-        err.response.status === 404 && setOrderList([]);
+        err?.response?.status === 404 && setOrderList([]);
         setIsLoading(false);
         console.log(err);
       });

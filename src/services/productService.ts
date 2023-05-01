@@ -147,10 +147,11 @@ export function addProduct(productDetails: any) {
     formData.append('cover_image', productDetails.cover_image);
   }
 
-  formData.append(
-    'featured_highlights',
-    productDetails.featured_highlights.join(',')
+  const filteredHighlights = productDetails.featured_highlights.filter(
+    (item: string) => item !== ''
   );
+
+  formData.append('featured_highlights', filteredHighlights.join(','));
 
   let bulkPrices = productDetails.bulk_pricing.map((price: any) => {
     return [price.quantity, price.price];
