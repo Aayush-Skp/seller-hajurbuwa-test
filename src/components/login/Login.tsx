@@ -183,13 +183,13 @@ export default function Login() {
                 <p className="w-full text-sm">
                   By continuing you agree to Hajurbuwa.com’s
                   <span className="text-accent-primary">
-                    <Link href="">
+                    <Link href="https://www.hajurbuwa.com/policies/terms-of-use">
                       <a> Terms of Use </a>
                     </Link>
                   </span>
                   and
                   <span className="text-accent-primary">
-                    <Link href="">
+                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
                       <a> Privacy Policy.</a>
                     </Link>
                   </span>
