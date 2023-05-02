@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useTable } from 'react-table';
+import { useGlobalFilter, useTable } from 'react-table';
 import Image from 'next/image';
 import Button from '../common/Button';
 import Link from 'next/link';
 import ChangeOrderStatusModal from './ChangeOrderStatusModal';
 import PackagingSlip from './PackagingSlip';
+import searchIcon from '../../../public/icons/searchIcon.svg';
 import cancelIcon from '../../../public/icons/cancel.svg';
 import { Tab } from '.';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
@@ -66,9 +67,15 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
     status: '',
   });
 
-  const tableInstance = useTable({ columns, data });
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;
+  const {
+    rows,
+    state,
+    prepareRow,
+    headerGroups,
+    getTableProps,
+    getTableBodyProps,
+    setGlobalFilter,
+  } = useTable({ columns, data }, useGlobalFilter);
 
   function formatDate(date: string) {
     return new Date(date).toLocaleTimeString('en-us', {

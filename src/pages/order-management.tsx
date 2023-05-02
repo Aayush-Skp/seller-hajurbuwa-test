@@ -5,11 +5,15 @@ import authenticatedRoute from '../components/WithAuth';
 import Header from '../components/Header';
 
 function OrderManagement() {
+  function handleSearch() {}
+
   return (
     <div>
       <PageWrapper>
-        <Header header="Order Management" />
-        <Orders />
+        <div className="relative">
+          <Header header="Order Management" />
+          <Orders />
+        </div>
       </PageWrapper>
     </div>
   );

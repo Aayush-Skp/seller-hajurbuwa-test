@@ -6,7 +6,7 @@ import PasswordChangeSuccess from './PasswordChangeSuccess';
 
 export default function ForgotPassword() {
   const [step, setStep] = useState(1);
-  const [otp, setOtp] = useState<string>('');
+  const [otp, setOtp] = useState('');
   const [email, setEmail] = useState('');
 
   function handleOTPChange(value: string) {

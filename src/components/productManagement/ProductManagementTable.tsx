@@ -10,9 +10,11 @@ import AddQuantityDiscountModal from './AddQuantityDiscountModal';
 import { MdContentCopy } from 'react-icons/md';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
+import searchIcon from '../../../public/icons/searchIcon.svg';
 import InputLabel from '../common/InputLabel';
 import CheckboxInput from '../common/CheckboxInput';
 import Link from 'next/link';
+import { useGlobalFilter } from 'react-table';
 
 type ITableData = {
   product_id: string;
@@ -127,18 +129,26 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
     value: '',
   });
 
-  const tableInstance = useTable({
-    columns:
-      productStatus.id === 'suspended'
-        ? columnsWithSuspensionReason
-        : productStatus.id === 'locked'
-        ? columnsWithViolationDescription
-        : columns,
-    data,
-  });
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    tableInstance;
+  const {
+    rows,
+    state,
+    prepareRow,
+    headerGroups,
+    getTableProps,
+    getTableBodyProps,
+    setGlobalFilter,
+  } = useTable(
+    {
+      columns:
+        productStatus.id === 'suspended'
+          ? columnsWithSuspensionReason
+          : productStatus.id === 'locked'
+          ? columnsWithViolationDescription
+          : columns,
+      data,
+    },
+    useGlobalFilter
+  );
 
   const [__, copyProductId] = useCopyToClipboard();
 
@@ -151,10 +161,20 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
     );
   }
 
-  console.log(productStatus);
-
   return (
     <div className="border-3 border-gray-150">
+      <div className="absolute top-10 right-10">
+        <div className="relative">
+          <div className="absolute flex items-center h-full pl-2">
+            <Image src={searchIcon} alt="search" />
+          </div>
+          <input
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-10 text-base font-normal w-[542px] h-[35px] bg-gray-100 rounded-md outline-none"
+            placeholder="Search Product(s) by Product Id or product name"
+          />
+        </div>
+      </div>
       <table {...getTableProps()} className="w-full border-x-4">
         <thead className="border-b-2 h-5 font-bold bg-[#f5f5f5]">
           {headerGroups.map((headerGroup: any, i: number) => (

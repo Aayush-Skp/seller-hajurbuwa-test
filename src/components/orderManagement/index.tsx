@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { getOrdersByStatus } from '../../services/orderServices';
 import OrdersTable from './OrdersTable';
 import TabsHeader from './TabsHeader';
-import { current } from '@reduxjs/toolkit';
+import searchIcon from '../../../public/icons/searchIcon.svg';
+import Image from 'next/image';
 
 export type OrderState =
   | 'pending'
@@ -100,6 +101,18 @@ export default function Orders() {
 
   return (
     <section className="flex flex-col justify-center items-center w-full">
+      <div className="absolute top-10 right-10">
+        <div className="relative">
+          <div className="absolute flex items-center h-full pl-2">
+            <Image src={searchIcon} alt="search" />
+          </div>
+          <input
+            onChange={(e) => console.log(e.target.value)}
+            className="pl-10 text-base font-normal w-[542px] h-[35px] bg-gray-100 rounded-md outline-none"
+            placeholder="Search Order(s) by Order Id"
+          />
+        </div>
+      </div>
       <div className="w-4/5">
         <TabsHeader
           tabs={tabs}

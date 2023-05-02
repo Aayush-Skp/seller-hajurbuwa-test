@@ -7,14 +7,14 @@ export type Tab = {
   id:
     | 'online'
     | 'pending'
-    | 'out_of_stock'
+    // | 'out_of_stock'
     | 'deactivated'
     | 'suspended'
     | 'locked';
   label:
     | 'Online'
     | 'Pending QC'
-    | 'Out of stock'
+    // | 'Out of stock'
     | 'Inactive'
     | 'Suspended'
     | 'Locked';
@@ -29,10 +29,10 @@ const tabs: Tab[] = [
     id: 'pending',
     label: 'Pending QC',
   },
-  {
-    id: 'out_of_stock',
-    label: 'Out of stock',
-  },
+  // {
+  //   id: 'out_of_stock',
+  //   label: 'Out of stock',
+  // },
   {
     id: 'deactivated',
     label: 'Inactive',
@@ -61,14 +61,13 @@ export default function ProductManagement() {
   function getAllProducts() {
     getProductByStatus(currentTab.id)
       .then((res) => {
-        console.log(res);
         setProductList(res.data);
         console.log(res.statusCount);
         setStatusArray(res.statusCount);
       })
       .catch((err) => {
         console.log(err);
-        if (err.response.status === 404) setProductList([]);
+        if (err?.response?.status === 404) setProductList([]);
       });
   }
 
