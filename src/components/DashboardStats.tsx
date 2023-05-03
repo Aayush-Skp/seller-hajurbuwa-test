@@ -78,9 +78,7 @@ const DashboardElements = (DashboardProp: dashboardProp) => {
         {icon}
       </span>
       <span className="ml-5 text-gray-700">{text}</span>
-      <Link href="/orders">
-        <a href="/orders" className="text-3xl text-black underline">{number}</a>
-      </Link>
+        <div className="text-3xl text-black underline">{number}</div>
     </div>
   );
 };

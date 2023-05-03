@@ -12,7 +12,6 @@ const nextConfig = {
       'www.fjallraven.com',
       'hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com',
       'dipencompany.com',
-      'hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.comproducts',
     ],
   },
   // Add the next-sitemap configuration
