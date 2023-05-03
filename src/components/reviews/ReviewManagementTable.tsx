@@ -5,6 +5,7 @@ import Button from '../common/Button';
 import StarRating from '../StarRating';
 import ReplyModal from './ReplyModal';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
+import Link from 'next/link';
 
 interface ITableData {
   order_id: string;
@@ -113,10 +114,13 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                         </div>
                       ) : cell.column.Header === 'Product' ? (
                         <div>
-                          <div className="flex flex-col justify-start text-xs text-blue-700 space-y-1">
-                            <span>{row?.original?.product_name}</span>
-                            <span>{row?.original?.product_included_item}</span>
-                          </div>
+                          <Link
+                            href={`/product/description/?id=${row.original.id}`}
+                          >
+                            <div className="flex flex-col justify-start items-center text-md text-blue-700 space-y-1">
+                              <span>{row?.original?.product_name}</span>
+                            </div>
+                          </Link>
                         </div>
                       ) : cell.column.Header === 'Rating' ? (
                         <div className="flex items-center justify-center">
