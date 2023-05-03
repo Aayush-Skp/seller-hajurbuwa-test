@@ -11,6 +11,8 @@ import {
 } from '../../validation/forgotPasswordSchema';
 import { resetPassword } from '../../services/forgotPasswordService';
 import PasswordTextInput from '../registration/PasswordTextInput';
+import { useState } from 'react';
+import Spinner from '../loader/Spinner';
 
 type OPTVerificationProps = {
   incStep: () => void;
@@ -23,13 +25,20 @@ export default function CreateNewPassword(props: OPTVerificationProps) {
   const { register, errors, handleSubmit } =
     useFormValidation(MatchPasswordSchema);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   function handleFormSubmit(data: MatchPasswordSchemaType) {
+    setIsLoading(true);
     resetPassword({
       ...data,
       code: otp,
     })
-      .then((res) => incStep())
-      .catch(console.log);
+      .then((res) => {
+        incStep();
+      })
+      .catch((err) => {
+        setIsLoading(false);
+      });
   }
 
   return (
@@ -93,7 +102,16 @@ export default function CreateNewPassword(props: OPTVerificationProps) {
               </div>
             </div>
             <div>
-              <Button type="submit">Continue</Button>
+              <Button type="submit">
+                {isLoading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <span>Please wait...</span>
+                    <Spinner />
+                  </div>
+                ) : (
+                  'Continue'
+                )}
+              </Button>
             </div>
           </div>
         </form>

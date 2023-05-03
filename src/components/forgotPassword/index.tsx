@@ -3,6 +3,7 @@ import CreateNewPassword from './CreateNewPassword';
 import EnterEmailOrPassword from './EnterEmailOrPhone';
 import OPTVerification from './OTPVerification';
 import PasswordChangeSuccess from './PasswordChangeSuccess';
+import formBackground from '../../../public/images/form_background.svg';
 
 export default function ForgotPassword() {
   const [step, setStep] = useState(1);
@@ -14,7 +15,7 @@ export default function ForgotPassword() {
   }
 
   function incStep() {
-    step <= 2 && setStep((prev) => prev + 1);
+    step <= 3 && setStep((prev) => prev + 1);
   }
 
   function decStep() {
@@ -23,6 +24,16 @@ export default function ForgotPassword() {
 
   return (
     <div>
+      <div
+        className="absolute h-full w-full z-0 opacity-20"
+        style={{
+          backgroundImage: `url(${formBackground.src})`,
+          backgroundPosition: 'bottom',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}
+      ></div>
+
       {step === 1 ? (
         <EnterEmailOrPassword
           incStep={incStep}
