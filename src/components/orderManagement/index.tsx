@@ -87,9 +87,10 @@ export default function Orders() {
         setIsLoading(false);
       })
       .catch((err) => {
+        console.log(err);
         if (err?.response?.status === 404) {
           setOrderList([]);
-          setOrderListWithCount(err?.response?.data?.status_array);
+          setOrderListWithCount(err?.response?.data?.status_array ?? []);
         }
         setIsLoading(false);
       });

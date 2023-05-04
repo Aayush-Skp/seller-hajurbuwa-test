@@ -26,6 +26,22 @@ export default function ProductImagesAndVideos(props: any) {
     }));
   }
 
+  function handleMultipleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setProductDetails((prev: any) => ({
+      ...prev,
+      images: {
+        first: e.target.files![0] ?? '',
+        second: e.target.files![1] ?? '',
+        third: e.target.files![2] ?? '',
+        fourth: e.target.files![3] ?? '',
+        fifth: e.target.files![4] ?? '',
+        sixth: e.target.files![5] ?? '',
+        seventh: e.target.files![6] ?? '',
+        eighth: e.target.files![7] ?? '',
+      },
+    }));
+  }
+
   function handleSubmit() {
     productDetails.cover_image !== '' && incStep();
   }
@@ -45,7 +61,13 @@ export default function ProductImagesAndVideos(props: any) {
               htmlFor="productPhotosInput"
               className="w-24 h-16 cursor-pointer"
             >
-              <input type="file" id="productPhotosInput" className="hidden" />
+              <input
+                type="file"
+                id="productPhotosInput"
+                multiple
+                className="hidden"
+                onChange={(e) => handleMultipleChange(e)}
+              />
               <div className="flex items-center space-x-3">
                 <p className="text-blue-700 text-sm">
                   Upload multiple files here
@@ -667,11 +689,11 @@ export default function ProductImagesAndVideos(props: any) {
             Back
           </Button>
           <button
-              className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
-              onClick={handleSubmit}
-            >
-              Continue
-            </button>
+            className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
+            onClick={handleSubmit}
+          >
+            Continue
+          </button>
         </div>
       </div>
     </form>
