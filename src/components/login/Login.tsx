@@ -222,8 +222,8 @@ export default function Login() {
         )}
       </div>
       <div className="absolute justify-center bottom-4">
-          <p className="text-black">© 2023, Hajurbuwa.com</p>
-        </div>
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
+      </div>
     </div>
   );
 }

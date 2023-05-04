@@ -55,20 +55,22 @@ export default function AccountFinanceStatement() {
       if (typeof userDetails === 'string') {
         const details = JSON.parse(userDetails);
 
-        let response: any;
-
         getFinancePeriod(1)
           .then((res) => {
-            response = res;
             setDateList(res);
             setSellerId(details.id);
             setIsLoading(false);
-            console.log(res);
+            setSelectedDate({
+              start_date: res[0]?.start_date,
+              end_date: res[1]?.end_date,
+            });
+
+            return res;
           })
-          .then(() => {
+          .then((response) => {
             if (response[0]?.start_date)
               getFinanceDetails({
-                sellerId,
+                sellerId: details.id,
                 start_date: response[0]?.start_date,
                 end_date: response[0]?.end_date,
               })
@@ -132,7 +134,7 @@ export default function AccountFinanceStatement() {
               </span>
               {financeData?.status === 'unpaid' ? (
                 <span className="px-2 py-1 ">
-                  Estimated Date of Payout:{' '}
+                  Estimated Date of Payout:
                   {formatDate(selectedDate.start_date)} -
                   {formatDate(selectedDate.end_date)}
                 </span>
@@ -158,7 +160,7 @@ export default function AccountFinanceStatement() {
                 )}
                 <div className="flex items-center justify-between px-2 py-1 bg-white">
                   <span>Total Balance</span>
-                  <span>2500 NPR</span>
+                  <span>{financeData.total_amount} NPR</span>
                 </div>
                 <div className="flex flex-col pl-10 space-y-3">
                   <div className="flex items-center justify-between">
@@ -254,17 +256,26 @@ export default function AccountFinanceStatement() {
                           </svg>
                         )}
                       </div>
-                      <span>2648.56 NPR</span>
+                      <span>
+                        -
+                        {financeData?.transactionFee?.commission_fee +
+                          financeData?.transactionFee?.shipping_fee}
+                        NPR
+                      </span>
                     </div>
                     {toggleTransactionFee ? (
                       <div className="pl-28 space-y-2">
                         <div className="flex items-center justify-between">
                           <span>Commission Fees</span>
-                          <span>500 NPR</span>
+                          <span>
+                            -{financeData?.transactionFee?.commission_fee} NPR
+                          </span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span>Shipping Fee Paid By Buyer</span>
-                          <span>65 NPR</span>
+                          <span>
+                            -{financeData?.transactionFee?.shipping_fee} NPR
+                          </span>
                         </div>
                       </div>
                     ) : null}
@@ -273,7 +284,7 @@ export default function AccountFinanceStatement() {
                     <hr className="w-1/2" />
                     <div className="flex justify-end w-1/2 space-x-20 ">
                       <span>Subtotal</span>
-                      <span>2500 NPR</span>
+                      <span>{financeData?.total_amount} NPR</span>
                     </div>
                   </div>
                 </div>

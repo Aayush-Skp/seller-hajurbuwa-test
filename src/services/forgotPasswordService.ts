@@ -31,5 +31,17 @@ type ResetPasswordArgs = MatchPasswordSchemaType & {
 };
 
 export function resetPassword(data: ResetPasswordArgs) {
-  return httpClient.post(`${Url}/reset`, data).then((res) => res.data);
+  const formData = new FormData();
+
+  formData.append('code', data.code);
+  formData.append('password', data.password);
+  formData.append('password_confirmation', data.password_confirmation);
+
+  return httpClient
+    .post(`${Url}/reset`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((res) => res.data);
 }

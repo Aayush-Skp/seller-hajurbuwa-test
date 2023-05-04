@@ -44,7 +44,6 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
         if (res.status === 'error') {
           forgotPasswordService(data)
             .then((res) => {
-              console.log(res);
               incStep();
             })
             .catch((err) => {
@@ -58,7 +57,7 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
               }
             });
         }
-        if (res === 'success') {
+        if (res.status === 'success') {
           setError('email', { message: 'Email not registered' });
           setApiResponse({
             loading: false,
@@ -66,7 +65,6 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
         }
       })
       .catch((err) => {
-        console.log('inside here');
         console.log(err);
       });
   }

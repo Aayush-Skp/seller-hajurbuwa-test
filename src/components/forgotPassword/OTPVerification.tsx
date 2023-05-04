@@ -74,8 +74,11 @@ export default function OPTVerification(props: OPTVerificationProps) {
               Verification Required
             </span>
             <div className="space-x-1 text-xs">
-              <span>We have sent an One-Time-Password (OTP) to</span>
-              <span className="text-accent-primary">{email}</span>
+              <span className="">
+                If your email address has been registered with Hajurbuwa,
+              </span>
+              <span>you will get One-Time-Password (OTP) to</span>
+              <span className="text-accent-primary">{email}.</span>
             </div>
             <div>
               <span className="text-gray-500 text-sm">Enter OTP code</span>

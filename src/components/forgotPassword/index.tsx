@@ -15,7 +15,7 @@ export default function ForgotPassword() {
   }
 
   function incStep() {
-    step <= 2 && setStep((prev) => prev + 1);
+    step <= 3 && setStep((prev) => prev + 1);
   }
 
   function decStep() {
