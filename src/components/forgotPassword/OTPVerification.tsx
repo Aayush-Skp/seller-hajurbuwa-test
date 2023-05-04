@@ -53,8 +53,7 @@ export default function OPTVerification(props: OPTVerificationProps) {
   }
 
   return (
-    <div className="bg-gray-150 h-screen w-full flex justify-center items-center">
-      <div className="h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white">
+    <div className="relative w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white z-10 shadow-lg">
         <form
           onSubmit={handleSubmit}
           className="px-6 py-4 w-full space-y-4 my-5"
@@ -121,6 +120,5 @@ export default function OPTVerification(props: OPTVerificationProps) {
           </div>
         </form>
       </div>
-    </div>
   );
 }

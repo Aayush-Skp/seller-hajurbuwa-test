@@ -3,6 +3,7 @@ import CreateNewPassword from './CreateNewPassword';
 import EnterEmailOrPassword from './EnterEmailOrPhone';
 import OPTVerification from './OTPVerification';
 import PasswordChangeSuccess from './PasswordChangeSuccess';
+import formBackground from '/public/images/form_background.svg';
 
 export default function ForgotPassword() {
   const [step, setStep] = useState(1);
@@ -22,7 +23,17 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div>
+    <div className=" h-screen flex justify-center items-center relative w-full overflow-hidden">
+      <div
+        className="absolute h-full w-full z-0 opacity-20"
+        style={{
+          backgroundImage: `url(${formBackground.src})`,
+          backgroundPosition: 'bottom',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+        }}
+      ></div>
+      <>
       {step === 1 ? (
         <EnterEmailOrPassword
           incStep={incStep}
@@ -42,6 +53,10 @@ export default function ForgotPassword() {
       ) : step === 4 ? (
         <PasswordChangeSuccess />
       ) : null}
+      </>
+      <div className="absolute justify-center bottom-4">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
+      </div>
     </div>
   );
 }
