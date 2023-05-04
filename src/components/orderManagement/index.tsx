@@ -80,18 +80,18 @@ export default function Orders() {
   function getAllOrders() {
     setOrderList([]);
     setIsLoading(true);
-    console.log(currentTab.id);
     getOrdersByStatus(currentTab.id)
       .then((res) => {
-        console.log(res);
         setOrderList(res.data);
         setOrderListWithCount(res.status_array);
         setIsLoading(false);
       })
       .catch((err) => {
-        err?.response?.status === 404 && setOrderList([]);
+        if (err?.response?.status === 404) {
+          setOrderList([]);
+          setOrderListWithCount(err?.response?.data?.status_array);
+        }
         setIsLoading(false);
-        console.log(err);
       });
   }
 
@@ -118,7 +118,6 @@ export default function Orders() {
           tabs={tabs}
           currentTab={currentTab}
           onTabClick={handleTabChange}
-          orderList={orderList}
           orderListWithCount={orderListWithCount}
         />
         <OrdersTable

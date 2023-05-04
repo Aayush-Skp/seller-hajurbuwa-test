@@ -1,7 +1,6 @@
 import { httpClient } from '../config/httpClient';
 
 export function getFinanceDetails({ sellerId, start_date, end_date }: any) {
-  // console.log(sellerId, start_date, end_date);
   return httpClient
     .get(
       `/seller/finance/seller/${sellerId}?start_date=${start_date}&end_date=${end_date}`

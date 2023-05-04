@@ -1,11 +1,11 @@
 import React from 'react';
 import { Tab } from '.';
+import { count } from 'console';
 
 type NavigationHeaderProps = {
   currentTab: Tab;
   tabs: Tab[];
   onTabClick: (tab: Tab) => void;
-  orderList: any;
   orderListWithCount: any;
 };
 
@@ -13,7 +13,6 @@ export default function TabsHeader({
   currentTab,
   tabs,
   onTabClick,
-  orderList,
   orderListWithCount,
 }: NavigationHeaderProps) {
   return (
@@ -26,14 +25,17 @@ export default function TabsHeader({
               (status: any) => status.status === header.id
             )[0]?.count;
           }
+
+          console.log(badge);
           return (
             <li
               key={header.id}
               onClick={() => onTabClick(header)}
-              className={`${currentTab.id === header.id
-                  ? "border-blue-700 border-b-[3px]"
-                  : "text-gray-800"
-                } tracking-wide cursor-pointer`}
+              className={`${
+                currentTab.id === header.id
+                  ? 'border-blue-700 border-b-[3px]'
+                  : 'text-gray-800'
+              } tracking-wide cursor-pointer`}
             >
               <div className="relative flex justify-center items-center">
                 <span className=" text-sm bg-[#e50131] w-5 mr-1 h-5 rounded-full text-white flex justify-center items-center font-semibold">

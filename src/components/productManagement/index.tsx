@@ -4,20 +4,8 @@ import ProductManagementTable from './ProductManagementTable';
 import { getProductByStatus } from '../../services/productService';
 
 export type Tab = {
-  id:
-    | 'online'
-    | 'pending'
-    // | 'out_of_stock'
-    | 'deactivated'
-    | 'suspended'
-    | 'locked';
-  label:
-    | 'Online'
-    | 'Pending QC'
-    // | 'Out of stock'
-    | 'Inactive'
-    | 'Suspended'
-    | 'Locked';
+  id: 'online' | 'pending' | 'deactivated' | 'suspended' | 'locked';
+  label: 'Online' | 'Pending QC' | 'Inactive' | 'Suspended' | 'Locked';
 };
 
 const tabs: Tab[] = [
@@ -29,10 +17,6 @@ const tabs: Tab[] = [
     id: 'pending',
     label: 'Pending QC',
   },
-  // {
-  //   id: 'out_of_stock',
-  //   label: 'Out of stock',
-  // },
   {
     id: 'deactivated',
     label: 'Inactive',
@@ -55,19 +39,25 @@ export default function ProductManagement() {
 
   const [productList, setProductList] = useState([]);
   const [statusArray, setStatusArray] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleTabChange = useCallback((tab: Tab) => setCurrentTab(tab), []);
 
   function getAllProducts() {
+    setProductList([]);
+    setIsLoading(true);
     getProductByStatus(currentTab.id)
       .then((res) => {
-        setProductList(res.data);
-        console.log(res.statusCount);
-        setStatusArray(res.statusCount);
+        setIsLoading(false);
+        setProductList(res?.data);
+        setStatusArray(res?.statusCount);
       })
       .catch((err) => {
-        console.log(err);
-        if (err?.response?.status === 404) setProductList([]);
+        if (err?.response?.status === 404) {
+          setProductList([]);
+          setStatusArray(err?.response?.data?.statusCount);
+        }
+        setIsLoading(false);
       });
   }
 

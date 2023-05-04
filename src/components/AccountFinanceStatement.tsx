@@ -55,7 +55,7 @@ export default function AccountFinanceStatement() {
       if (typeof userDetails === 'string') {
         const details = JSON.parse(userDetails);
 
-        getFinancePeriod(1)
+        getFinancePeriod(details.id)
           .then((res) => {
             setDateList(res);
             setSellerId(details.id);
