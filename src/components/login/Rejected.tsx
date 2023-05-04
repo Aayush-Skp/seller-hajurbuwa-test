@@ -8,7 +8,7 @@ export default function Rejected({ username }: { username: string }) {
       <div className="px-6 py-4 w-full my-5">
         <div className="flex flex-col items-center justify-center w-full space-y-5">
           <div className="flex flex-col items-center justify-center space-y-3">
-            <span>Dear Username,</span>
+            <span>Dear {username},</span>
             <span className="text-3xl font-semibold text-center">
               Your Business Account has been Rejected
             </span>

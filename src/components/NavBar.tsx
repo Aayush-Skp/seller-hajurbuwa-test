@@ -43,7 +43,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center justify-start">
             <div className="flex-shrink-0 border-r-2 border-black mr-2">
-              <Link href="/">
+              <Link href="/dashboard">
                 <a>
                   <Image
                     src={logo}

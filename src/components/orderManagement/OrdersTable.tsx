@@ -90,9 +90,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
   return (
     <div className="border-3 border-gray-150">
       {data?.length === 0 ? (
-        <div className="flex justify-center mt-10">
-          No data found for this status
-        </div>
+        <div className="flex justify-center mt-10">No orders available</div>
       ) : (
         <table {...getTableProps()} className="w-full border-x-4">
           <thead className="border-b-2 h-5 font-bold bg-[#f5f5f5]">

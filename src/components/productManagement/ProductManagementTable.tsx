@@ -176,9 +176,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
         </div>
       </div>
       {data?.length === 0 ? (
-        <div className="flex justify-center mt-10">
-          No data found for this product status
-        </div>
+        <div className="flex justify-center mt-10">No products available</div>
       ) : (
         <table {...getTableProps()} className="w-full border-x-4">
           <thead className="border-b-2 h-5 font-bold bg-[#f5f5f5]">

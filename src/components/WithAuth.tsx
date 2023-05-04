@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { httpClient } from '../config/httpClient';
+import Image from 'next/image';
+import logo from '../../public/icons/hajurbuwa-logo.svg';
 
 export default function authenticatedRoute(Component: any = null) {
   function Auth() {
@@ -33,7 +35,14 @@ export default function authenticatedRoute(Component: any = null) {
       }
     }, [router]);
 
-    if (!access.grantAccess) return <div>Loading...</div>;
+    if (!access.grantAccess)
+      return (
+        <div className="w-full h-screen flex items-center justify-center animate-bounce">
+          <span className="flex items-center justify-center">
+            <Image height={200} width={200} src={logo} alt="logo" />
+          </span>
+        </div>
+      );
 
     return (
       <>

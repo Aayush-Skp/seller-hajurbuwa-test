@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { FaChevronDown } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
 
 type HeroProps = {
   openOrders: number;
@@ -9,6 +9,18 @@ type HeroProps = {
 };
 
 const Hero = ({ openOrders, todaysSales, onlineProducts }: HeroProps) => {
+  const [user, setUser] = useState('');
+  useEffect(() => {
+    try {
+      const storageValue = localStorage.getItem('userDetails');
+
+      if (typeof storageValue === 'string') {
+        const details = JSON.parse(storageValue);
+        setUser(details?.first_name);
+      }
+    } catch (err) {}
+  }, []);
+
   return (
     <div className="relative w-full overflow-hidden h-72 flex">
       <div className="inset-0 absolute">
@@ -26,7 +38,7 @@ const Hero = ({ openOrders, todaysSales, onlineProducts }: HeroProps) => {
       ></div>
       <div className="relative content-center h-full w-full flex flex-col justify-center items-start pl-48">
         <h1 className="text-6xl w-full font-bold text-white">
-          Welcome, Bishal!
+          Welcome, {user}!
         </h1>
         <div className="detailsCTA flex items-start justify-start w-1/2">
           <Link href="/order-management">
@@ -53,17 +65,17 @@ const Hero = ({ openOrders, todaysSales, onlineProducts }: HeroProps) => {
           </Link>
           <Link href="/product-management">
             <a>
-          <div className="flex flex-col items-start justify-start whitespace-nowrap bg-white m-2 p-2">
-            <h1 className="w-full text-base text-black">
-              Total Products Online
-            </h1>
-            <div className="w-full flex items-center justify-between pr-2">
-              <h1 className="text-xxxl w-full text-center text-black">
-                {onlineProducts}
-              </h1>
-            </div>
-          </div>
-          </a>
+              <div className="flex flex-col items-start justify-start whitespace-nowrap bg-white m-2 p-2">
+                <h1 className="w-full text-base text-black">
+                  Total Products Online
+                </h1>
+                <div className="w-full flex items-center justify-between pr-2">
+                  <h1 className="text-xxxl w-full text-center text-black">
+                    {onlineProducts}
+                  </h1>
+                </div>
+              </div>
+            </a>
           </Link>
         </div>
       </div>

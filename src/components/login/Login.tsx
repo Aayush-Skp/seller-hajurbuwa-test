@@ -38,7 +38,6 @@ export default function Login() {
     setApiResponse({
       loading: true,
     });
-    console.log(data);
 
     loginService(data)
       .then((res) => {
@@ -93,6 +92,9 @@ export default function Login() {
           err.response?.data?.message === 'This account is not verified yet'
         ) {
           setVerificationStatus('pending');
+          setSellerData({
+            first_name: 'Bishal',
+          });
         }
         if (
           err?.response?.status === 401 &&
