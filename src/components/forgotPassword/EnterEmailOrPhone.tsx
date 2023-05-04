@@ -70,72 +70,69 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
   }
 
   return (
-    <div className="bg-gray-150 h-screen w-full flex justify-center items-center mt-10">
-      <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white">
-        <Link href="/login">
-          <a>
-            <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
-          </a>
-        </Link>
+    <div className="relative w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white z-10 shadow-lg">
+      <Link href="/login">
+        <a>
+          <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+        </a>
+      </Link>
+      <form
+        onSubmit={handleSubmit(handleFormSubmit)}
+        className="px-6 py-4 w-full space-y-4 my-5"
+      >
+        <div className="w-full flex justify-center">
+          <Image
+            src={hajurBuwaLogo}
+            alt="Register Phone Number Illustration"
+          />
+        </div>
 
-        <form
-          onSubmit={handleSubmit(handleFormSubmit)}
-          className="px-6 py-4 w-full space-y-4 my-5"
-        >
-          <div className="w-full flex justify-center">
-            <Image
-              src={hajurBuwaLogo}
-              alt="Register Phone Number Illustration"
-            />
-          </div>
-
-          <div className="flex flex-col w-full space-y-5">
-            <div className="text-gray-400">
-              <div className="space-y-4 text-black">
-                <div className="space-y-1">
-                  <p className="text-3xl font-semibold">Password Assistance</p>
-                  <p className="text-xs">
-                    Enter the email address associated with your Hajurbuwa
-                    account.
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <InputLabel label="Email" htmlFor="emailOrPhone" />
-                  <TextInput
-                    {...register('email')}
-                    error={errors.hasOwnProperty('email')}
-                    placeholder="user@email.com"
-                    id="emailOrPhone"
-                  />
-                  <ErrorMessage message={errors.email?.message as string} />
-                </div>
+        <div className="flex flex-col w-full space-y-5">
+          <div className="text-gray-400">
+            <div className="space-y-4 text-black">
+              <div className="space-y-1">
+                <p className="text-3xl font-semibold">Password Assistance</p>
+                <p className="text-xs">
+                  Enter the email address associated with your Hajurbuwa
+                  account.
+                </p>
+              </div>
+              <div className="space-y-1">
+                <InputLabel label="Email" htmlFor="emailOrPhone" />
+                <TextInput
+                  {...register('email')}
+                  error={errors.hasOwnProperty('email')}
+                  placeholder="user@email.com"
+                  id="emailOrPhone"
+                />
+                <ErrorMessage message={errors.email?.message as string} />
               </div>
             </div>
-            <div>
-              <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
-                {apiResponse.loading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <span>Please wait...</span>
-                    <Spinner />
-                  </div>
-                ) : (
-                  'Continue'
-                )}
-              </Button>
-            </div>
-            <div className="flex items-center space-x-4 text-sm">
-              <div className="w-full h-[1px] bg-black" />
-              <p className="whitespace-nowrap">New to Hajurbuwa?</p>
-              <div className="w-full h-[1px] bg-black" />
-            </div>
-            <Link href="/register">
-              <a className="bg-white text-accent-primary border border-accent-primary text-center rounded px-3 py-2">
-                Register as Hajurbuwa seller
-              </a>
-            </Link>
           </div>
-        </form>
-      </div>
+          <div>
+            <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
+              {apiResponse.loading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <span>Please wait...</span>
+                  <Spinner />
+                </div>
+              ) : (
+                'Continue'
+              )}
+            </Button>
+          </div>
+          <div className="flex items-center space-x-4 text-sm">
+            <div className="w-full h-[1px] bg-black" />
+            <p className="whitespace-nowrap">New to Hajurbuwa?</p>
+            <div className="w-full h-[1px] bg-black" />
+          </div>
+          <Link href="/register">
+            <a className="bg-white text-accent-primary border border-accent-primary text-center rounded px-3 py-2">
+              Register as Hajurbuwa seller
+            </a>
+          </Link>
+        </div>
+      </form>
     </div>
   );
 }
