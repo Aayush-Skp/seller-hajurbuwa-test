@@ -18,7 +18,7 @@ const listingSteps = [
 ];
 
 export default function ProductListing() {
-  const [currentStep, setCurrentStep] = useState(4);
+  const [currentStep, setCurrentStep] = useState(1);
   const [defaultValues, setDefaultValues] = useState({
     brands: [],
     units: [],
