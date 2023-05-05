@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTable } from 'react-table';
 import Image from 'next/image';
-import StockAvailabilityModal from './StockAvailabilityModal';
 import PriceEditModal from './PriceEditModal';
 import QuantityDiscountModal from './QuantityDiscountModal';
 import ActionButtons from './ActionButtons';
@@ -11,10 +10,9 @@ import { MdContentCopy } from 'react-icons/md';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 import searchIcon from '../../../public/icons/searchIcon.svg';
-import InputLabel from '../common/InputLabel';
-import CheckboxInput from '../common/CheckboxInput';
 import Link from 'next/link';
 import { useGlobalFilter } from 'react-table';
+import ViolationDescriptionModal from './ViolationDescriptionModal';
 
 type ITableData = {
   product_id: string;
@@ -23,8 +21,8 @@ type ITableData = {
   bulk_pricing: { quantity: string; price: string }[];
   in_stock?: string;
   action?: string;
-  suspension_reason?: string;
-  violation_description?: string;
+  suspend_reason?: string;
+  lock_reason?: string;
 };
 
 type ProductManagementTableProps = {
@@ -50,7 +48,8 @@ type Accessor =
   | 'price_per_unit'
   | 'bulk_pricing'
   | 'in_stock'
-  | 'violation_description'
+  | 'suspend_reason'
+  | 'lock_reason'
   | 'action';
 
 const columns: { Header: TableHeader; accessor: Accessor }[] = [
@@ -68,7 +67,7 @@ const columnsWithSuspensionReason: {
   { Header: 'Product', accessor: 'product_name' },
   { Header: 'Price', accessor: 'price_per_unit' },
   { Header: 'Business Price', accessor: 'bulk_pricing' },
-  { Header: 'Violation Description', accessor: 'violation_description' },
+  { Header: 'Violation Description', accessor: 'suspend_reason' },
   { Header: 'Action', accessor: 'action' },
 ];
 
@@ -79,7 +78,7 @@ const columnsWithViolationDescription: {
   { Header: 'Product', accessor: 'product_name' },
   { Header: 'Price', accessor: 'price_per_unit' },
   { Header: 'Business Price', accessor: 'bulk_pricing' },
-  { Header: 'Violation Description', accessor: 'violation_description' },
+  { Header: 'Violation Description', accessor: 'lock_reason' },
   { Header: 'Action', accessor: 'action' },
 ];
 
@@ -90,16 +89,10 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
 }) => {
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
 
-  const [isStockAvailabilityModalOpen, setIsStockAvailabilityModalOpen] =
+  const [isViolationDescriptionModalOpen, setIsViolationDescriptionModalOpen] =
     useState(false);
 
-  const [stockToBeUpdated, setStockToBeUpdated] = useState<{
-    id: string | number;
-    value: number | null;
-  }>({
-    id: '',
-    value: null,
-  });
+  const [violationDescription, setViolationDescription] = useState('');
 
   const [isQuantityDiscountModalOpen, setIsQuantityDiscountModalOpen] =
     useState(false);
@@ -252,52 +245,26 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                               </p>
                             </div>
                           </div>
-                        ) : cell.column.Header === 'Stock Availability' ? (
+                        ) : cell.column.Header === 'Violation Description' ? (
                           <div>
-                            <div className="flex flex-col items-center space-y-2">
-                              <div className="flex justify-center items-center space-x-1">
-                                <InputLabel label="Yes" />
-                                <CheckboxInput
-                                  checked={cell.value === 1 ? true : false}
-                                  onChange={() => {
-                                    if (cell.value === 0) {
-                                      setStockToBeUpdated({
-                                        id: `${row.original.id}`,
-                                        value: 1,
-                                      });
-
-                                      setIsStockAvailabilityModalOpen(true);
-                                    }
-                                  }}
-                                />
-                              </div>
-                              <div className="flex justify-center items-center space-x-1">
-                                <InputLabel label="No" />
-                                <CheckboxInput
-                                  checked={cell.value === 0 ? true : false}
-                                  onChange={() => {
-                                    if (cell.value === 1) {
-                                      setStockToBeUpdated({
-                                        id: `${row.original.id}`,
-                                        value: 0,
-                                      });
-
-                                      setIsStockAvailabilityModalOpen(true);
-                                    }
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            {isStockAvailabilityModalOpen ? (
-                              <StockAvailabilityModal
-                                isStockAvailabilityModalOpen={
-                                  isStockAvailabilityModalOpen
+                            <button
+                              onClick={() => {
+                                setIsViolationDescriptionModalOpen(true);
+                                setViolationDescription(cell.value);
+                              }}
+                              className="text-blue-700 hover:underline text-sm"
+                            >
+                              See reason
+                            </button>
+                            {isViolationDescriptionModalOpen ? (
+                              <ViolationDescriptionModal
+                                violationDescription={violationDescription}
+                                isViolationDescriptionModalOpen={
+                                  isViolationDescriptionModalOpen
                                 }
-                                setIsStockAvailabilityModalOpen={
-                                  setIsStockAvailabilityModalOpen
+                                setIsViolationDescriptionModalOpen={
+                                  setIsViolationDescriptionModalOpen
                                 }
-                                stockToBeUpdated={stockToBeUpdated}
-                                updateProductAttribute={updateProductAttribute}
                               />
                             ) : null}
                           </div>
