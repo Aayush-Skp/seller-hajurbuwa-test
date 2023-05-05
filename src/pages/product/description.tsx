@@ -17,7 +17,6 @@ function ProductDescriptionPage() {
     router?.query?.id &&
       getProductDescription(router.query.id as string)
         .then((res) => {
-          console.log(res);
           setProduct(res);
         })
         .catch(console.log);
@@ -160,7 +159,7 @@ function ProductDescriptionPage() {
                         <Image
                           width={100}
                           height={100}
-                          src={`https://hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com${item}`}
+                          src={`${imageServerBaseUrl}${item}`}
                           alt=""
                         />
                       </div>

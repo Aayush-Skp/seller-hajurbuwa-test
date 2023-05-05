@@ -193,9 +193,6 @@ export default function WarehouseAddress() {
       return;
     }
 
-    console.log(addressLine1);
-    console.log(addressLine2);
-
     setIsLoading(true);
 
     addWarehouseInfo({

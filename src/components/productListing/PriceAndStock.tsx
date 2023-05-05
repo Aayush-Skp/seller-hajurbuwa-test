@@ -134,8 +134,9 @@ export default function PriceAndStock(props: any) {
       ) {
         setBulkValidation({
           isValid: false,
-          message: `Quantity must me greater than ${productDetails.bulk_pricing[index - 1].quantity
-            }`,
+          message: `Quantity must me greater than ${
+            productDetails.bulk_pricing[index - 1].quantity
+          }`,
         });
       } else {
         setBulkValidation({
@@ -152,8 +153,9 @@ export default function PriceAndStock(props: any) {
       ) {
         setBulkValidation({
           isValid: false,
-          message: `Price must me less than ${productDetails.bulk_pricing[index - 1].price
-            }`,
+          message: `Price must me less than ${
+            productDetails.bulk_pricing[index - 1].price
+          }`,
         });
       } else {
         setBulkValidation({
@@ -346,7 +348,7 @@ export default function PriceAndStock(props: any) {
                   <option
                     key={unit.id}
                     value={`${unit.id},${unit.name}`}
-                    selected={unit.name === productDetails.unitName}
+                    selected={unit.id === productDetails.unit}
                   >
                     {unit?.name}
                   </option>
@@ -373,10 +375,11 @@ export default function PriceAndStock(props: any) {
               <input
                 disabled={productDetails.is_bulk_price}
                 id="price_per_unit"
-                className={`h-10 pl-3 border border-gray-600 rounded-r outline-none ${productDetails.is_bulk_price
+                className={`h-10 pl-3 border border-gray-600 rounded-r outline-none ${
+                  productDetails.is_bulk_price
                     ? 'cursor-not-allowed'
                     : 'cursor-pointer'
-                  }`}
+                }`}
                 {...register('price_per_unit')}
               />
             </div>
@@ -419,7 +422,7 @@ export default function PriceAndStock(props: any) {
                         className="outline-none border border-gray-600 h-8 w-36 px-3"
                       />
                       <span className="flex items-center">
-                        +{productDetails.unitName}s
+                        +{productDetails.unitName}
                       </span>
                     </div>
                     <div className="flex space-x-3">

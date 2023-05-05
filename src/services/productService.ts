@@ -26,7 +26,6 @@ export function getProductDescription(productId: string | number) {
 
 export function getProductById(productId: string | number) {
   return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
-    console.log(res);
     const productDetails = {
       productId: '',
       featured_highlights: [''],
@@ -60,21 +59,37 @@ export function getProductById(productId: string | number) {
 
     for (let i = 0; i < res?.data?.data[0]?.sub_images.length; i++) {
       if (i === 0)
-        productDetails.images.first = `${imageServerBaseUrl}${res.data.data[0].sub_images[0]}`;
+        productDetails.images.first = res?.data?.data[0]?.sub_images[0]
+          ? `${imageServerBaseUrl}${res.data.data[0].sub_images[0]}`
+          : '';
       if (i === 1)
-        productDetails.images.second = `${imageServerBaseUrl}${res.data.data[0].sub_images[1]}`;
+        productDetails.images.second = res?.data?.data[1]?.sub_images[1]
+          ? `${imageServerBaseUrl}${res.data.data[1].sub_images[1]}`
+          : '';
       if (i === 2)
-        productDetails.images.third = `${imageServerBaseUrl}${res.data.data[0].sub_images[2]}`;
+        productDetails.images.third = res?.data?.data[2]?.sub_images[2]
+          ? `${imageServerBaseUrl}${res.data.data[2].sub_images[2]}`
+          : '';
       if (i === 3)
-        productDetails.images.fourth = `${imageServerBaseUrl}${res.data.data[0].sub_images[3]}`;
+        productDetails.images.fourth = res?.data?.data[3]?.sub_images[3]
+          ? `${imageServerBaseUrl}${res.data.data[3].sub_images[3]}`
+          : '';
       if (i === 4)
-        productDetails.images.fifth = `${imageServerBaseUrl}${res.data.data[0].sub_images[4]}`;
+        productDetails.images.fifth = res?.data?.data[4]?.sub_images[4]
+          ? `${imageServerBaseUrl}${res.data.data[4].sub_images[4]}`
+          : '';
       if (i === 5)
-        productDetails.images.sixth = `${res.data.data[0].sub_images[5]}`;
+        productDetails.images.sixth = res?.data?.data[5]?.sub_images[5]
+          ? `${imageServerBaseUrl}${res.data.data[5].sub_images[5]}`
+          : '';
       if (i === 6)
-        productDetails.images.seventh = `${imageServerBaseUrl}${res.data.data[0].sub_images[6]}`;
+        productDetails.images.seventh = res?.data?.data[6]?.sub_images[6]
+          ? `${imageServerBaseUrl}${res.data.data[6].sub_images[6]}`
+          : '';
       if (i === 7)
-        productDetails.images.eighth = `${imageServerBaseUrl}${res.data.data[0].sub_images[7]}`;
+        productDetails.images.eighth = res?.data?.data[7]?.sub_images[7]
+          ? `${imageServerBaseUrl}${res.data.data[6].sub_images[7]}`
+          : '';
     }
 
     productDetails.product_name = res.data.data[0].product_name;

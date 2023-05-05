@@ -21,7 +21,7 @@ export function addWarehouseInfo(data: any) {
   formData.append('city', data.city_id);
   formData.append('area', data.area_id);
   formData.append('address_line_1', data.addressLine1);
-  formData.append('address_line_2', data.addressLine1);
+  formData.append('address_line_2', data.addressLine2);
 
   return httpClient.post('/seller/update-warehouse-info', formData, {
     headers: {

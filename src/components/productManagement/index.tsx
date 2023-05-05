@@ -48,6 +48,7 @@ export default function ProductManagement() {
     setIsLoading(true);
     getProductByStatus(currentTab.id)
       .then((res) => {
+        console.log(res);
         setIsLoading(false);
         setProductList(res?.data);
         setStatusArray(res?.statusCount);
