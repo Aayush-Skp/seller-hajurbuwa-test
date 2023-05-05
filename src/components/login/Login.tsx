@@ -98,14 +98,15 @@ export default function Login() {
         }
         if (
           err?.response?.status === 401 &&
-          err.response?.data?.message === 'rejected'
+          err.response?.data?.message === 'This account is rejected'
         ) {
           setVerificationStatus('rejected');
           setSellerData({
-            first_name: 'Bishal',
+            ...err.response?.data.user,
+            ...err.response?.data?.seller[0],
           });
         }
-        console.log(err);
+        // console.log(err);
       });
   }
 
@@ -127,11 +128,11 @@ export default function Login() {
 
         {verificationStatus === 'pending' ? (
           <div className="py-5">
-            <UnderReview username={sellerData.first_name} />
+            <UnderReview username={sellerData.fname} />
           </div>
         ) : verificationStatus === 'rejected' ? (
           <div className="py-5">
-            <Rejected username={sellerData.first_name} />
+            <Rejected sellerData={sellerData} />
           </div>
         ) : (
           <form

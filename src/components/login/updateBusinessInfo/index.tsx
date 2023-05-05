@@ -39,35 +39,22 @@ export type PhoneVerificationProps = {
 export default function UpdateBusinessDetails() {
   const router = useRouter();
 
-  const [registrationData, setRegistrationData] =
-    useState<SellerRegistrationDataType>({
-      first_name: '',
-      last_name: '',
-      pan_number: '',
-      phone: '',
-      email: '',
-      business_name: '',
-      pan_image: null,
-      confirm_terms_and_conditions: false,
-      receive_updates_on_whatsapp: true,
-      confirm_business_name: false,
-    });
+  const [registrationData, setRegistrationData] = useState<any>({
+    first_name: '',
+    last_name: '',
+    pan_number: '',
+    phone: '',
+    email: '',
+    business_name: '',
+    pan_image: null,
+    confirm_terms_and_conditions: false,
+    receive_updates_on_whatsapp: true,
+    confirm_business_name: false,
+  });
 
   useEffect(() => {
-    setRegistrationData({
-      email: '',
-      phone: '',
-      first_name: 'Bishal',
-      last_name: 'kandel',
-      pan_number: '123456789',
-      business_name: 'Bishal Cosmetics',
-      pan_image:
-        'https://dipencompany.com/images/company-registration-certificate-of-nepal.webp',
-      confirm_terms_and_conditions: false,
-      receive_updates_on_whatsapp: true,
-      confirm_business_name: false,
-    });
-  }, []);
+    router?.query?.id && setRegistrationData(router.query);
+  }, [router]);
 
   const [step, setStep] = useState<number>(1);
 

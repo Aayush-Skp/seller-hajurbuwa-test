@@ -22,7 +22,7 @@ type BusinessDetailsProps = {
   decStep: () => void;
 };
 
-export default function BusinessDetails(props: BusinessDetailsProps) {
+export default function BusinessDetails(props: any) {
   const { setRegistrationData, incStep, decStep, registrationData } = props;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
     useFormValidation(businessDetailsSchema);
 
   useEffect(() => {
-    setValue('business_name', registrationData.business_name);
+    setValue('business_name', registrationData.company_name);
     setValue('pan_number', registrationData.pan_number);
   }, [registrationData]);
 
@@ -56,7 +56,7 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
         }
 
         if (res.status === 'success') {
-          setRegistrationData((prev) => {
+          setRegistrationData((prev: any) => {
             return {
               ...prev,
               ...data,
@@ -89,7 +89,7 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
         <div className="justify-start">
           <div className="my-3 flex justify-start">
             <span className="font-bold text-left text-md capitalize mt-1">
-              {registrationData.first_name}, Let&apos;s Setup your Profile
+              {registrationData.fname}, Let&apos;s Update your Profile
             </span>
           </div>
           <div className="mb-5 flex items-start">

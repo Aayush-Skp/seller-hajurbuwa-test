@@ -9,11 +9,11 @@ type ChangePanOrVatProps = {
   decStep: () => void;
 };
 
-export default function ChangePanOrVat(props: ChangePanOrVatProps) {
+export default function ChangePanOrVat(props: any) {
   const { registrationData, incStep, decStep, setRegistrationData } = props;
 
   function handlePANImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setRegistrationData((prev) => ({
+    setRegistrationData((prev: any) => ({
       ...prev,
       pan_image: e.target.files![0],
     }));

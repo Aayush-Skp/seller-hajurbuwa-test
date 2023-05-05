@@ -46,9 +46,10 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
       `${registrationData.first_name} ${registrationData.last_name}`
     )
       .then((res) => {
+        console.log(res);
         if (
           res.status === 'error' &&
-          res?.message === 'Pan number already exist.'
+          res?.message === 'Pan number already exits.'
         ) {
           setError('pan_number', {
             type: 'custom',

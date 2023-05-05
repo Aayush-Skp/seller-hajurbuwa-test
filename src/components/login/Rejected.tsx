@@ -2,19 +2,18 @@ import Image from 'next/image';
 import accountVerificationRejected from '../../../public/images/accountVerificaitonRejected.svg';
 import Link from 'next/link';
 
-export default function Rejected({ username }: { username: string }) {
+export default function Rejected(sellerData: any) {
   return (
     <section className="my-10">
       <div className="px-6 py-4 w-full my-5">
         <div className="flex flex-col items-center justify-center w-full space-y-5">
           <div className="flex flex-col items-center justify-center space-y-3">
-            <span>Dear {username},</span>
+            <span>Dear {sellerData?.sellerData.fname},</span>
             <span className="text-3xl font-semibold text-center">
               Your Business Account has been Rejected
             </span>
             <span className="text-xs text-error-primary text-center">
-              Your business name on PAN document is same as the name you wrote
-              on your business name. Please update your business name form.
+              {sellerData?.sellerData?.rejection_reason}
             </span>
           </div>
           <div>
@@ -27,11 +26,7 @@ export default function Rejected({ username }: { username: string }) {
             as="/update-business-details"
             href={{
               pathname: '/update-business-details',
-              query: {
-                business_name: 'Bishal cosmetics',
-                pan_image: 'asdasdfasdfa',
-                pan_number: '123456789',
-              },
+              query: sellerData?.sellerData,
             }}
           >
             <a className="w-full px-20 text-center bg-accent-primary py-3 border border-accent-primary rounded text-white font-semibold">
