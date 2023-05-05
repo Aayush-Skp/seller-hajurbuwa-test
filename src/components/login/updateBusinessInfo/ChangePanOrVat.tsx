@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { BiArrowBack } from 'react-icons/bi';
 import { SellerRegistrationDataType, SetRegistrationData } from '.';
+import { imageServerBaseUrl } from '../../../constants/serverConstants';
 
 type ChangePanOrVatProps = {
   incStep: () => void;
@@ -38,7 +39,7 @@ export default function ChangePanOrVat(props: any) {
           src={
             typeof registrationData?.pan_image === 'object'
               ? URL.createObjectURL(registrationData?.pan_image! as File)
-              : (registrationData.pan_image as string)
+              : `${imageServerBaseUrl}${registrationData.pan_image}`
           }
           alt="PAN card preview"
           width={300}

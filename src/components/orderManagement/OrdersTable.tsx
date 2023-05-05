@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGlobalFilter, useTable } from 'react-table';
+import { useTable } from 'react-table';
 import Image from 'next/image';
 import Button from '../common/Button';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ import { Tab } from '.';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 import logo from '../../../public/icons/hajurbuwa-logo.svg';
 
-interface ITableData {
+type ITableData = {
   id?: string | number;
   product_name: string;
   product_id: string;
@@ -24,7 +24,7 @@ interface ITableData {
   order_status: string;
   time_left: string;
   action?: string;
-}
+};
 
 type ProductManagementTableProps = {
   data: ITableData[];
@@ -70,14 +70,8 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
     status: '',
   });
 
-  const {
-    rows,
-    prepareRow,
-    headerGroups,
-    getTableProps,
-    getTableBodyProps,
-    setGlobalFilter,
-  } = useTable({ columns, data }, useGlobalFilter);
+  const { rows, prepareRow, headerGroups, getTableProps, getTableBodyProps } =
+    useTable({ columns, data });
 
   function formatDate(date: string) {
     return new Date(date).toLocaleTimeString('en-us', {

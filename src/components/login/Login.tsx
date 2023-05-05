@@ -19,6 +19,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import UnderReview from './UnderReview';
 import Rejected from './Rejected';
 import Spinner from '../loader/Spinner';
+import { MdTry } from 'react-icons/md';
 
 export default function Login() {
   const [apiResponse, setApiResponse] = useState({
@@ -97,12 +98,19 @@ export default function Login() {
           err.response?.data?.message === 'This account is rejected'
         ) {
           setVerificationStatus('rejected');
-          setSellerData({
-            ...err.response?.data.user,
-            ...err.response?.data?.seller[0],
-          });
+          {
+            try {
+              localStorage.setItem(
+                'userDetails',
+                JSON.stringify(err.response.data)
+              );
+            } catch (err) {}
+            setSellerData({
+              ...err.response?.data.user,
+              ...err.response?.data?.seller[0],
+            });
+          }
         }
-        // console.log(err);
       });
   }
 
