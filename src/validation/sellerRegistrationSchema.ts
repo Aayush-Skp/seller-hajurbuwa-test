@@ -47,7 +47,7 @@ export type BusinessDetailsType = z.infer<typeof businessDetailsSchema>;
 
 export const sellerDetailsSchema = z.object({
   first_name: z.string().min(1, { message: 'First name is required' }).max(256),
-  last_name: z.string().min(1, { message: 'First name is required' }).max(256),
+  last_name: z.string().min(1, { message: 'Last name is required' }).max(256),
   email: z
     .string()
     .min(1, { message: 'Please enter your email' })

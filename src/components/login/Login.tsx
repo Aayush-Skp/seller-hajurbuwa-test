@@ -41,10 +41,6 @@ export default function Login() {
 
     loginService(data)
       .then((res) => {
-        setApiResponse({
-          loading: false,
-        });
-
         if (res.status === 'success') {
           const { user, token, seller } = res;
 
@@ -54,8 +50,8 @@ export default function Login() {
             id: details?.user_id,
             first_name: user?.fname,
             last_name: user?.lname,
-            phone: user?.phone,
             email: user?.email,
+            phone: user?.phone,
             business_name: details?.company_name,
             pan: details?.pan_number,
             pan_image: details?.pan_image,
@@ -65,8 +61,8 @@ export default function Login() {
             state: location?.state_name ?? '',
             city: location?.city_name ?? '',
             area: location?.area_name ?? '',
-            address_line1: location?.address_line_1 ?? '',
-            address_line2: location?.address_line_2 ?? '',
+            address_line1: details?.address_line_1 ?? '',
+            address_line2: details?.address_line_2 ?? '',
             token,
           };
 
