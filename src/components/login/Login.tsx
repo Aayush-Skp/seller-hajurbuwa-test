@@ -97,19 +97,17 @@ export default function Login() {
           err?.response?.status === 401 &&
           err.response?.data?.message === 'This account is rejected'
         ) {
-          setVerificationStatus('rejected');
-          {
-            try {
-              localStorage.setItem(
-                'userDetails',
-                JSON.stringify(err.response.data)
-              );
-            } catch (err) {}
+          try {
+            setVerificationStatus('rejected');
             setSellerData({
               ...err.response?.data.user,
               ...err.response?.data?.seller[0],
             });
-          }
+            localStorage.setItem(
+              'userDetails',
+              JSON.stringify(err.response.data)
+            );
+          } catch (err) {}
         }
       });
   }

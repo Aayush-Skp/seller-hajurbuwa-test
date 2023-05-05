@@ -3,6 +3,7 @@ import accountVerificationRejected from '../../../public/images/accountVerificai
 import Link from 'next/link';
 
 export default function Rejected(sellerData: any) {
+  console.log(sellerData);
   return (
     <section className="my-10">
       <div className="px-6 py-4 w-full my-5">

@@ -8,17 +8,14 @@ import ErrorMessage from '../common/ErrorMessage';
 import { getBankList } from '../../services/getBankList';
 import { addBankDetails } from '../../services/profileService';
 import { useRouter } from 'next/router';
+import Spinner from '../loader/Spinner';
 
 export default function BankAccount() {
   const [bankList, setBankList] = useState<
     { id: string | number; name: string }[]
   >([]);
 
-  const [apiResponse, setApiResponse] = useState({
-    isLoading: false,
-    isError: false,
-    message: '',
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { register, errors, handleSubmit, setValue, getValues } =
     useFormValidation(BankAccountSchema(bankList));
@@ -26,6 +23,7 @@ export default function BankAccount() {
   const router = useRouter();
 
   function handleFormSubmit(data: any) {
+    setIsLoading(true);
     addBankDetails(data)
       .then(() => {
         const value = localStorage.getItem('userDetails');
@@ -47,7 +45,10 @@ export default function BankAccount() {
       .then(() => {
         router.reload();
       })
-      .catch(console.log);
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
   }
 
   useEffect(() => {
@@ -101,7 +102,7 @@ export default function BankAccount() {
             >
               <option value="">select a bank</option>
               {bankList.map((bank) => (
-                <option key={bank.id} value={bank.id}>
+                <option key={bank.id} value={`${bank.id}`}>
                   {bank.name}
                 </option>
               ))}
@@ -111,8 +112,17 @@ export default function BankAccount() {
         </div>
         <div className="w-full flex justify-end">
           <div className="w-36">
-            <Button type="submit">
-              {getValues('account_name') !== '' ? 'Update' : 'Submit'}
+            <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
+              {isLoading ? (
+                <div className="flex items-center justify-center space-x-2 text-sm">
+                  <span>Please wait...</span>
+                  <Spinner />
+                </div>
+              ) : getValues('account_name') !== '' ? (
+                'Update'
+              ) : (
+                'Submit'
+              )}
             </Button>
           </div>
         </div>
