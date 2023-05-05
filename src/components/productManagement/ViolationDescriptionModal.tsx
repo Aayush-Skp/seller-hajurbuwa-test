@@ -20,7 +20,7 @@ export default function ViolationDescriptionModal({
         onRequestClose={() => {
           setIsViolationDescriptionModalOpen(false);
         }}
-        className="w-2/3 h-1/4 bg-white rounded-md flex flex-col justify-center items-center"
+        className="w-2/3 bg-white rounded-md flex flex-col justify-center items-center"
         style={{
           content: {
             position: 'absolute',

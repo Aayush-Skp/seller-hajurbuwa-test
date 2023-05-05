@@ -41,11 +41,12 @@ export default function ProductManagement() {
   const [statusArray, setStatusArray] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleTabChange = useCallback((tab: Tab) => setCurrentTab(tab), []);
+  const handleTabChange = useCallback((tab: Tab) => {
+    setIsLoading(true);
+    setCurrentTab(tab);
+  }, []);
 
   function getAllProducts() {
-    setProductList([]);
-    setIsLoading(true);
     getProductByStatus(currentTab.id)
       .then((res) => {
         console.log(res);
@@ -76,6 +77,7 @@ export default function ProductManagement() {
       />
       <ProductManagementTable
         data={productList}
+        isLoading={isLoading}
         productStatus={currentTab}
         getAllProducts={getAllProducts}
       />

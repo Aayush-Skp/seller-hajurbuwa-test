@@ -75,11 +75,10 @@ export default function Orders() {
 
   const handleTabChange = useCallback((tab: Tab) => {
     setCurrentTab(tab);
+    setIsLoading(true);
   }, []);
 
   function getAllOrders() {
-    setOrderList([]);
-    setIsLoading(true);
     getOrdersByStatus(currentTab.id)
       .then((res) => {
         setOrderList(res.data);
@@ -87,7 +86,6 @@ export default function Orders() {
         setIsLoading(false);
       })
       .catch((err) => {
-        console.log(err);
         if (err?.response?.status === 404) {
           setOrderList([]);
           setOrderListWithCount(err?.response?.data?.status_array ?? []);
@@ -122,6 +120,7 @@ export default function Orders() {
           orderListWithCount={orderListWithCount}
         />
         <OrdersTable
+          isLoading={isLoading}
           data={orderList}
           productStatus={currentTab}
           getAllOrders={getAllOrders}
