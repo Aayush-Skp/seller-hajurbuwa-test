@@ -136,11 +136,11 @@ export function deleteProduct(productId: string | number) {
 }
 
 export function deactivateProduct(productId: string | number) {
-  return httpClient.delete(`/seller/deactivate-product/${productId}`);
+  return httpClient.get(`/seller/deactivate-product/${productId}`);
 }
 
 export function activateProduct(productId: string | number) {
-  return httpClient.delete(`seller/activate-product/${productId}`);
+  return httpClient.get(`seller/activate-product/${productId}`);
 }
 
 export function addProduct(productDetails: any) {

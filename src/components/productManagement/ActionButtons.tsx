@@ -65,9 +65,6 @@ export default function ActionButtons({
   function handleAction(type: string) {
     setActionType(type);
     setIsModalOpen(true);
-
-    console.log(actionType);
-    console.log(productId);
   }
 
   function handleProductAction() {
@@ -78,25 +75,20 @@ export default function ActionButtons({
     if (actionType === 'Deactivate')
       deactivateProduct(productId)
         .then((res) => {
-          setApiResponse({
-            loading: false,
-            message: '',
-          });
+          getAllProducts();
+          setIsModalOpen(false);
         })
         .catch(console.log);
     if (actionType === 'Activate')
       activateProduct(productId)
         .then((res) => {
-          setApiResponse({
-            loading: false,
-            message: '',
-          });
+          getAllProducts();
+          setIsModalOpen(false);
         })
         .catch(console.log);
     if (actionType === 'Delete')
       deleteProduct(productId)
         .then((res) => {
-          console.log(res);
           getAllProducts();
           setIsModalOpen(false);
         })
@@ -129,25 +121,7 @@ export default function ActionButtons({
         </div>
       );
 
-    if (currentTab.id === 'outOfStock')
-      return (
-        <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
-          <button
-            className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Deactivate')}
-          >
-            Deactivate
-          </button>
-          <button
-            className="text-xs border border-error-primary text-error-primary px-5 py-2"
-            onClick={() => handleAction('Delete')}
-          >
-            Delete
-          </button>
-        </div>
-      );
-
-    if (currentTab.id === 'inActive')
+    if (currentTab.id === 'deactivated')
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
           <button
@@ -267,7 +241,7 @@ export default function ActionButtons({
               onClick={handleProductAction}
               className="bg-accent-primary px-5 py-1 text-white rounded"
             >
-              Yes, Confirm
+              {apiResponse.loading ? 'Please wait...' : 'Yes, Confirm'}
             </button>
           </div>
         </div>

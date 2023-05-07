@@ -11,9 +11,10 @@ import { imageServerBaseUrl } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 import searchIcon from '../../../public/icons/searchIcon.svg';
 import Link from 'next/link';
-import { useGlobalFilter } from 'react-table';
 import ViolationDescriptionModal from './ViolationDescriptionModal';
 import logo from '../../../public/icons/hajurbuwa-logo.svg';
+import CheckboxInput from '../common/CheckboxInput';
+import StockAvailabilityModal from './StockAvailabilityModal';
 
 type ITableData = {
   product_id: string;
@@ -69,6 +70,7 @@ const columnsWithSuspensionReason: {
   { Header: 'Product', accessor: 'product_name' },
   { Header: 'Price', accessor: 'price_per_unit' },
   { Header: 'Business Price', accessor: 'bulk_pricing' },
+  { Header: 'Stock Availability', accessor: 'in_stock' },
   { Header: 'Violation Description', accessor: 'suspend_reason' },
   { Header: 'Action', accessor: 'action' },
 ];
@@ -81,6 +83,7 @@ const columnsWithViolationDescription: {
   { Header: 'Price', accessor: 'price_per_unit' },
   { Header: 'Business Price', accessor: 'bulk_pricing' },
   { Header: 'Violation Description', accessor: 'lock_reason' },
+  { Header: 'Stock Availability', accessor: 'in_stock' },
   { Header: 'Action', accessor: 'action' },
 ];
 
@@ -93,6 +96,9 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
 
   const [isViolationDescriptionModalOpen, setIsViolationDescriptionModalOpen] =
+    useState(false);
+
+  const [isStockAvailabilityModalOpen, setIsStockAvailabilityModalOpen] =
     useState(false);
 
   const [violationDescription, setViolationDescription] = useState('');
@@ -114,6 +120,11 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
       id: '',
     });
 
+  const [stockAvailabilityToBeEdited, setStockAvailabilityToBeEdited] =
+    useState<any>({
+      id: '',
+    });
+
   const [minOrderForNewQuantityDiscount, setMinOrderForNewQuantityDiscount] =
     useState<any>({
       productId: '',
@@ -126,18 +137,15 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   });
 
   const { rows, prepareRow, headerGroups, getTableProps, getTableBodyProps } =
-    useTable(
-      {
-        columns:
-          productStatus.id === 'suspended'
-            ? columnsWithSuspensionReason
-            : productStatus.id === 'locked'
-            ? columnsWithViolationDescription
-            : columns,
-        data,
-      },
-      useGlobalFilter
-    );
+    useTable({
+      columns:
+        productStatus.id === 'suspended'
+          ? columnsWithSuspensionReason
+          : productStatus.id === 'locked'
+          ? columnsWithViolationDescription
+          : columns,
+      data,
+    });
 
   const [__, copyProductId] = useCopyToClipboard();
 
@@ -433,6 +441,63 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                   }
                                 />
                               ) : null}
+                            </div>
+                          ) : cell.column.Header === 'Stock Availability' ? (
+                            <div>
+                              {productStatus.id !== 'locked' ? (
+                                <div className="flex flex-col items-center space-y-2 text-sm">
+                                  <div
+                                    onClick={() => {
+                                      setIsStockAvailabilityModalOpen(true);
+                                      setStockAvailabilityToBeEdited({
+                                        id: row.original.id,
+                                        value: 1,
+                                      });
+                                    }}
+                                    className="flex items-center space-x-5"
+                                  >
+                                    <span>Yes</span>
+                                    <CheckboxInput
+                                      checked={!!cell.value ? true : false}
+                                      onChange={() => {}}
+                                    />
+                                  </div>
+                                  <div
+                                    onClick={() => {
+                                      setIsStockAvailabilityModalOpen(true);
+                                      setStockAvailabilityToBeEdited({
+                                        id: row.original.id,
+                                        value: 0,
+                                      });
+                                    }}
+                                    className="flex items-center space-x-5"
+                                  >
+                                    <span>No</span>
+                                    <CheckboxInput
+                                      checked={!!cell.value ? false : true}
+                                      onChange={() => {}}
+                                    />
+                                  </div>
+
+                                  {isStockAvailabilityModalOpen ? (
+                                    <StockAvailabilityModal
+                                      in_stock={cell.value}
+                                      isStockAvailabilityModalOpen={
+                                        isStockAvailabilityModalOpen
+                                      }
+                                      setIsStockAvailabilityModalOpen={
+                                        setIsStockAvailabilityModalOpen
+                                      }
+                                      updateProductAttribute={
+                                        updateProductAttribute
+                                      }
+                                      value={stockAvailabilityToBeEdited}
+                                    />
+                                  ) : null}
+                                </div>
+                              ) : (
+                                <span>{!!cell.value ? 'Yes' : 'No'}</span>
+                              )}
                             </div>
                           ) : (
                             cell.render('Cell')
