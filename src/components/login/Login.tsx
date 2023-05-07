@@ -93,6 +93,7 @@ export default function Login() {
             first_name: 'Bishal',
           });
         }
+
         if (
           err?.response?.status === 401 &&
           err.response?.data?.message === 'This account is rejected'

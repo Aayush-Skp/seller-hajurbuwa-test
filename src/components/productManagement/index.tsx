@@ -72,7 +72,6 @@ export default function ProductManagement() {
       ? getAllProducts()
       : searchProductsWithStatusAndKeyword(currentTab.id, e.target.value)
           .then((res) => {
-            console.log(res);
             setIsLoading(false);
             setProductList(res?.data);
             setStatusArray(res?.statusCount);

@@ -1,6 +1,6 @@
 import { httpClient } from '../config/httpClient';
 
-export function searchProductsWithStatusAndKeyword(
+export function searchOrdersWithStatusAndKeyword(
   status: string,
   keyword: string
 ) {
