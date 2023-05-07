@@ -48,6 +48,8 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
       isLoading: true,
     });
 
+    console.log(registrationData, 'dsafasdfadsf');
+
     updatePersonalDetails(registrationData)
       .then((res) => {
         incStep();

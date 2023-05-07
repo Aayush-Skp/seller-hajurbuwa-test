@@ -9,6 +9,7 @@ import {
   validateOTP,
 } from '../../services/forgotPasswordService';
 import ErrorMessage from '../common/ErrorMessage';
+import Spinner from '../loader/Spinner';
 
 type OPTVerificationProps = {
   email: string;
@@ -21,6 +22,8 @@ type OPTVerificationProps = {
 export default function OPTVerification(props: OPTVerificationProps) {
   const [isOTPValid, setIsOTPValid] = useState(true);
   const { incStep, decStep, handleOTPChange, otp, email } = props;
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [validOTPTime, setValidOTPTime] = useState(60);
 
@@ -42,11 +45,16 @@ export default function OPTVerification(props: OPTVerificationProps) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    setIsLoading(true);
+
     validateOTP(otp)
       .then((res) => {
         incStep();
       })
-      .catch((err) => setIsOTPValid(false));
+      .catch((err) => {
+        setIsLoading(false);
+        setIsOTPValid(false);
+      });
   }
 
   return (
@@ -94,7 +102,16 @@ export default function OPTVerification(props: OPTVerificationProps) {
           </div>
           <div className="space-y-1">
             <div>
-              <Button type="submit">Continue</Button>
+              <Button type="submit">
+                {isLoading ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <span>Please wait...</span>
+                    <Spinner />
+                  </div>
+                ) : (
+                  'Continue'
+                )}
+              </Button>
             </div>
             <div className="w-full flex justify-between text-blue-700 text-sm">
               <span className="cursor-pointer" onClick={decStep}>

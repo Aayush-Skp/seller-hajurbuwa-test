@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTable } from 'react-table';
 import Image from 'next/image';
+import Link from 'next/link';
 import PriceEditModal from './PriceEditModal';
 import QuantityDiscountModal from './QuantityDiscountModal';
 import ActionButtons from './ActionButtons';
@@ -9,8 +10,6 @@ import AddQuantityDiscountModal from './AddQuantityDiscountModal';
 import { MdContentCopy } from 'react-icons/md';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
-import searchIcon from '../../../public/icons/searchIcon.svg';
-import Link from 'next/link';
 import ViolationDescriptionModal from './ViolationDescriptionModal';
 import logo from '../../../public/icons/hajurbuwa-logo.svg';
 import CheckboxInput from '../common/CheckboxInput';
@@ -82,8 +81,8 @@ const columnsWithViolationDescription: {
   { Header: 'Product', accessor: 'product_name' },
   { Header: 'Price', accessor: 'price_per_unit' },
   { Header: 'Business Price', accessor: 'bulk_pricing' },
-  { Header: 'Violation Description', accessor: 'lock_reason' },
   { Header: 'Stock Availability', accessor: 'in_stock' },
+  { Header: 'Violation Description', accessor: 'lock_reason' },
   { Header: 'Action', accessor: 'action' },
 ];
 
@@ -101,13 +100,13 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   const [isStockAvailabilityModalOpen, setIsStockAvailabilityModalOpen] =
     useState(false);
 
-  const [violationDescription, setViolationDescription] = useState('');
-
   const [isQuantityDiscountModalOpen, setIsQuantityDiscountModalOpen] =
     useState(false);
 
   const [isAddQuantityDiscountModalOpen, setIsAddQuantityDiscountModalOpen] =
     useState(false);
+
+  const [violationDescription, setViolationDescription] = useState('');
 
   const [newQuantityDiscountsToBeAdded, setNewQuantityDiscountsToBeAdded] =
     useState<any>({
@@ -160,17 +159,6 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
 
   return (
     <div className="border-3 border-gray-150">
-      <div className="absolute top-10 right-10">
-        <div className="relative">
-          <div className="absolute flex items-center h-full pl-2">
-            <Image src={searchIcon} alt="search" />
-          </div>
-          <input
-            className="pl-10 text-base font-normal w-[542px] h-[35px] bg-gray-100 rounded-md outline-none"
-            placeholder="Search Product(s) by Product Id or product name"
-          />
-        </div>
-      </div>
       {!isLoading ? (
         data?.length === 0 ? (
           <div className="flex justify-center mt-10">No products available</div>
@@ -281,9 +269,9 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                               />
                             </div>
                           ) : cell.column.Header === 'Price' ? (
-                            <div className="flex items-center justify-start">
+                            <div className="flex items-center justify-start w-full">
                               {row.original.is_bulk_pricing ? (
-                                <div className="flex space-x-1 items-center">
+                                <div className="flex space-x-1 items-center justify-center w-full">
                                   <button
                                     onClick={() => {
                                       setSelectedPriceForUpdate({
@@ -304,7 +292,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                   </button>
                                 </div>
                               ) : (
-                                <div className="flex items-center text-sm space-x-2">
+                                <div className="flex items-center justify-center w-full text-sm space-x-2">
                                   <span>Rs. {cell.value}</span>
                                   <button
                                     onClick={() => {

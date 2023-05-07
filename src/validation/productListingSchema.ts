@@ -5,7 +5,7 @@ export const ProductGeneralInfoSchema = z.object({
 });
 
 export const ProductDetailsSchema = z.object({
-  description: z.string().max(1000).optional(),
+  description: z.string().max(1000).optional().or(z.literal('')),
   included_items: z
     .string()
     .min(1, { message: "Please mention what's in the package" }),

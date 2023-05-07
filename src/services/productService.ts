@@ -9,8 +9,16 @@ type ProductStatus =
   | 'online'
   | 'deactivated'
   | 'locked'
-  | 'suspended'
-  | 'out_of_stock';
+  | 'suspended';
+
+export function searchProductsWithStatusAndKeyword(
+  status: ProductStatus,
+  keyword: string
+) {
+  return httpClient
+    .get(`/seller/products/search?status=${status}&keyword=${keyword}`)
+    .then((res) => res.data);
+}
 
 export function getProductByStatus(productStatus: ProductStatus) {
   return httpClient
@@ -26,6 +34,7 @@ export function getProductDescription(productId: string | number) {
 
 export function getProductById(productId: string | number) {
   return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
+    console.log(res);
     const productDetails = {
       productId: '',
       featured_highlights: [''],
@@ -102,13 +111,13 @@ export function getProductById(productId: string | number) {
     productDetails.category_id = res.data.data[0].product_type;
     productDetails.in_stock = res.data.data[0].stock_availability;
     productDetails.unit = res.data.data[0].unit_selection;
-    productDetails.unitName = res.data.data[0].unit_selection;
+    productDetails.unitName = res.data.data[0].unit_name;
     productDetails.is_bulk_price = res.data.data[0].is_bulk_price;
     productDetails.bulk_pricing = res.data.data[0].is_bulk_price
       ? res.data.data[0].bulk_pricing
       : [{ quantity: res.data.data[0].minimum_order, price: 0 }];
     productDetails.brand = res.data.data[0].brand_specification.toString();
-    productDetails.description = res.data.data[0].description;
+    productDetails.description = res.data.data[0].description ?? '';
     productDetails.featured_highlights = res.data.data[0].featured_highlights;
     productDetails.productId = res.data.data[0].id;
     productDetails.category_tree = res.data.data[0]?.category_tree;
@@ -122,13 +131,11 @@ export function updateProduct(
   productId: string | number,
   updatedField: FormData
 ) {
-  return httpClient
-    .post(`${productUrl}/${productId}`, updatedField, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    .then((res) => res);
+  return httpClient.post(`${productUrl}/${productId}`, updatedField, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 }
 
 export function deleteProduct(productId: string | number) {
