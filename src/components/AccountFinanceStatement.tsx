@@ -4,6 +4,8 @@ import {
   getFinancePeriod,
 } from '../services/financeService';
 import Header from './Header';
+import Image from 'next/image';
+import logo from '../../public/icons/hajurbuwa-logo.svg';
 
 export default function AccountFinanceStatement() {
   const [toggleTransactionFee, setToggleTransactionFee] = useState(false);
@@ -76,7 +78,6 @@ export default function AccountFinanceStatement() {
               })
                 .then((res) => {
                   setFinanceData(res);
-                  console.log(res);
                 })
                 .catch(console.log);
           });
@@ -95,7 +96,14 @@ export default function AccountFinanceStatement() {
     });
   }
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div>
+        <div className="flex items-center justify-center h-screen animate-ping">
+          <Image height={50} width={50} src={logo} alt="logo" />
+        </div>
+      </div>
+    );
 
   return (
     <section>
@@ -120,7 +128,7 @@ export default function AccountFinanceStatement() {
             ))}
           </select>
         </div>
-        <div className="w-full flex items-center justify-center bg-">
+        <div className="w-full flex items-center justify-center">
           <div className="w-2/3 bg-gray-100 h-96 space-y-5">
             <div className="space-x-3">
               <span
