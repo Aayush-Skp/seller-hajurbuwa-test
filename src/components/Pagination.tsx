@@ -21,8 +21,10 @@ export default function Pagination({ paginationData, setCurrentPageUrl }: any) {
                   setCurrentPageUrl(link?.url && link.url.split('/api')[1]);
                 }}
                 type="button"
-                className={`flex w-[50px] h-[50px] items-center justify-center px-2 py-2 border-2 border-gray-200 rounded-[4px] ${
-                  link.active ? 'bg-accent-primary text-white' : ''
+                className={`flex w-[50px] h-[50px] items-center justify-center px-2 py-2 border-2 rounded-[4px] font-semibold ${
+                  link.active
+                    ? 'border-blue-700 text-blue-700'
+                    : 'border-gray-200'
                 } `}
               >
                 {idx === 0 ? (
