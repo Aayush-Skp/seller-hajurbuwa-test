@@ -72,6 +72,7 @@ export default function ActionButtons({
       loading: true,
       message: '',
     });
+
     if (actionType === 'Deactivate')
       deactivateProduct(productId)
         .then((res) => {

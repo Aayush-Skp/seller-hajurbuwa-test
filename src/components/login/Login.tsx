@@ -19,7 +19,6 @@ import { BiArrowBack } from 'react-icons/bi';
 import UnderReview from './UnderReview';
 import Rejected from './Rejected';
 import Spinner from '../loader/Spinner';
-import { MdTry } from 'react-icons/md';
 
 export default function Login() {
   const [apiResponse, setApiResponse] = useState({
@@ -76,6 +75,7 @@ export default function Login() {
         }
       })
       .catch((err) => {
+        console.log(err);
         if (err?.response?.status === 404) {
           setError('password', { message: 'Invalid credentials' });
           setError('email', { message: '' });
@@ -90,7 +90,8 @@ export default function Login() {
         ) {
           setVerificationStatus('pending');
           setSellerData({
-            first_name: 'Bishal',
+            ...err.response?.data.user,
+            ...err.response?.data?.seller[0],
           });
         }
 

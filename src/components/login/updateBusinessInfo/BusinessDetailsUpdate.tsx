@@ -70,7 +70,6 @@ export default function BusinessDetails(props: any) {
           message: 'Network Error! Please check your network connection',
         });
         setIsLoading(false);
-        console.log(err);
       });
   }
 

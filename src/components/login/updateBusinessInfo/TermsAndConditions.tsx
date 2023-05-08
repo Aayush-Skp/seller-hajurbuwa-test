@@ -128,7 +128,11 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
           </div>
         </div>
       </div>
-      <Button type="button" onClick={handleFormSubmit}>
+      <Button
+        type="button"
+        onClick={handleFormSubmit}
+        disabled={!(confirm_terms_and_conditions && confirm_business_name)}
+      >
         {apiResponse.isLoading ? (
           <div className="flex items-center justify-center space-x-2">
             <span>Please wait...</span>

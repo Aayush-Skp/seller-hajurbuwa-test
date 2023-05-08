@@ -13,6 +13,7 @@ import {
   verifyOTPSentToEmail,
 } from '../../services/emailVerificationService';
 import ErrorMessage from '../common/ErrorMessage';
+import Spinner from '../loader/Spinner';
 
 type PhoneVerificationProps = {
   setRegistrationData: SetRegistrationData;
@@ -28,6 +29,8 @@ export default function EmailVerification(props: PhoneVerificationProps) {
     status: true,
     message: '',
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [otpTimeOut, setOtpTimeOut] = useState(59);
 
@@ -56,12 +59,18 @@ export default function EmailVerification(props: PhoneVerificationProps) {
   }
 
   function handleSubmit() {
+    if (isLoading) return;
+
     if (registrationData.emailOtp === '') {
       setOtpValidation({
         status: false,
         message: 'Please enter otp',
       });
+
+      return;
     }
+
+    setIsLoading(true);
 
     verifyOTPSentToEmail(registrationData.emailOtp)
       .then((res) => {
@@ -74,6 +83,8 @@ export default function EmailVerification(props: PhoneVerificationProps) {
             status: false,
             message: 'OTP you entered is invalid',
           });
+
+        setIsLoading(false);
       });
   }
 
@@ -137,12 +148,26 @@ export default function EmailVerification(props: PhoneVerificationProps) {
           </div>
         </div>
       </div>
-      <Button
+      {/* <Button
         disabled={registrationData.emailOtp === ''}
         className="my-2"
         onClick={handleSubmit}
       >
         Continue
+      </Button> */}
+      <Button
+        type="submit"
+        onClick={handleSubmit}
+        disabled={registrationData.emailOtp === ''}
+      >
+        {isLoading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <span>Please wait...</span>
+            <Spinner />
+          </div>
+        ) : (
+          'Continue'
+        )}
       </Button>
     </div>
   );

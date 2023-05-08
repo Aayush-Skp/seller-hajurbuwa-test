@@ -79,6 +79,7 @@ export default function UpdateBusinessDetails() {
           backgroundSize: 'cover',
         }}
       ></div>
+
       <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:h-4/5 md:w-1/2 lg:w-1/3  2xl:h-3/5 2xl:w-1/4  bg-white z-10 shadow-lg">
         {step === 1 ? (
           <BusinessDetails
@@ -104,6 +105,9 @@ export default function UpdateBusinessDetails() {
         ) : step === 4 ? (
           <Success />
         ) : null}
+      </div>
+      <div className="absolute justify-center bottom-4">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
       </div>
     </div>
   );
