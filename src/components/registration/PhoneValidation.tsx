@@ -113,14 +113,14 @@ export default function PhoneValidation(props: PhoneValidationProps) {
             href="https://www.hajurbuwa.com/policies/terms-of-use"
             className="text-accent-tertiary"
           >
-            <a className="text-accent-primary">Terms of Service</a>
+            <a className="text-accent-primary">Terms of Service </a>
           </Link>
           and
           <Link
             href="https://www.hajurbuwa.com/policies/privacy-policy"
             className="text-accent-tertiary"
           >
-            <a className="text-accent-primary">Privacy Policy.</a>
+            <a className="text-accent-primary"> Privacy Policy.</a>
           </Link>
         </p>
         <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>

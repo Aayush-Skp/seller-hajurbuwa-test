@@ -7,6 +7,7 @@ import OrdersTable from './OrdersTable';
 import TabsHeader from './TabsHeader';
 import searchIcon from '../../../public/icons/searchIcon.svg';
 import Image from 'next/image';
+import Pagination from '../Pagination';
 
 export type OrderState =
   | 'pending'
@@ -76,9 +77,13 @@ export default function Orders() {
   const [isLoading, setIsLoading] = useState(false);
   const [orderListWithCount, setOrderListWithCount] = useState([]);
 
+  const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
+  const [paginationData, setPaginationData] = useState<any>({
+    links: [],
+  });
+
   const handleTabChange = useCallback((tab: Tab) => {
     setCurrentTab(tab);
-    setIsLoading(true);
   }, []);
 
   function handleOrderSearch(e: React.ChangeEvent<HTMLInputElement>) {
@@ -100,10 +105,13 @@ export default function Orders() {
   }
 
   function getAllOrders() {
-    getOrdersByStatus(currentTab.id)
+    setIsLoading(true);
+
+    getOrdersByStatus(currentTab.id, currentPageUrl)
       .then((res) => {
         setOrderList(res.data);
         setOrderListWithCount(res.status_array);
+        setPaginationData(res?.pagination);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -117,7 +125,7 @@ export default function Orders() {
 
   useEffect(() => {
     getAllOrders();
-  }, [currentTab]);
+  }, [currentTab, currentPageUrl]);
 
   return (
     <section className="flex flex-col justify-center items-center w-full">
@@ -148,6 +156,13 @@ export default function Orders() {
           productStatus={currentTab}
           getAllOrders={getAllOrders}
         />
+
+        <div className="w-full flex justify-end">
+          <Pagination
+            paginationData={paginationData}
+            setCurrentPageUrl={setCurrentPageUrl}
+          />
+        </div>
       </div>
     </section>
   );

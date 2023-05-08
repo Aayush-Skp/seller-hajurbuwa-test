@@ -20,10 +20,15 @@ export function searchProductsWithStatusAndKeyword(
     .then((res) => res.data);
 }
 
-export function getProductByStatus(productStatus: ProductStatus) {
+export function getProductByStatus(
+  productStatus: ProductStatus,
+  currentPageUrl: string | null
+) {
   return httpClient
-    .get(`${productUrl}?status=${productStatus}`)
-    .then((res) => res.data);
+    .get(`${currentPageUrl ?? `${productUrl}?page=1`}&status=${productStatus}`)
+    .then((res) => {
+      return res.data;
+    });
 }
 
 export function getProductDescription(productId: string | number) {

@@ -9,7 +9,10 @@ export function searchOrdersWithStatusAndKeyword(
     .then((res) => res.data);
 }
 
-export function getOrdersByStatus(status: string) {
+export function getOrdersByStatus(
+  status: string,
+  currentPageUrl: string | null
+) {
   return httpClient
     .post('/seller/get-orders', {
       status,

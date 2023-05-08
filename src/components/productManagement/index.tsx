@@ -7,6 +7,7 @@ import {
 } from '../../services/productService';
 import Image from 'next/image';
 import searchIcon from '../../../public/icons/searchIcon.svg';
+import Pagination from '../Pagination';
 
 export type Tab = {
   id: 'online' | 'pending' | 'deactivated' | 'suspended' | 'locked';
@@ -45,18 +46,25 @@ export default function ProductManagement() {
   const [productList, setProductList] = useState([]);
   const [statusArray, setStatusArray] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [paginationData, setPaginationData] = useState<any>({
+    links: [],
+  });
+
+  const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
 
   const handleTabChange = useCallback((tab: Tab) => {
-    setIsLoading(true);
     setCurrentTab(tab);
+    setCurrentPageUrl(null);
   }, []);
 
   function getAllProducts() {
-    getProductByStatus(currentTab.id)
+    setIsLoading(true);
+    getProductByStatus(currentTab.id, currentPageUrl)
       .then((res) => {
         setIsLoading(false);
         setProductList(res?.data);
         setStatusArray(res?.statusCount);
+        setPaginationData(res?.pagination);
       })
       .catch((err) => {
         if (err?.response?.status === 404) {
@@ -82,13 +90,12 @@ export default function ProductManagement() {
               setStatusArray(err?.response?.data?.statusCount);
             }
             setIsLoading(false);
-            console.log(err);
           });
   }
 
   useEffect(() => {
     getAllProducts();
-  }, [currentTab]);
+  }, [currentTab, currentPageUrl]);
 
   return (
     <section className="">
@@ -114,10 +121,19 @@ export default function ProductManagement() {
 
       <ProductManagementTable
         data={productList}
+        paginationData={paginationData}
+        setCurrentPageUrl={setCurrentPageUrl}
         isLoading={isLoading}
         productStatus={currentTab}
         getAllProducts={getAllProducts}
       />
+
+      <div className="w-full flex justify-end">
+        <Pagination
+          paginationData={paginationData}
+          setCurrentPageUrl={setCurrentPageUrl}
+        />
+      </div>
     </section>
   );
 }

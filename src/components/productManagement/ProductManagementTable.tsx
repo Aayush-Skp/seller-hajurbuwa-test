@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { useTable } from 'react-table';
 import Image from 'next/image';
 import Link from 'next/link';
 import PriceEditModal from './PriceEditModal';
 import QuantityDiscountModal from './QuantityDiscountModal';
+import CheckboxInput from '../common/CheckboxInput';
 import ActionButtons from './ActionButtons';
 import { updateProduct } from '../../services/productService';
 import AddQuantityDiscountModal from './AddQuantityDiscountModal';
@@ -12,8 +13,8 @@ import { imageServerBaseUrl } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 import ViolationDescriptionModal from './ViolationDescriptionModal';
 import logo from '../../../public/icons/hajurbuwa-logo.svg';
-import CheckboxInput from '../common/CheckboxInput';
 import StockAvailabilityModal from './StockAvailabilityModal';
+import Pagination from '../Pagination';
 
 type ITableData = {
   product_id: string;
@@ -28,12 +29,14 @@ type ITableData = {
 
 type ProductManagementTableProps = {
   data: ITableData[];
+  setCurrentPageUrl: Dispatch<SetStateAction<string | null>>;
   productStatus: {
     id: string;
     label: string;
   };
   isLoading: boolean;
-  getAllProducts: () => void;
+  getAllProducts: (pageNo?: number) => void;
+  paginationData: any;
 };
 
 type TableHeader =
@@ -91,6 +94,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   productStatus,
   isLoading,
   getAllProducts,
+  paginationData,
 }) => {
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
 
@@ -135,6 +139,8 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
     value: '',
   });
 
+  const [_, copyProductId] = useCopyToClipboard();
+
   const { rows, prepareRow, headerGroups, getTableProps, getTableBodyProps } =
     useTable({
       columns:
@@ -146,14 +152,12 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
       data,
     });
 
-  const [__, copyProductId] = useCopyToClipboard();
-
   function updateProductAttribute(
     productId: string | number,
     updatedField: FormData
   ) {
     return updateProduct(productId, updatedField).then((res) =>
-      getAllProducts()
+      getAllProducts(2)
     );
   }
 
