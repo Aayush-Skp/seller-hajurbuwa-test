@@ -101,7 +101,16 @@ export default function CreateNewPassword(props: OPTVerificationProps) {
             </div>
           </div>
           <div>
-            <Button type="submit">Continue</Button>
+            <Button type="submit">
+              {isLoading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <span>Please wait...</span>
+                  <Spinner />
+                </div>
+              ) : (
+                'Continue'
+              )}
+            </Button>
           </div>
         </div>
       </form>

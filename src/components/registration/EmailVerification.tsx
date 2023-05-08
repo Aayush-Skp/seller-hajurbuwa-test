@@ -138,7 +138,9 @@ export default function EmailVerification(props: PhoneVerificationProps) {
             <div className="text-xs text-accent-primary flex justify-between">
               <button onClick={decStep}>Change email</button>
               <button
-                className={`${!!otpTimeOut ? 'cursor-not-allowed' : ''}`}
+                className={`${
+                  !!otpTimeOut ? 'cursor-not-allowed text-gray-400' : ''
+                }`}
                 disabled={otpTimeOut !== 0}
                 onClick={handleSendOTP}
               >
@@ -148,13 +150,7 @@ export default function EmailVerification(props: PhoneVerificationProps) {
           </div>
         </div>
       </div>
-      {/* <Button
-        disabled={registrationData.emailOtp === ''}
-        className="my-2"
-        onClick={handleSubmit}
-      >
-        Continue
-      </Button> */}
+
       <Button
         type="submit"
         onClick={handleSubmit}

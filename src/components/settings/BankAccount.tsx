@@ -171,7 +171,7 @@ export default function BankAccount() {
               onChange={handleBankSelection}
               className="w-full h-10 outline-none border border-black rounded cursor-pointer select-none"
             >
-              <option value="">select a bank</option>
+              <option value="">Select a bank</option>
               {bankList.map((bank) => (
                 <option
                   key={bank.id}

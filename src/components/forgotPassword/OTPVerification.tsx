@@ -121,7 +121,9 @@ export default function OPTVerification(props: OPTVerificationProps) {
                 type="button"
                 disabled={validOTPTime !== 0}
                 onClick={handleResendOTP}
-                className={`${!!validOTPTime ? 'cursor-not-allowed' : ''}`}
+                className={`${
+                  !!validOTPTime ? 'cursor-not-allowed text-gray-400' : ''
+                }`}
               >
                 Resend OTP {!!validOTPTime ? `(${validOTPTime})` : ''}
               </button>

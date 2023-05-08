@@ -191,13 +191,13 @@ export default function Login() {
                   By continuing you agree to Hajurbuwa.com’s
                   <span className="text-accent-primary">
                     <Link href="https://www.hajurbuwa.com/policies/terms-of-use">
-                      <a> Terms of Use </a>
+                      <a target="_blank"> Terms of Use </a>
                     </Link>
                   </span>
                   and
                   <span className="text-accent-primary">
-                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
-                      <a> Privacy Policy.</a>
+                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+                      <a target="_blank"> Privacy Policy.</a>
                     </Link>
                   </span>
                 </p>
@@ -220,7 +220,10 @@ export default function Login() {
                 <div className="w-full h-[1px] bg-black" />
               </div>
               <Link href="/register">
-                <a className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2 text-center">
+                <a
+                  target="_blank"
+                  className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2 text-center"
+                >
                   Register as Hajurbuwa seller
                 </a>
               </Link>

@@ -133,14 +133,23 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
             <label className="px-2" htmlFor="agreed_terms_conditions">
               Click here to indicate that you have read and agree to the
               <Link href="https://www.hajurbuwa.com/policies/terms-of-use">
-                <a className="text-accent-primary"> Terms Of Use,</a>
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Terms Of Use,
+                </a>
               </Link>
-              <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
-                <a className="text-accent-primary"> Privacy Policy</a>
+              <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Privacy Policy
+                </a>
               </Link>{' '}
               and
               <Link href="https://www.hajurbuwa.com/policies/product-listing-policy">
-                <a className="text-accent-primary"> Product Listing Policy</a>
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Product Listing Policy
+                </a>
               </Link>
             </label>
           </div>

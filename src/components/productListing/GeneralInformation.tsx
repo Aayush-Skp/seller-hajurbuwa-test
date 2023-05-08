@@ -215,7 +215,7 @@ export default function GeneralInformation(props: any) {
                   : 'border-gray-600'
               } rounded cursor-pointer`}
             >
-              <option value="">Select Brand</option>
+              <option value="">Select a Brand</option>
               {defaultValues?.brands?.map((brand: any) => (
                 <option
                   key={brand.id}
@@ -231,7 +231,7 @@ export default function GeneralInformation(props: any) {
         </div>
         <div className="flex">
           <div className="w-[190px]">
-            <InputLabel label="Select a product type" required />
+            <InputLabel label="Selected Category" required />
           </div>
           <div className="w-full space-y-3">
             <div className="flex items-center space-x-2">
@@ -322,7 +322,10 @@ export default function GeneralInformation(props: any) {
                 </div>
               </div>
               <p>OR</p>
-              <div className="h-56 border border-gray-500 divide-y divide-gray-500">
+              <div
+                className={`h-56 border border-gray-500 divide-y divide-gray-500
+                }`}
+              >
                 <p className="px-4 py-1">
                   {selectedCategoryStringFromList !== '' ? (
                     <div className="flex items-center space-x-2">

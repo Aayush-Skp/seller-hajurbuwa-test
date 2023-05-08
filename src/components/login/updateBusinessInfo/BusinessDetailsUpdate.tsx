@@ -15,15 +15,8 @@ import Button from '../../common/Button';
 import Spinner from '../../loader/Spinner';
 import Link from 'next/link';
 
-type BusinessDetailsProps = {
-  registrationData: SellerRegistrationDataType;
-  setRegistrationData: SetRegistrationData;
-  incStep: () => void;
-  decStep: () => void;
-};
-
 export default function BusinessDetails(props: any) {
-  const { setRegistrationData, incStep, decStep, registrationData } = props;
+  const { setRegistrationData, incStep, registrationData } = props;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,12 +24,14 @@ export default function BusinessDetails(props: any) {
     useFormValidation(businessDetailsSchema);
 
   useEffect(() => {
-    setValue('business_name', registrationData.company_name);
+    setValue('business_name', registrationData?.company_name);
     setValue('pan_number', registrationData.pan_number);
   }, [registrationData]);
 
   function handleFormSubmit(data: BusinessDetailsType) {
     setIsLoading(true);
+
+    console.log(data);
 
     checkIfPANExist(
       data.pan_number,

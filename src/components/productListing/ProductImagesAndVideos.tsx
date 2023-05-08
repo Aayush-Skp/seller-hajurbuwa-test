@@ -78,9 +78,6 @@ export default function ProductImagesAndVideos(props: any) {
               </div>
             </label>
           </div>
-          {/* <p className="text-sm tracking-tight">
-            Or drag and drop 1 or more files below.
-          </p> */}
         </div>
 
         <div className="flex items-center">
@@ -157,6 +154,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.first,
+                          images: {
+                            ...prev.images,
+                            first: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
@@ -230,6 +231,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.second,
+                          images: {
+                            ...prev.images,
+                            second: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
@@ -302,6 +307,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.third,
+                          images: {
+                            ...prev.images,
+                            third: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
@@ -374,6 +383,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.fourth,
+                          images: {
+                            ...prev.images,
+                            second: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
@@ -446,6 +459,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.fifth,
+                          images: {
+                            ...prev.images,
+                            fifth: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
@@ -518,6 +535,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.sixth,
+                          images: {
+                            ...prev.images,
+                            sixth: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
@@ -590,6 +611,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.seventh,
+                          images: {
+                            ...prev.images,
+                            seventh: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
@@ -662,6 +687,10 @@ export default function ProductImagesAndVideos(props: any) {
                         setProductDetails((prev: any) => ({
                           ...prev,
                           cover_image: productDetails.images.eighth,
+                          images: {
+                            ...prev.images,
+                            eighth: '',
+                          },
                         }))
                       }
                       className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"

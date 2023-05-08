@@ -54,7 +54,7 @@ const Navbar = () => {
                 </a>
               </Link>
             </div>
-            <div className="flex-shrink-0 flex items-center justify-center px-10 text-lg shadow-xl h-7 w-28 mx-5">
+            <div className="flex-shrink-0 flex items-center justify-center px-10 text-lg shadow-xl h-7">
               <span className="font-bold text-sm whitespace-nowrap">
                 {sellerDetails?.business_name}
               </span>
@@ -91,11 +91,6 @@ const Navbar = () => {
                 </ul>
               ) : null}
             </li>
-            {/* <li className="flex-shrink-0 flex items-center justify-center px-5 text-lg">
-              <Link href="/">
-                <a className="font-bold text-lg">Help</a>
-              </Link>
-            </li> */}
           </ul>
         </div>
         <ul className="flex items-center justify-center space-x-5">

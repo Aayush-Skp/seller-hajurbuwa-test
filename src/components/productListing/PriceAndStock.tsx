@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import Info from '../../../public/icons/info.svg';
-import deleteIcon from '../../../public/icons/delete.svg';
+import deleteIcon from '../../../public/icons/cancel.svg';
 import useFormValidation from '../../hooks/useFormValidation';
 import { ProductPriceSchema } from '../../validation/productListingSchema';
 import Button from '../common/Button';
@@ -450,7 +450,12 @@ export default function PriceAndStock(props: any) {
               <div className="flex w-full justify-between">
                 <ErrorMessage message={bulkValidation.message} />
                 <div className="w-36 flex space-x-2">
-                  <Button onClick={addBulkPrice}>Add Row</Button>
+                  <Button
+                    disabled={productDetails?.bulk_pricing?.length === 4}
+                    onClick={addBulkPrice}
+                  >
+                    Add Row
+                  </Button>
                 </div>
               </div>
             </div>

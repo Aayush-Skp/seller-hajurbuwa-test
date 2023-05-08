@@ -81,10 +81,7 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
         className="px-6 py-4 w-full space-y-4 my-5"
       >
         <div className="w-full flex justify-center">
-          <Image
-            src={hajurBuwaLogo}
-            alt="Register Phone Number Illustration"
-          />
+          <Image src={hajurBuwaLogo} alt="Register Phone Number Illustration" />
         </div>
 
         <div className="flex flex-col w-full space-y-5">
@@ -110,7 +107,7 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
             </div>
           </div>
           <div>
-            <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
+            <Button type="submit">
               {apiResponse.loading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <span>Please wait...</span>
@@ -127,7 +124,10 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
             <div className="w-full h-[1px] bg-black" />
           </div>
           <Link href="/register">
-            <a className="bg-white text-accent-primary border border-accent-primary text-center rounded px-3 py-2">
+            <a
+              target="_blank"
+              className="bg-white text-accent-primary border border-accent-primary text-center rounded px-3 py-2"
+            >
               Register as Hajurbuwa seller
             </a>
           </Link>

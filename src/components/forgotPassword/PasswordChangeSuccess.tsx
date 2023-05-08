@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import hajurBuwaLogo from '../../../public/icons/hajurbuwa-logo.svg';
-import { BiArrowBack } from 'react-icons/bi';
 import Button from '../common/Button';
 import Link from 'next/link';
 
@@ -9,9 +8,6 @@ export default function PasswordChangeSuccess() {
     <div className="relative w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white z-10 shadow-lg">
       <form className="px-6 py-4 w-full space-y-4 my-5">
         <div className="w-full">
-          <div className="cursor-pointer" onClick={() => { }}>
-            <BiArrowBack className="text-3xl cursor-pointer" />
-          </div>
           <div className="w-full flex justify-center">
             <Image
               src={hajurBuwaLogo}
