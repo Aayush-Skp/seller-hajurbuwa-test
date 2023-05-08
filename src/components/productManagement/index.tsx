@@ -121,8 +121,6 @@ export default function ProductManagement() {
 
       <ProductManagementTable
         data={productList}
-        paginationData={paginationData}
-        setCurrentPageUrl={setCurrentPageUrl}
         isLoading={isLoading}
         productStatus={currentTab}
         getAllProducts={getAllProducts}

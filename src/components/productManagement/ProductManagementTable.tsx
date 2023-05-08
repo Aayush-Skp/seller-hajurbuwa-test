@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { useState } from 'react';
 import { useTable } from 'react-table';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,7 +14,6 @@ import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 import ViolationDescriptionModal from './ViolationDescriptionModal';
 import logo from '../../../public/icons/hajurbuwa-logo.svg';
 import StockAvailabilityModal from './StockAvailabilityModal';
-import Pagination from '../Pagination';
 
 type ITableData = {
   product_id: string;
@@ -29,14 +28,12 @@ type ITableData = {
 
 type ProductManagementTableProps = {
   data: ITableData[];
-  setCurrentPageUrl: Dispatch<SetStateAction<string | null>>;
   productStatus: {
     id: string;
     label: string;
   };
   isLoading: boolean;
-  getAllProducts: (pageNo?: number) => void;
-  paginationData: any;
+  getAllProducts: () => void;
 };
 
 type TableHeader =
@@ -94,7 +91,6 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
   productStatus,
   isLoading,
   getAllProducts,
-  paginationData,
 }) => {
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
 
@@ -157,7 +153,7 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
     updatedField: FormData
   ) {
     return updateProduct(productId, updatedField).then((res) =>
-      getAllProducts(2)
+      getAllProducts()
     );
   }
 
