@@ -235,7 +235,9 @@ export default function GeneralInformation(props: any) {
         </div>
         <div className="flex">
           <div className="w-[190px]">
-            <InputLabel label="Selected Category" />
+            <span className="italic text-gray-500 text-sm">
+              Selected Category
+            </span>
           </div>
           <div className="w-full space-y-3">
             <div className="flex items-center space-x-2">
