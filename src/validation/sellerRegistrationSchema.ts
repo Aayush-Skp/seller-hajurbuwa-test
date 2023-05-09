@@ -21,7 +21,7 @@ export const phoneSchema = z.object({
 export type PhoneNumberType = z.infer<typeof phoneSchema>;
 
 export const businessDetailsSchema = z.object({
-  business_name: z
+  company_name: z
     .string()
     .min(1, { message: 'Please enter your business name' })
     .max(256),

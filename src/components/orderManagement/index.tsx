@@ -110,6 +110,7 @@ export default function Orders() {
     getOrdersByStatus(currentTab.id, currentPageUrl)
       .then((res) => {
         setOrderList(res.data);
+        console.log(res);
         setOrderListWithCount(res.status_array);
         setPaginationData(res?.pagination);
         setIsLoading(false);
