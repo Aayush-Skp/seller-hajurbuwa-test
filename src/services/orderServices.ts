@@ -5,7 +5,7 @@ export function searchOrdersWithStatusAndKeyword(
   keyword: string
 ) {
   return httpClient
-    .get(`/seller/get-orders/search?status=${status}&keyword=${keyword}`)
+    .get(`/seller/orders/search?status=${status}&keyword=${keyword}&page=1`)
     .then((res) => res.data);
 }
 
@@ -14,7 +14,7 @@ export function getOrdersByStatus(
   currentPageUrl: string | null
 ) {
   return httpClient
-    .post('/seller/get-orders', {
+    .post(`${currentPageUrl ?? '/seller/get-orders?page=1'}&status=${status}`, {
       status,
     })
     .then((res) => res.data);

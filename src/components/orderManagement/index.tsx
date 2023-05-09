@@ -84,6 +84,7 @@ export default function Orders() {
 
   const handleTabChange = useCallback((tab: Tab) => {
     setCurrentTab(tab);
+    setCurrentPageUrl(null);
   }, []);
 
   function handleOrderSearch(e: React.ChangeEvent<HTMLInputElement>) {
@@ -91,11 +92,13 @@ export default function Orders() {
       ? getAllOrders()
       : searchOrdersWithStatusAndKeyword(currentTab.id, e.target.value)
           .then((res) => {
+            console.log(res);
             setOrderList(res.data);
             setOrderListWithCount(res.status_array);
             setIsLoading(false);
           })
           .catch((err) => {
+            console.log(err);
             if (err?.response?.status === 404) {
               setOrderList([]);
               setOrderListWithCount(err?.response?.data?.status_array ?? []);
@@ -110,7 +113,6 @@ export default function Orders() {
     getOrdersByStatus(currentTab.id, currentPageUrl)
       .then((res) => {
         setOrderList(res.data);
-        console.log(res);
         setOrderListWithCount(res.status_array);
         setPaginationData(res?.pagination);
         setIsLoading(false);
