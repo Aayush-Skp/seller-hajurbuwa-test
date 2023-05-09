@@ -78,7 +78,7 @@ export default function StockAvailabilityModal(
 
         overlay: {
           zIndex: 100,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
+          backgroundColor: 'rgba(0, 0, 0, 0.03)',
         },
       }}
     >

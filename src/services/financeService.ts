@@ -11,5 +11,7 @@ export function getFinanceDetails({ sellerId, start_date, end_date }: any) {
 export function getFinancePeriod(sellerId: string | number) {
   return httpClient
     .get(`/seller/finance/period?seller_id=${sellerId}`)
-    .then((res) => res.data.data);
+    .then((res) => {
+      return res.data.data;
+    });
 }

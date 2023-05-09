@@ -120,7 +120,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
           </Link>
           and
           <Link
-            href="https://www.hajurbuwa.com/policies/privacy-policy-2"
+            href="https://www.hajurbuwa.com/policies/privacy-policy"
             className="text-accent-tertiary"
           >
             <a target="_blank" className="text-accent-primary">

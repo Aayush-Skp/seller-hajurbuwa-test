@@ -15,7 +15,7 @@ export default function OrderDetails() {
     product_name: '',
     product_id: '',
     quantity: '',
-    sub_total: '',
+    total_amount: '',
     buyer_company_name: '',
     pan_number: '',
     amount: '',
@@ -139,7 +139,7 @@ export default function OrderDetails() {
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Item Subtotal</span>
-              <span>Rs. {orderDetails.amount}</span>
+              <span>Rs. {orderDetails.total_amount}</span>
             </div>
           </li>
           <li className="border-b py-2 border-gray-300">

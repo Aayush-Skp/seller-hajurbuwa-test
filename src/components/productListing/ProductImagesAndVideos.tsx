@@ -5,14 +5,12 @@ import cancelIcon from '../../../public/icons/cancel.svg';
 import FileInput from '../common/FileInput';
 import Button from '../common/Button';
 import DiscardModal from './DiscardModal';
-
-type ImageObj = {
-  file: File | null;
-  url: string;
-};
+import { useState } from 'react';
 
 export default function ProductImagesAndVideos(props: any) {
   const { productDetails, decStep, incStep, setProductDetails } = props;
+
+  const [isCoverImageValid, setIsCoverImageValid] = useState(true);
 
   function handleImages(e: React.ChangeEvent<HTMLInputElement>) {
     const { id, files } = e.target;
@@ -43,7 +41,12 @@ export default function ProductImagesAndVideos(props: any) {
   }
 
   function handleSubmit() {
-    productDetails.cover_image !== '' && incStep();
+    if (productDetails.cover_image === '') {
+      setIsCoverImageValid(false);
+      return;
+    }
+
+    incStep();
   }
 
   return (
@@ -81,7 +84,11 @@ export default function ProductImagesAndVideos(props: any) {
         </div>
 
         <div className="flex items-center">
-          <div className="flex items-center justify-center w-80 h-80 border border-gray-600">
+          <div
+            className={`flex items-center justify-center w-80 h-80 border ${
+              isCoverImageValid ? 'border-gray-600' : 'border-error-primary'
+            } `}
+          >
             {productDetails.cover_image ? (
               <Image
                 width={500}
@@ -95,7 +102,11 @@ export default function ProductImagesAndVideos(props: any) {
                 alt=""
               />
             ) : (
-              <span className="text-sm">Please select a cover image</span>
+              <span
+                className={`${!isCoverImageValid ? 'text-error-primary' : ''}`}
+              >
+                Please select a cover image
+              </span>
             )}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 md:pl-24 lg:pl-24 gap-x-6 gap-y-5 md:gap-y-10 lg:gap-y-10">
@@ -718,6 +729,7 @@ export default function ProductImagesAndVideos(props: any) {
             Back
           </Button>
           <button
+            type="button"
             className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
             onClick={handleSubmit}
           >

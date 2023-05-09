@@ -2,7 +2,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import businessSetup from '/public/images/business_setup.svg';
 import { BiArrowBack } from 'react-icons/bi';
-import { SellerRegistrationDataType, SetRegistrationData } from '.';
 import useFormValidation from '../../../hooks/useFormValidation';
 import {
   BusinessDetailsType,
@@ -24,14 +23,12 @@ export default function BusinessDetails(props: any) {
     useFormValidation(businessDetailsSchema);
 
   useEffect(() => {
-    setValue('business_name', registrationData?.company_name);
+    setValue('company_name', registrationData?.company_name);
     setValue('pan_number', registrationData.pan_number);
   }, [registrationData]);
 
   function handleFormSubmit(data: BusinessDetailsType) {
     setIsLoading(true);
-
-    console.log(data);
 
     checkIfPANExist(
       data.pan_number,
@@ -96,8 +93,8 @@ export default function BusinessDetails(props: any) {
           <TextInput
             className="h-14 outline-none"
             placeholder="Business Name"
-            {...register('business_name')}
-            error={errors.hasOwnProperty('business_name')}
+            {...register('company_name')}
+            error={errors.hasOwnProperty('company_name')}
           />
           {errors.business_name && (
             <ErrorMessage message={errors.business_name?.message as string} />

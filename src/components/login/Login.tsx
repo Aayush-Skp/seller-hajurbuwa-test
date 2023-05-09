@@ -27,7 +27,7 @@ export default function Login() {
 
   const [verificationStatus, setVerificationStatus] = useState('');
 
-  const [sellerData, setSellerData] = useState<any>({ first_name: 'Bishal' });
+  const [sellerData, setSellerData] = useState<any>({ fname: '' });
 
   const router = useRouter();
 
@@ -47,7 +47,7 @@ export default function Login() {
           const [details, location] = seller;
 
           const userDetails = {
-            id: details?.user_id,
+            id: details?.id,
             first_name: user?.fname,
             last_name: user?.lname,
             email: user?.email,
@@ -196,14 +196,14 @@ export default function Login() {
                   </span>
                   and
                   <span className="text-accent-primary">
-                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
                       <a target="_blank"> Privacy Policy.</a>
                     </Link>
                   </span>
                 </p>
               </div>
               <div>
-                <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
+                <Button type="submit">
                   {apiResponse.loading ? (
                     <div className="flex items-center justify-center space-x-2">
                       <span>Please wait...</span>

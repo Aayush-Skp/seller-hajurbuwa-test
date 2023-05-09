@@ -138,7 +138,7 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
                   Terms Of Use,
                 </a>
               </Link>
-              <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+              <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
                 <a target="_blank" className="text-accent-primary">
                   {' '}
                   Privacy Policy

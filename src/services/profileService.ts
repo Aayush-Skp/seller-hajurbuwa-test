@@ -36,7 +36,7 @@ export function updatePersonalDetails(data: any) {
   formData.append('first_name', data.fname);
   formData.append('last_name', data.lname);
   formData.append('email', data.email);
-  formData.append('business_name', data.business_name);
+  formData.append('company_name', data.company_name);
   formData.append('pan_number', data.pan_number);
   formData.append('pan_image', data.pan_image);
 

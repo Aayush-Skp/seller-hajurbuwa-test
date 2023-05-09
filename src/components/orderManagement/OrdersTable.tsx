@@ -5,11 +5,12 @@ import Button from '../common/Button';
 import Link from 'next/link';
 import ChangeOrderStatusModal from './ChangeOrderStatusModal';
 import PackagingSlip from './PackagingSlip';
-import searchIcon from '../../../public/icons/searchIcon.svg';
 import cancelIcon from '../../../public/icons/cancel.svg';
 import { Tab } from '.';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 import logo from '../../../public/icons/hajurbuwa-logo.svg';
+import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
+import { MdContentCopy } from 'react-icons/md';
 
 type ITableData = {
   id?: string | number;
@@ -72,6 +73,8 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
 
   const { rows, prepareRow, headerGroups, getTableProps, getTableBodyProps } =
     useTable({ columns, data });
+
+  const [_, copyProductId] = useCopyToClipboard();
 
   function formatDate(date: string) {
     return new Date(date).toLocaleTimeString('en-us', {
@@ -145,9 +148,17 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                   <p>{row.original.product_name}</p>
                                   <p>{row.original.product_included_item}</p>
                                 </div>
-                                <div>
-                                  <p>Id: {row.original.product_id}</p>
-                                </div>
+                                <p className="text-sm space-x-2 items-center">
+                                  <span>Id: {row.original.product_id}</span>
+                                  <button
+                                    className="group"
+                                    onClick={() =>
+                                      copyProductId(row.original.product_id)
+                                    }
+                                  >
+                                    <MdContentCopy className="group-hover:scale-110 transition-transform" />
+                                  </button>
+                                </p>
                               </div>
                             </div>
                           ) : cell.column.Header === 'Order Details' ? (
@@ -304,8 +315,10 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                       Cancelled by {row.original.cancelled_by}
                                     </p>
                                     <p className="">
-                                      Cancellation Reason:{' '}
-                                      {row.original.cancel_reason}
+                                      Cancellation Reason:
+                                      <span className="w-1/2 whitespace-pre-">
+                                        {row.original.cancel_reason}
+                                      </span>
                                     </p>
                                   </div>
                                 ) : cell.value === 'failed' ? (

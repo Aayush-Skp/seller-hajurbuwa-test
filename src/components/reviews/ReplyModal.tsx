@@ -6,14 +6,14 @@ import InputLabel from '../common/InputLabel';
 import TextInput from '../common/TextInput';
 import ErrorMessage from '../common/ErrorMessage';
 import { replyToReview } from '../../services/reviewService';
+import Button from '../common/Button';
+import Spinner from '../loader/Spinner';
 
 export default function ReplyModal(props: any) {
   const { isReplyModalOpen, setIsReplyModalOpen, orderId, getAllReviews } =
     props;
 
-  const [responseState, setResponseState] = useState({
-    isLoading: false,
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const [replyMessageValidation, setReplyMessageValidation] = useState({
     isValid: true,
@@ -41,12 +41,16 @@ export default function ReplyModal(props: any) {
       return;
     }
 
+    setIsLoading(true);
+
     replyToReview(orderId, replyMessage)
       .then((res) => {
-        console.log(res);
         setIsReplyModalOpen(false);
       })
-      .catch(console.log);
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
   }
 
   return (
@@ -91,12 +95,17 @@ export default function ReplyModal(props: any) {
             >
               No, Cancel
             </button>
-            <button
-              type="submit"
-              className="text-white border border-accent-primary bg-accent-primary  px-5 py-1 rounded hover:bg-accent-secondary transition-colors"
-            >
-              {!responseState.isLoading ? 'Submit' : 'Loading...'}
-            </button>
+
+            <Button type="submit">
+              {isLoading ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <span>Please wait...</span>
+                  <Spinner />
+                </div>
+              ) : (
+                'Submit'
+              )}
+            </Button>
           </div>
         </form>
       </Modal>

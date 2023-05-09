@@ -62,6 +62,7 @@ export default function ProductManagement() {
     getProductByStatus(currentTab.id, currentPageUrl)
       .then((res) => {
         setIsLoading(false);
+        console.log(res);
         setProductList(res?.data);
         setStatusArray(res?.statusCount);
         setPaginationData(res?.pagination);

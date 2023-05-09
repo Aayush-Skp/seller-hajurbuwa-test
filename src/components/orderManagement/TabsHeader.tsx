@@ -25,8 +25,6 @@ export default function TabsHeader({
               (status: any) => status.status === header.id
             )[0]?.count;
           }
-
-          console.log(badge);
           return (
             <li
               key={header.id}
