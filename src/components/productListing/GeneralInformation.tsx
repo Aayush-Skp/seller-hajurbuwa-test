@@ -231,7 +231,7 @@ export default function GeneralInformation(props: any) {
         </div>
         <div className="flex">
           <div className="w-[190px]">
-            <InputLabel label="Selected Category" required />
+            <InputLabel label="Selected Category" />
           </div>
           <div className="w-full space-y-3">
             <div className="flex items-center space-x-2">
@@ -310,7 +310,6 @@ export default function GeneralInformation(props: any) {
                           <button className="border border-accent-primary rounded px-6 py-1 mr-2">
                             Select
                           </button>
-
                           <hr />
                         </li>
                       ))}
@@ -321,10 +320,17 @@ export default function GeneralInformation(props: any) {
                   <Button onClick={handleCategorySearch}>Search</Button>
                 </div>
               </div>
-              <p>OR</p>
+              <span className="block">OR</span>
+              <div className="absolute block left-52 bottom-[107px]">
+                <InputLabel label="Select a Category" required />
+              </div>
               <div
                 className={`h-56 border border-gray-500 divide-y divide-gray-500
-                }`}
+               ${
+                 productDetails?.category_tree !== ''
+                   ? 'text-gray-500'
+                   : 'text-black'
+               } }`}
               >
                 <p className="px-4 py-1">
                   {selectedCategoryStringFromList !== '' ? (
@@ -351,21 +357,28 @@ export default function GeneralInformation(props: any) {
                     } h-44 divide-y divide-gray-500`}
                   >
                     {categoryList?.map((category: any) => (
-                      <li
-                        key={category.id}
-                        onClick={() => handleSelectedCategory(category)}
-                        className="flex justify-between items-center cursor-pointer"
-                      >
-                        <p className="pl-4 py-2">{category.name}</p>
-                        {category?.sub_categories?.length === 0 ? (
-                          <button className="border border-accent-primary rounded px-6 py-1 mr-2">
-                            Select
-                          </button>
-                        ) : (
-                          <div className="flex items-center justify-center cursor-pointer mr-6">
-                            <Image src={RightIcon} alt="" />
-                          </div>
-                        )}
+                      <li key={category.id}>
+                        <button
+                          type="button"
+                          disabled={productDetails?.category_tree !== ''}
+                          onClick={() => handleSelectedCategory(category)}
+                          className={`flex justify-between items-center w-full ${
+                            productDetails?.category_tree !== ''
+                              ? 'cursor-not-allowed'
+                              : ''
+                          }`}
+                        >
+                          <span className="pl-4 py-2">{category.name}</span>
+                          {category?.sub_categories?.length === 0 ? (
+                            <button className="border border-accent-primary rounded px-6 py-1 mr-2">
+                              Select
+                            </button>
+                          ) : (
+                            <div className="flex items-center justify-center cursor-pointer mr-6">
+                              <Image src={RightIcon} alt="" />
+                            </div>
+                          )}
+                        </button>
                       </li>
                     ))}
                   </ul>
