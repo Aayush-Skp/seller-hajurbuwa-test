@@ -18,7 +18,6 @@ import { phoneVerificationService } from '../../services/phoneVerificationServic
 import { useEffect, useState } from 'react';
 import Spinner from '../loader/Spinner';
 import { BiArrowBack } from 'react-icons/bi';
-import { useRouter } from 'next/router';
 
 type PhoneValidationProps = {
   setRegistrationData: SetRegistrationData;
@@ -67,16 +66,16 @@ export default function PhoneValidation(props: PhoneValidationProps) {
       });
   }
 
-  const router = useRouter();
-
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
       className="flex flex-col px-10 pt-10 pb-5 items-around justify-center text-black h-full w-full"
     >
-      <div className="cursor-pointer" onClick={() => router.push('/')}>
-        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
-      </div>
+      <Link href="/login">
+        <a>
+          <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl" />
+        </a>
+      </Link>
       <Image
         src={registerPhoneNumber}
         alt="Register Phone Number Illustration"
@@ -101,7 +100,6 @@ export default function PhoneValidation(props: PhoneValidationProps) {
             </div>
             <TextInput
               className="pl-20"
-              type="number"
               {...register('phone')}
               error={errors.hasOwnProperty('phone')}
             />
@@ -111,14 +109,25 @@ export default function PhoneValidation(props: PhoneValidationProps) {
 
         <p className="text-sm py-6 text-gray-850">
           By Clicking &quot;Continue&quot;, you agree to Hajurbuwa.com&apos;s
-          <Link href="https://www.hajurbuwa.com/policies/terms-of-use" className="text-accent-tertiary">
-            <a className="text-accent-primary">{` Terms of Service `}</a>
+          <Link
+            href="https://www.hajurbuwa.com/policies/terms-of-use"
+            className="text-accent-tertiary"
+          >
+            <a target="_blank" className="text-accent-primary">
+              {' '}
+              Terms of Use{' '}
+            </a>
           </Link>
           and
-          <Link href="https://www.hajurbuwa.com/policies/privacy-policy" className="text-accent-tertiary">
-            <a className="text-accent-primary">{` Privacy Policy `}</a>
+          <Link
+            href="https://www.hajurbuwa.com/policies/privacy-policy-2"
+            className="text-accent-tertiary"
+          >
+            <a target="_blank" className="text-accent-primary">
+              {' '}
+              Privacy Policy.
+            </a>
           </Link>
-          .
         </p>
         <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
           {isLoading ? (

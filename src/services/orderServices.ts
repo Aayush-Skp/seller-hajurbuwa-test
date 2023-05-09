@@ -1,6 +1,18 @@
 import { httpClient } from '../config/httpClient';
 
-export function getOrdersByStatus(status: string) {
+export function searchOrdersWithStatusAndKeyword(
+  status: string,
+  keyword: string
+) {
+  return httpClient
+    .get(`/seller/get-orders/search?status=${status}&keyword=${keyword}`)
+    .then((res) => res.data);
+}
+
+export function getOrdersByStatus(
+  status: string,
+  currentPageUrl: string | null
+) {
   return httpClient
     .post('/seller/get-orders', {
       status,

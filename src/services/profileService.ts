@@ -21,7 +21,7 @@ export function addWarehouseInfo(data: any) {
   formData.append('city', data.city_id);
   formData.append('area', data.area_id);
   formData.append('address_line_1', data.addressLine1);
-  formData.append('address_line_2', data.addressLine1);
+  formData.append('address_line_2', data.addressLine2);
 
   return httpClient.post('/seller/update-warehouse-info', formData, {
     headers: {
@@ -33,8 +33,8 @@ export function addWarehouseInfo(data: any) {
 export function updatePersonalDetails(data: any) {
   const formData = new FormData();
 
-  formData.append('first_name', data.first_name);
-  formData.append('last_name', data.last_name);
+  formData.append('first_name', data.fname);
+  formData.append('last_name', data.lname);
   formData.append('email', data.email);
   formData.append('business_name', data.business_name);
   formData.append('pan_number', data.pan_number);

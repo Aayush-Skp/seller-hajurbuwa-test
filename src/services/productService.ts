@@ -9,13 +9,26 @@ type ProductStatus =
   | 'online'
   | 'deactivated'
   | 'locked'
-  | 'suspended'
-  | 'out_of_stock';
+  | 'suspended';
 
-export function getProductByStatus(productStatus: ProductStatus) {
+export function searchProductsWithStatusAndKeyword(
+  status: ProductStatus,
+  keyword: string
+) {
   return httpClient
-    .get(`${productUrl}?status=${productStatus}`)
+    .get(`/seller/products/search?status=${status}&keyword=${keyword}`)
     .then((res) => res.data);
+}
+
+export function getProductByStatus(
+  productStatus: ProductStatus,
+  currentPageUrl: string | null
+) {
+  return httpClient
+    .get(`${currentPageUrl ?? `${productUrl}?page=1`}&status=${productStatus}`)
+    .then((res) => {
+      return res.data;
+    });
 }
 
 export function getProductDescription(productId: string | number) {
@@ -26,7 +39,6 @@ export function getProductDescription(productId: string | number) {
 
 export function getProductById(productId: string | number) {
   return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
-    console.log(res);
     const productDetails = {
       productId: '',
       featured_highlights: [''],
@@ -58,23 +70,39 @@ export function getProductById(productId: string | number) {
       },
     };
 
-    for (let i = 0; i < res?.data?.data[0]?.sub_images.length; i++) {
+    for (let i = 0; i < res?.data?.data[0]?.sub_images?.length; i++) {
       if (i === 0)
-        productDetails.images.first = `${imageServerBaseUrl}${res.data.data[0].sub_images[0]}`;
+        productDetails.images.first = res?.data?.data[0]?.sub_images[0]
+          ? `${imageServerBaseUrl}${res.data.data[0].sub_images[0]}`
+          : '';
       if (i === 1)
-        productDetails.images.second = `${imageServerBaseUrl}${res.data.data[0].sub_images[1]}`;
+        productDetails.images.second = res?.data?.data[1]?.sub_images[1]
+          ? `${imageServerBaseUrl}${res.data.data[1].sub_images[1]}`
+          : '';
       if (i === 2)
-        productDetails.images.third = `${imageServerBaseUrl}${res.data.data[0].sub_images[2]}`;
+        productDetails.images.third = res?.data?.data[2]?.sub_images[2]
+          ? `${imageServerBaseUrl}${res.data.data[2].sub_images[2]}`
+          : '';
       if (i === 3)
-        productDetails.images.fourth = `${imageServerBaseUrl}${res.data.data[0].sub_images[3]}`;
+        productDetails.images.fourth = res?.data?.data[3]?.sub_images[3]
+          ? `${imageServerBaseUrl}${res.data.data[3].sub_images[3]}`
+          : '';
       if (i === 4)
-        productDetails.images.fifth = `${imageServerBaseUrl}${res.data.data[0].sub_images[4]}`;
+        productDetails.images.fifth = res?.data?.data[4]?.sub_images[4]
+          ? `${imageServerBaseUrl}${res.data.data[4].sub_images[4]}`
+          : '';
       if (i === 5)
-        productDetails.images.sixth = `${res.data.data[0].sub_images[5]}`;
+        productDetails.images.sixth = res?.data?.data[5]?.sub_images[5]
+          ? `${imageServerBaseUrl}${res.data.data[5].sub_images[5]}`
+          : '';
       if (i === 6)
-        productDetails.images.seventh = `${imageServerBaseUrl}${res.data.data[0].sub_images[6]}`;
+        productDetails.images.seventh = res?.data?.data[6]?.sub_images[6]
+          ? `${imageServerBaseUrl}${res.data.data[6].sub_images[6]}`
+          : '';
       if (i === 7)
-        productDetails.images.eighth = `${imageServerBaseUrl}${res.data.data[0].sub_images[7]}`;
+        productDetails.images.eighth = res?.data?.data[7]?.sub_images[7]
+          ? `${imageServerBaseUrl}${res.data.data[6].sub_images[7]}`
+          : '';
     }
 
     productDetails.product_name = res.data.data[0].product_name;
@@ -87,13 +115,13 @@ export function getProductById(productId: string | number) {
     productDetails.category_id = res.data.data[0].product_type;
     productDetails.in_stock = res.data.data[0].stock_availability;
     productDetails.unit = res.data.data[0].unit_selection;
-    productDetails.unitName = res.data.data[0].unit_selection;
+    productDetails.unitName = res.data.data[0].unit_name;
     productDetails.is_bulk_price = res.data.data[0].is_bulk_price;
     productDetails.bulk_pricing = res.data.data[0].is_bulk_price
       ? res.data.data[0].bulk_pricing
       : [{ quantity: res.data.data[0].minimum_order, price: 0 }];
     productDetails.brand = res.data.data[0].brand_specification.toString();
-    productDetails.description = res.data.data[0].description;
+    productDetails.description = res.data.data[0].description ?? '';
     productDetails.featured_highlights = res.data.data[0].featured_highlights;
     productDetails.productId = res.data.data[0].id;
     productDetails.category_tree = res.data.data[0]?.category_tree;
@@ -107,13 +135,11 @@ export function updateProduct(
   productId: string | number,
   updatedField: FormData
 ) {
-  return httpClient
-    .post(`${productUrl}/${productId}`, updatedField, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    .then((res) => res);
+  return httpClient.post(`${productUrl}/${productId}`, updatedField, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 }
 
 export function deleteProduct(productId: string | number) {
@@ -121,11 +147,11 @@ export function deleteProduct(productId: string | number) {
 }
 
 export function deactivateProduct(productId: string | number) {
-  return httpClient.delete(`/seller/deactivate-product/${productId}`);
+  return httpClient.get(`/seller/deactivate-product/${productId}`);
 }
 
 export function activateProduct(productId: string | number) {
-  return httpClient.delete(`seller/activate-product/${productId}`);
+  return httpClient.get(`seller/activate-product/${productId}`);
 }
 
 export function addProduct(productDetails: any) {

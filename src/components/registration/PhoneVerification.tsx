@@ -13,6 +13,7 @@ import {
   sendOTPToPhone,
   verifyOTPSentToPhone,
 } from '../../services/phoneVerificationService';
+import Spinner from '../loader/Spinner';
 
 type PhoneVerificationProps = {
   setRegistrationData: SetRegistrationData;
@@ -29,6 +30,8 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
     message: '',
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     let timeout: NodeJS.Timeout;
 
@@ -40,6 +43,8 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
   }, [otpTimeout]);
 
   const handleSubmit = () => {
+    setIsLoading(true);
+
     verifyOTPSentToPhone(registrationData.phone, registrationData.phoneOtp)
       .then((res) => {
         if (res.status === 'error') {
@@ -48,7 +53,6 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
             message: 'invalid otp',
           });
         } else {
-          console.log(res);
           incStep();
         }
       })
@@ -57,6 +61,7 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
           isValid: false,
           message: 'invalid otp',
         });
+        setIsLoading(false);
       });
   };
 
@@ -116,19 +121,33 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
               <ErrorMessage message={otpValidation.message} />
             </span>
             <div className="text-xs text-accent-primary flex justify-between">
-              <button onClick={decStep}>Change phone</button>
+              <button onClick={decStep}>Change Phone Number</button>
               <button
+                className={`${
+                  !!otpTimeout ? 'text-gray-400 cursor-not-allowed' : ''
+                }`}
                 disabled={otpTimeout === 0 ? false : true}
                 onClick={handleSendOTP}
               >
-                Resend OTP {!!otpTimeout ? `(${otpTimeout})` : ''}
+                Resend OTP {!!otpTimeout ? `(${otpTimeout} seconds)` : ''}
               </button>
             </div>
           </div>
         </div>
       </div>
-      <Button className="my-2" type="button" onClick={handleSubmit}>
-        Next
+      <Button
+        type="submit"
+        onClick={handleSubmit}
+        disabled={registrationData.emailOtp === ''}
+      >
+        {isLoading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <span>Please wait...</span>
+            <Spinner />
+          </div>
+        ) : (
+          'Next'
+        )}
       </Button>
     </div>
   );

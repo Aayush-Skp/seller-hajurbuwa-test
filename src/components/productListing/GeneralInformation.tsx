@@ -13,6 +13,7 @@ import {
   searchCategory,
 } from '../../services/categoryService';
 import { useClickAwayListener } from '../../hooks/useClickAwayListener';
+import Spinner from '../loader/Spinner';
 
 export default function GeneralInformation(props: any) {
   const { productDetails, incStep, defaultValues, setProductDetails } = props;
@@ -24,6 +25,8 @@ export default function GeneralInformation(props: any) {
     isValid: true,
     message: '',
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [productNameValidation, setProductNameValidation] = useState({
     isValid: true,
@@ -77,11 +80,14 @@ export default function GeneralInformation(props: any) {
   }
 
   function fetchCategoryList() {
+    setIsLoading(true);
     getCategoryListById(recentCategory)
       .then((res) => {
         setCategoryList(res);
+        setIsLoading(false);
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log(err);
       });
   }
@@ -203,9 +209,13 @@ export default function GeneralInformation(props: any) {
           <div className="w-full">
             <select
               onChange={handleBrandChange}
-              className="w-full h-10 outline-none border border-gray-600 rounded cursor-pointer"
+              className={`w-full h-10 outline-none border ${
+                !brandValidation.isValid
+                  ? 'border-error-primary'
+                  : 'border-gray-600'
+              } rounded cursor-pointer`}
             >
-              <option value="">Select Brand</option>
+              <option value="">Select a Brand</option>
               {defaultValues?.brands?.map((brand: any) => (
                 <option
                   key={brand.id}
@@ -221,7 +231,7 @@ export default function GeneralInformation(props: any) {
         </div>
         <div className="flex">
           <div className="w-[190px]">
-            <InputLabel label="Select a product type" required />
+            <InputLabel label="Selected Category" required />
           </div>
           <div className="w-full space-y-3">
             <div className="flex items-center space-x-2">
@@ -246,10 +256,11 @@ export default function GeneralInformation(props: any) {
                 </div>
               ) : (
                 <span
-                  className={`italic ${!categoryValidation.isValid
-                    ? 'text-error-primary'
-                    : 'text-gray-500'
-                    }`}
+                  className={`italic ${
+                    !categoryValidation.isValid
+                      ? 'text-error-primary'
+                      : 'text-gray-500'
+                  }`}
                 >
                   Select a suitable category for your product
                 </span>
@@ -311,7 +322,10 @@ export default function GeneralInformation(props: any) {
                 </div>
               </div>
               <p>OR</p>
-              <div className="h-56 border border-gray-500 divide-y divide-gray-500">
+              <div
+                className={`h-56 border border-gray-500 divide-y divide-gray-500
+                }`}
+              >
                 <p className="px-4 py-1">
                   {selectedCategoryStringFromList !== '' ? (
                     <div className="flex items-center space-x-2">
@@ -330,29 +344,37 @@ export default function GeneralInformation(props: any) {
                     'Select a category'
                   )}
                 </p>
-                <ul
-                  className={`${categoryList.length > 4 ? 'overflow-y-auto' : ''
+                {!isLoading ? (
+                  <ul
+                    className={`${
+                      categoryList.length > 4 ? 'overflow-y-auto' : ''
                     } h-44 divide-y divide-gray-500`}
-                >
-                  {categoryList?.map((category: any) => (
-                    <li
-                      key={category.id}
-                      onClick={() => handleSelectedCategory(category)}
-                      className="flex justify-between items-center cursor-pointer"
-                    >
-                      <p className="pl-4 py-2">{category.name}</p>
-                      {category?.sub_categories?.length === 0 ? (
-                        <button className="border border-accent-primary rounded px-6 py-1 mr-2">
-                          Select
-                        </button>
-                      ) : (
-                        <div className="flex items-center justify-center cursor-pointer mr-6">
-                          <Image src={RightIcon} alt="" />
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+                  >
+                    {categoryList?.map((category: any) => (
+                      <li
+                        key={category.id}
+                        onClick={() => handleSelectedCategory(category)}
+                        className="flex justify-between items-center cursor-pointer"
+                      >
+                        <p className="pl-4 py-2">{category.name}</p>
+                        {category?.sub_categories?.length === 0 ? (
+                          <button className="border border-accent-primary rounded px-6 py-1 mr-2">
+                            Select
+                          </button>
+                        ) : (
+                          <div className="flex items-center justify-center cursor-pointer mr-6">
+                            <Image src={RightIcon} alt="" />
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="flex items-center justify-center h-3/4">
+                    <Spinner className="w-10 h-10" />
+                    <span>Fetching categories...</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

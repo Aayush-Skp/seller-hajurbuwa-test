@@ -41,10 +41,6 @@ export default function Login() {
 
     loginService(data)
       .then((res) => {
-        setApiResponse({
-          loading: false,
-        });
-
         if (res.status === 'success') {
           const { user, token, seller } = res;
 
@@ -54,8 +50,8 @@ export default function Login() {
             id: details?.user_id,
             first_name: user?.fname,
             last_name: user?.lname,
-            phone: user?.phone,
             email: user?.email,
+            phone: user?.phone,
             business_name: details?.company_name,
             pan: details?.pan_number,
             pan_image: details?.pan_image,
@@ -65,8 +61,8 @@ export default function Login() {
             state: location?.state_name ?? '',
             city: location?.city_name ?? '',
             area: location?.area_name ?? '',
-            address_line1: location?.address_line_1 ?? '',
-            address_line2: location?.address_line_2 ?? '',
+            address_line1: details?.address_line_1 ?? '',
+            address_line2: details?.address_line_2 ?? '',
             token,
           };
 
@@ -79,6 +75,7 @@ export default function Login() {
         }
       })
       .catch((err) => {
+        console.log(err);
         if (err?.response?.status === 404) {
           setError('password', { message: 'Invalid credentials' });
           setError('email', { message: '' });
@@ -93,19 +90,27 @@ export default function Login() {
         ) {
           setVerificationStatus('pending');
           setSellerData({
-            first_name: 'Bishal',
+            ...err.response?.data.user,
+            ...err.response?.data?.seller[0],
           });
         }
+
         if (
           err?.response?.status === 401 &&
-          err.response?.data?.message === 'rejected'
+          err.response?.data?.message === 'This account is rejected'
         ) {
-          setVerificationStatus('rejected');
-          setSellerData({
-            first_name: 'Bishal',
-          });
+          try {
+            setVerificationStatus('rejected');
+            setSellerData({
+              ...err.response?.data.user,
+              ...err.response?.data?.seller[0],
+            });
+            localStorage.setItem(
+              'userDetails',
+              JSON.stringify(err.response.data)
+            );
+          } catch (err) {}
         }
-        console.log(err);
       });
   }
 
@@ -127,11 +132,11 @@ export default function Login() {
 
         {verificationStatus === 'pending' ? (
           <div className="py-5">
-            <UnderReview username={sellerData.first_name} />
+            <UnderReview username={sellerData.fname} />
           </div>
         ) : verificationStatus === 'rejected' ? (
           <div className="py-5">
-            <Rejected username={sellerData.first_name} />
+            <Rejected sellerData={sellerData} />
           </div>
         ) : (
           <form
@@ -186,13 +191,13 @@ export default function Login() {
                   By continuing you agree to Hajurbuwa.com’s
                   <span className="text-accent-primary">
                     <Link href="https://www.hajurbuwa.com/policies/terms-of-use">
-                      <a> Terms of Use </a>
+                      <a target="_blank"> Terms of Use </a>
                     </Link>
                   </span>
                   and
                   <span className="text-accent-primary">
-                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
-                      <a> Privacy Policy.</a>
+                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+                      <a target="_blank"> Privacy Policy.</a>
                     </Link>
                   </span>
                 </p>
@@ -215,7 +220,10 @@ export default function Login() {
                 <div className="w-full h-[1px] bg-black" />
               </div>
               <Link href="/register">
-                <a className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2 text-center">
+                <a
+                  target="_blank"
+                  className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2 text-center"
+                >
                   Register as Hajurbuwa seller
                 </a>
               </Link>

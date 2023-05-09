@@ -39,35 +39,22 @@ export type PhoneVerificationProps = {
 export default function UpdateBusinessDetails() {
   const router = useRouter();
 
-  const [registrationData, setRegistrationData] =
-    useState<SellerRegistrationDataType>({
-      first_name: '',
-      last_name: '',
-      pan_number: '',
-      phone: '',
-      email: '',
-      business_name: '',
-      pan_image: null,
-      confirm_terms_and_conditions: false,
-      receive_updates_on_whatsapp: true,
-      confirm_business_name: false,
-    });
+  const [registrationData, setRegistrationData] = useState<any>({
+    first_name: '',
+    last_name: '',
+    pan_number: '',
+    phone: '',
+    email: '',
+    business_name: '',
+    pan_image: null,
+    confirm_terms_and_conditions: false,
+    receive_updates_on_whatsapp: true,
+    confirm_business_name: false,
+  });
 
   useEffect(() => {
-    setRegistrationData({
-      email: '',
-      phone: '',
-      first_name: 'Bishal',
-      last_name: 'kandel',
-      pan_number: '123456789',
-      business_name: 'Bishal Cosmetics',
-      pan_image:
-        'https://dipencompany.com/images/company-registration-certificate-of-nepal.webp',
-      confirm_terms_and_conditions: false,
-      receive_updates_on_whatsapp: true,
-      confirm_business_name: false,
-    });
-  }, []);
+    router?.query?.id && setRegistrationData(router.query);
+  }, [router]);
 
   const [step, setStep] = useState<number>(1);
 
@@ -92,6 +79,7 @@ export default function UpdateBusinessDetails() {
           backgroundSize: 'cover',
         }}
       ></div>
+
       <div className="relative h-full w-full xs:h-full xs:w-full sm:h-full sm:w-full  md:h-4/5 md:w-1/2 lg:w-1/3  2xl:h-3/5 2xl:w-1/4  bg-white z-10 shadow-lg">
         {step === 1 ? (
           <BusinessDetails
@@ -117,6 +105,9 @@ export default function UpdateBusinessDetails() {
         ) : step === 4 ? (
           <Success />
         ) : null}
+      </div>
+      <div className="absolute justify-center bottom-4">
+        <p className="text-black">© 2023, Hajurbuwa.com</p>
       </div>
     </div>
   );

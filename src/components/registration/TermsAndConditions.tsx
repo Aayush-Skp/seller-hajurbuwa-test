@@ -11,6 +11,7 @@ import { ChangeEvent, useState } from 'react';
 import { registerSeller } from '../../services/registrationService';
 import { sendOTPToPhone } from '../../services/phoneVerificationService';
 import Link from 'next/link';
+import Spinner from '../loader/Spinner';
 
 type TermsAndConditionsProps = {
   setRegistrationData: SetRegistrationData;
@@ -22,7 +23,11 @@ type TermsAndConditionsProps = {
 export default function TermsAndConditions(props: TermsAndConditionsProps) {
   const { decStep, incStep, registrationData, setRegistrationData } = props;
 
-  const [apiResponse, setApiResponse] = useState({});
+  const [apiResponse, setApiResponse] = useState({
+    isLoading: false,
+    isError: false,
+    message: '',
+  });
 
   const {
     confirm_terms_and_conditions,
@@ -45,6 +50,8 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
     setApiResponse({
       ...apiResponse,
       isLoading: true,
+      message: '',
+      isError: false,
     });
 
     registerSeller(registrationData)
@@ -64,7 +71,14 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
             .catch(console.log);
         }
       })
-      .catch(console.log);
+      .catch((err) => {
+        setApiResponse({
+          ...apiResponse,
+          isError: true,
+          isLoading: false,
+          message: 'Error while requesting',
+        });
+      });
   }
 
   return (
@@ -118,18 +132,42 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
             />
             <label className="px-2" htmlFor="agreed_terms_conditions">
               Click here to indicate that you have read and agree to the
-              <Link href="https://www.hajurbuwa.com/policies/terms-of-use"><a className="text-accent-primary"> Terms Of Use</a>,</Link>
-              <Link href="https://www.hajurbuwa.com/policies/privacy-policy"><a className="text-accent-primary"> Privacy Policy</a></Link> and
-              <Link href="https://www.hajurbuwa.com/policies/product-listing-policy"><a className="text-accent-primary"> Product Listing Policy</a></Link>
+              <Link href="https://www.hajurbuwa.com/policies/terms-of-use">
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Terms Of Use,
+                </a>
+              </Link>
+              <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Privacy Policy
+                </a>
+              </Link>{' '}
+              and
+              <Link href="https://www.hajurbuwa.com/policies/product-listing-policy">
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Product Listing Policy
+                </a>
+              </Link>
             </label>
           </div>
         </div>
       </div>
       <Button
-        disabled={!(confirm_terms_and_conditions && confirm_business_name)}
+        type="submit"
         onClick={handleFormSubmit}
+        disabled={!(confirm_terms_and_conditions && confirm_business_name)}
       >
-        Continue
+        {apiResponse.isLoading ? (
+          <div className="flex items-center justify-center space-x-2">
+            <span>Please wait...</span>
+            <Spinner />
+          </div>
+        ) : (
+          'Continue'
+        )}
       </Button>
     </div>
   );

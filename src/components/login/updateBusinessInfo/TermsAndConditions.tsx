@@ -7,6 +7,7 @@ import CheckboxInput from '../../common/CheckboxInput';
 import Button from '../../common/Button';
 import { updatePersonalDetails } from '../../../services/profileService';
 import Spinner from '../../loader/Spinner';
+import Link from 'next/link';
 
 type TermsAndConditionsProps = {
   setRegistrationData: SetRegistrationData;
@@ -50,7 +51,6 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
     updatePersonalDetails(registrationData)
       .then((res) => {
         incStep();
-        console.log(res);
       })
       .catch((err) => {
         setApiResponse({
@@ -114,14 +114,34 @@ export default function TermsAndConditions(props: TermsAndConditionsProps) {
             />
             <label className="px-2" htmlFor="agreed_terms_conditions">
               Click here to indicate that you have read and agree to the
-              <a className="text-accent-primary"> Terms Of Use</a>,
-              <a className="text-accent-primary"> Privacy Policy</a> and
-              <a className="text-accent-primary"> Product Listing Policy</a>
+              <Link href="https://www.hajurbuwa.com/policies/terms-of-use">
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Terms Of Use,
+                </a>
+              </Link>
+              <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Privacy Policy{' '}
+                </a>
+              </Link>
+              and
+              <Link href="https://www.hajurbuwa.com/policies/product-listing-policy">
+                <a target="_blank" className="text-accent-primary">
+                  {' '}
+                  Product Listing Policy
+                </a>
+              </Link>
             </label>
           </div>
         </div>
       </div>
-      <Button type="button" onClick={handleFormSubmit}>
+      <Button
+        type="button"
+        onClick={handleFormSubmit}
+        disabled={!(confirm_terms_and_conditions && confirm_business_name)}
+      >
         {apiResponse.isLoading ? (
           <div className="flex items-center justify-center space-x-2">
             <span>Please wait...</span>

@@ -189,20 +189,18 @@ export default function ServicesAndDelivery(props: any) {
             <Button className="py-3 text-sm" onClick={decStep}>
               Back
             </Button>
-            <button
+            <Button
               className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
               type="submit"
             >
               {apiResponse.isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <span className="text-xs">Submitting...</span>
                   <Spinner />
                 </div>
               ) : (
                 'Submit'
               )}
-
-            </button>
+            </Button>
           </div>
         </div>
       </form>

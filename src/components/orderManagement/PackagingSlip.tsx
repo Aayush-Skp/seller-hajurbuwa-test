@@ -130,7 +130,7 @@ export default function PackagingSlip({
                   }}
                 >
                   <Text style={{ marginRight: 20 }}>1</Text>
-                  <Text>
+                  <Text style={{ maxWidth: 200 }}>
                     {product_name} {product_included_item}
                   </Text>
                 </View>

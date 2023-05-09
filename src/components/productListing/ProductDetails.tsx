@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import InputLabel from '../common/InputLabel';
 import TextInputField from '../common/TextInput';
 import Info from '../../../public/icons/info.svg';
-import deleteIcon from '../../../public/icons/delete.svg';
+import deleteIcon from '../../../public/icons/cancel.svg';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import useFormValidation from '../../hooks/useFormValidation';
@@ -16,7 +16,6 @@ export default function ProductDetails(props: any) {
   const { errors, register, setValue, handleSubmit } =
     useFormValidation(ProductDetailsSchema);
 
-  const [featuredHighlights, setFeaturedHighlights] = useState(['']);
   const [featuredHighlightValidation, setFeaturedHighlightValidation] =
     useState({
       isValid: true,
@@ -49,7 +48,7 @@ export default function ProductDetails(props: any) {
   function addFeaturedHightLight(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (productDetails.featured_highlights.length <= 4) {
+      if (productDetails.featured_highlights.length <= 21) {
         setProductDetails((prev: any) => {
           return {
             ...prev,
@@ -119,9 +118,14 @@ export default function ProductDetails(props: any) {
                       key={index}
                       className="flex items-center space-x-2 border-b border-gray-300"
                     >
-                      <div className="w-3 h-3 bg-success-secondary rounded-full" />
+                      <div className="w-2 h-2 bg-accent-primary rounded-full" />
                       <TextInputField
                         value={point}
+                        placeholder={
+                          index === 0
+                            ? 'Press enter for adding more featured highlights'
+                            : ''
+                        }
                         onKeyDown={addFeaturedHightLight}
                         onChange={(e) => handleOnChange(e, index)}
                         className="outline-none focus:shadow-none border-none"
@@ -184,11 +188,11 @@ export default function ProductDetails(props: any) {
             Back
           </Button>
           <button
-              className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
-              type="submit"
-            >
-              Continue
-            </button>
+            className={`w-full text-white px-14 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity`}
+            type="submit"
+          >
+            Continue
+          </button>
         </div>
       </div>
     </form>

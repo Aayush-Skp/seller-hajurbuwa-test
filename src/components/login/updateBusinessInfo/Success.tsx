@@ -11,11 +11,11 @@ const Success = () => {
       <Image src={successImage} alt="Register Phone Number Illustration" />
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-lg mt-2 font-bold text-black2">
-          Account Created Successfully
+          Account Updated Successfully.
         </h1>
         <p className="text-sm p-6 text-gray-850 text-center">
-          Your account has been successfully created as a seller in
-          Hajurbuwa.com. It may take 1-2 days to review and verify your account.
+          Your account has been successfully updated as a seller in
+          Hajurbuwa.com. It may take 48 Hours to review and verify your account.
           Meanwhile please check provided email or try logging in your account
           in next 1-2 days. Thank you.
         </p>
