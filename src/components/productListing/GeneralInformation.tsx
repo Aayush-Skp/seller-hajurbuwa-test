@@ -131,16 +131,19 @@ export default function GeneralInformation(props: any) {
     }
   }
 
-  function handleCategorySearch() {
-    searchCategory(categoryKeyword)
-      .then((res) => {
-        console.log(res);
-        setCategorySearchList(res);
-        res.length !== 0 && setIsNodeVisible(true);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  function handleCategorySearch(e: React.ChangeEvent<HTMLInputElement>) {
+    setIsNodeVisible(false);
+    setCategoryKeyword(e.target.value);
+
+    e.target.value !== '' &&
+      searchCategory(e.target.value)
+        .then((res) => {
+          setCategorySearchList(res);
+          res.length !== 0 && setIsNodeVisible(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
   }
 
   function handleFormSubmit() {
@@ -278,15 +281,11 @@ export default function GeneralInformation(props: any) {
                 >
                   <TextInputField
                     id="category_id"
-                    autoComplete=""
                     value={categoryKeyword}
-                    onChange={(e) => {
-                      setIsNodeVisible(false);
-                      setCategoryKeyword(e.target.value);
-                    }}
+                    onChange={handleCategorySearch}
                   />
                   {isNodeVisible ? (
-                    <ul className="absolute z-20 bg-white px-5 py-3 whitespace-nowrap space-y-2 shadow-2xl rounded">
+                    <ul className="absolute z-20 h-56 overflow-y-auto bg-white px-5 py-3 whitespace-nowrap space-y-2 shadow-2xl rounded">
                       {categorySearchList?.map((item: any, idx: number) => (
                         <li
                           className="cursor-pointer hover:scale-105 transition-transform text-sm space-x-2"
@@ -316,9 +315,9 @@ export default function GeneralInformation(props: any) {
                     </ul>
                   ) : null}
                 </div>
-                <div className="w-36">
+                {/* <div className="w-36">
                   <Button onClick={handleCategorySearch}>Search</Button>
-                </div>
+                </div> */}
               </div>
               <span className="block">OR</span>
               <div className="absolute block left-52 bottom-[107px]">
