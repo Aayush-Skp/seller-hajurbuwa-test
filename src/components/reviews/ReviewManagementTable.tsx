@@ -84,6 +84,7 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                   key={i}
                 >
                   {row.cells.map((cell: any, i: number) => {
+                    console.log(row?.original.review[0].image[0]);
                     return (
                       <td
                         {...cell.getCellProps()}
@@ -100,7 +101,7 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                                 <Image
                                   height={80}
                                   width={80}
-                                  src={`${imageServerBaseUrl}/${row?.original?.review[0]?.image}`}
+                                  src={`${imageServerBaseUrl}/${row?.original?.review[0]?.image[0]}`}
                                   alt=""
                                 />
                               </div>

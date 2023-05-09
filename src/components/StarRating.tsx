@@ -13,7 +13,6 @@ export default function StarRating({ rating }: StarRatingProps) {
       <div className="flex space-x-1">
         {stars.map((star) => {
           if (star + 1 <= rating) {
-            console.log(star + 1, rating);
             return (
               <span key={star}>
                 <AiFillStar className="text-warning-primary" />
