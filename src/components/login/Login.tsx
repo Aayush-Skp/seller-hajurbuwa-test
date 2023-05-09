@@ -196,7 +196,7 @@ export default function Login() {
                   </span>
                   and
                   <span className="text-accent-primary">
-                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy-2">
+                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
                       <a target="_blank"> Privacy Policy.</a>
                     </Link>
                   </span>

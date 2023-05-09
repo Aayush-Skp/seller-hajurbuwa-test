@@ -198,6 +198,7 @@ export default function GeneralInformation(props: any) {
           <div className="w-full flex flex-col">
             <TextInputField
               id="product_name"
+              placeholder="Please enter product name"
               error={!productNameValidation.isValid}
               onChange={handleProductNameChange}
               value={productDetails.product_name}
@@ -281,6 +282,7 @@ export default function GeneralInformation(props: any) {
                 >
                   <TextInputField
                     id="category_id"
+                    placeholder="Enter keyword to search category"
                     value={categoryKeyword}
                     onChange={handleCategorySearch}
                   />

@@ -2,7 +2,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import businessSetup from '/public/images/business_setup.svg';
 import { BiArrowBack } from 'react-icons/bi';
-import { SellerRegistrationDataType, SetRegistrationData } from '.';
 import useFormValidation from '../../../hooks/useFormValidation';
 import {
   BusinessDetailsType,
