@@ -46,7 +46,6 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
       `${registrationData.first_name} ${registrationData.last_name}`
     )
       .then((res) => {
-        console.log(res);
         if (
           res.status === 'error' &&
           res?.message === 'Pan number already exits.'
@@ -60,7 +59,6 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
         }
 
         if (res.status === 'success') {
-          console.log(res);
           setRegistrationData((prev) => {
             return {
               ...prev,
@@ -75,7 +73,6 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
           message: 'Network Error! Please check your network connection',
         });
         setIsLoading(false);
-        console.log(err);
       });
   }
 

@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import Button from '../common/Button';
 import { useEffect, useState } from 'react';
 import ErrorMessage from '../common/ErrorMessage';
-import deleteIcon from '../../../public/icons/delete.svg';
+import deleteIcon from '../../../public/icons/cancel.svg';
 import checkMark from '../../../public/icons/check-mark.svg';
 
 type ProductAttribute = {

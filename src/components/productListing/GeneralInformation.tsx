@@ -5,7 +5,6 @@ import TextInputField from '../common/TextInput';
 import Info from '../../../public/icons/info.svg';
 import cancelIcon from '../../../public/icons/cancel.svg';
 import RightIcon from '../../../public/icons/chevron-right.svg';
-import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import DiscardModal from './DiscardModal';
 import {
@@ -21,27 +20,23 @@ export default function GeneralInformation(props: any) {
   const { isNodeVisible, nodeRef, setIsNodeVisible } = useClickAwayListener();
 
   const [categoryList, setCategoryList] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
+  const [categoryKeyword, setCategoryKeyword] = useState('');
+  const [categorySearchList, setCategorySearchList] = useState<any>([]);
+  const [selectedCategoryStringFromList, setSelectedCategoryStringFromList] =
+    useState<string>('');
   const [categoryValidation, setCategoryValidation] = useState({
     isValid: true,
     message: '',
   });
-
-  const [isLoading, setIsLoading] = useState(false);
-
   const [productNameValidation, setProductNameValidation] = useState({
     isValid: true,
     message: '',
   });
-
-  const [selectedCategoryStringFromList, setSelectedCategoryStringFromList] =
-    useState<string>('');
-
-  const [categoryKeyword, setCategoryKeyword] = useState('');
-  const [categorySearchList, setCategorySearchList] = useState<any>([]);
   const [recentCategory, setRecentCategory] = useState<string | number | null>(
     null
   );
-
   const [brandValidation, setBrandValidation] = useState({
     isValid: true,
     message: '',
@@ -132,18 +127,25 @@ export default function GeneralInformation(props: any) {
   }
 
   function handleCategorySearch(e: React.ChangeEvent<HTMLInputElement>) {
-    setIsNodeVisible(false);
     setCategoryKeyword(e.target.value);
+    setIsSearchLoading(true);
 
-    e.target.value !== '' &&
+    if (e.target.value !== '') {
       searchCategory(e.target.value)
         .then((res) => {
+          setIsSearchLoading(false);
           setCategorySearchList(res);
           res.length !== 0 && setIsNodeVisible(true);
         })
         .catch((err) => {
+          setIsSearchLoading(false);
           console.log(err);
         });
+      return;
+    }
+
+    setIsNodeVisible(false);
+    setCategorySearchList([]);
   }
 
   function handleFormSubmit() {
@@ -286,42 +288,48 @@ export default function GeneralInformation(props: any) {
                     id="category_id"
                     placeholder="Enter keyword to search category"
                     value={categoryKeyword}
+                    autoComplete="off"
                     onChange={handleCategorySearch}
                   />
                   {isNodeVisible ? (
-                    <ul className="absolute z-20 h-56 overflow-y-auto bg-white px-5 py-3 whitespace-nowrap space-y-2 shadow-2xl rounded">
-                      {categorySearchList?.map((item: any, idx: number) => (
-                        <li
-                          className="cursor-pointer hover:scale-105 transition-transform text-sm space-x-2"
-                          key={item.id}
-                          onClick={() => {
-                            setSelectedCategoryStringFromList('');
-                            setRecentCategory(null);
-                            setProductDetails((prev: any) => ({
-                              ...prev,
-                              category_tree: categorySearchList[idx]?.tree_name,
-                            }));
-                            setProductDetails((prev: any) => {
-                              return {
+                    <ul className="absolute z-20 h-56 min-w-[30rem] overflow-y-auto bg-white px-5 py-3 whitespace-nowrap space-y-2 shadow-2xl rounded">
+                      {isSearchLoading ? (
+                        <div className="w-full h-full flex justify-center items-center space-x-2">
+                          <span>Fetching categories...</span>
+                          <Spinner className="h-8 w-8" />
+                        </div>
+                      ) : (
+                        categorySearchList?.map((item: any, idx: number) => (
+                          <li
+                            className="cursor-pointer hover:scale-105 transition-transform text-sm space-x-2"
+                            key={item.id}
+                            onClick={() => {
+                              setSelectedCategoryStringFromList('');
+                              setRecentCategory(null);
+                              setProductDetails((prev: any) => ({
                                 ...prev,
-                                category_id: item.id,
-                              };
-                            });
-                          }}
-                        >
-                          <span>{item.tree_name}</span>
-                          <button className="border border-accent-primary rounded px-6 py-1 mr-2">
-                            Select
-                          </button>
-                          <hr />
-                        </li>
-                      ))}
+                                category_tree:
+                                  categorySearchList[idx]?.tree_name,
+                              }));
+                              setProductDetails((prev: any) => {
+                                return {
+                                  ...prev,
+                                  category_id: item.id,
+                                };
+                              });
+                            }}
+                          >
+                            <span>{item.tree_name}</span>
+                            <button className="border border-accent-primary rounded px-6 py-1 mr-2">
+                              Select
+                            </button>
+                            <hr />
+                          </li>
+                        ))
+                      )}
                     </ul>
                   ) : null}
                 </div>
-                {/* <div className="w-36">
-                  <Button onClick={handleCategorySearch}>Search</Button>
-                </div> */}
               </div>
               <span className="block">OR</span>
               <div className="absolute block left-52 bottom-[107px]">
@@ -386,9 +394,9 @@ export default function GeneralInformation(props: any) {
                     ))}
                   </ul>
                 ) : (
-                  <div className="flex items-center justify-center h-3/4">
-                    <Spinner className="w-10 h-10" />
+                  <div className="flex items-center justify-center h-3/4 space-x-2">
                     <span>Fetching categories...</span>
+                    <Spinner className="w-10 h-10" />
                   </div>
                 )}
               </div>
