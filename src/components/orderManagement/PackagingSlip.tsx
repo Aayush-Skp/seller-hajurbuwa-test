@@ -16,6 +16,7 @@ export default function PackagingSlip({
   product_included_item,
   product_name,
   quantity,
+  payment_status
 }: {
   packing_slip_id: string;
   seller_pan_no: string;
@@ -24,6 +25,7 @@ export default function PackagingSlip({
   product_included_item: string;
   product_name: string;
   quantity: string;
+  payment_status: string;
 }) {
   return (
     <PDFViewer
@@ -71,8 +73,8 @@ export default function PackagingSlip({
                   </View>
                 </View>
                 <View style={{ fontSize: 15 }}>
-                  <Text>{seller_company_name} Trading Pvt. Ltd.</Text>
-                  <Text>Tax Id: {seller_pan_no}</Text>
+                  <Text>{`${seller_company_name} Trading Pvt. Ltd.`}</Text>
+                  <Text>{`Tax Id: ${seller_pan_no}`}</Text>
                 </View>
               </View>
               <View
@@ -84,11 +86,11 @@ export default function PackagingSlip({
               >
                 <View style={{}}>
                   <Text style={{ fontSize: 20 }}>PACKING SLIP</Text>
-                  <Text>#PS-{packing_slip_id}</Text>
+                  <Text>{`# PS-${packing_slip_id}`}</Text>
                 </View>
                 <View style={{ fontSize: 15 }}>
                   <Text>Balance Due</Text>
-                  <Text>NPR {total_amount}</Text>
+                  <Text>{`NPR ${payment_status === "paid" ? "0" :total_amount}`}</Text>
                 </View>
               </View>
             </View>
@@ -131,7 +133,7 @@ export default function PackagingSlip({
                 >
                   <Text style={{ marginRight: 20 }}>1</Text>
                   <Text style={{ maxWidth: 300 }}>
-                    {product_name} {product_included_item}
+                    {`${product_name} ${product_included_item}`}
                   </Text>
                 </View>
               </View>

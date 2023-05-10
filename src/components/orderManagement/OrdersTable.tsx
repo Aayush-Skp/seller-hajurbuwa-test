@@ -124,6 +124,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                     key={i}
                   >
                     {row.cells.map((cell: any, i: number) => {
+                      console.log(row.original)
                       return (
                         <td
                           {...cell.getCellProps()}
@@ -292,6 +293,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                         }
                                         product_name={row.original.product_name}
                                         quantity={row.original.quantity}
+                                        payment_status={row.original.payment_status}
                                       />
                                     </div>
                                     <div
