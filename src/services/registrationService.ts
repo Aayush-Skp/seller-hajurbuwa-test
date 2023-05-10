@@ -10,7 +10,7 @@ export function registerSeller(registrationData: any) {
   formData.append('last_name', registrationData.last_name);
   formData.append('password', registrationData.password);
   formData.append('email', registrationData.email);
-  formData.append('company_name', registrationData.business_name);
+  formData.append('company_name', registrationData.company_name);
   formData.append('pan_number', registrationData.pan_number);
   formData.append('pan_image', registrationData.pan_image);
   formData.append(

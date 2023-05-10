@@ -34,7 +34,7 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
     useFormValidation(businessDetailsSchema);
 
   useEffect(() => {
-    setValue('business_name', registrationData.business_name);
+    setValue('company_name', registrationData.company_name);
     setValue('pan_number', registrationData.pan_number);
   }, []);
 
@@ -60,6 +60,7 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
         }
 
         if (res.status === 'success') {
+          console.log(res);
           setRegistrationData((prev) => {
             return {
               ...prev,
@@ -104,12 +105,10 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
           <TextInput
             className="h-14 outline-none"
             placeholder="Business Name"
-            {...register('business_name')}
-            error={errors.hasOwnProperty('business_name')}
+            {...register('company_name')}
+            error={errors.hasOwnProperty('company_name')}
           />
-          {errors.business_name && (
-            <ErrorMessage message={errors.business_name?.message as string} />
-          )}
+          <ErrorMessage message={errors.company_name?.message as string} />
         </div>
         <div className="flex flex-col w-full my-2">
           <TextInput
@@ -118,11 +117,9 @@ export default function BusinessDetails(props: BusinessDetailsProps) {
             {...register('pan_number')}
             error={errors.hasOwnProperty('pan_number')}
           />
-          {errors.pan_number && (
-            <ErrorMessage message={errors.pan_number?.message as string} />
-          )}
+          <ErrorMessage message={errors.pan_number?.message as string} />
         </div>
-        <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>
+        <Button type="submit">
           {isLoading ? (
             <div className="flex items-center justify-center space-x-2">
               <span>Please wait...</span>

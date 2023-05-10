@@ -17,7 +17,7 @@ export type SellerRegistrationDataType = {
   password: string;
   email: string;
   pan_number: string;
-  business_name: string;
+  company_name: string;
   pan_image: File | null;
   confirm_terms_and_conditions: boolean;
   receive_updates_on_whatsapp: boolean;
@@ -51,7 +51,7 @@ export default function SellerRegistration() {
       last_name: '',
       email: '',
       pan_number: '',
-      business_name: '',
+      company_name: '',
       password: '',
       pan_image: null,
       confirm_terms_and_conditions: false,
