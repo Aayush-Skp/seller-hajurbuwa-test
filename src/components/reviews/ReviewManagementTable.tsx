@@ -7,13 +7,13 @@ import ReplyModal from './ReplyModal';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
 import Link from 'next/link';
 
-interface ITableData {
+type ITableData = {
   order_id: string;
   product_name: string;
   id: string | number;
   review: any;
   action?: string;
-}
+};
 
 type ProductManagementTableProps = {
   data: ITableData[];
@@ -84,7 +84,7 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                   key={i}
                 >
                   {row.cells.map((cell: any, i: number) => {
-                    console.log(row?.original.review[0].image[0]);
+                    console.log(row?.original?.review[0]?.image[0]);
                     return (
                       <td
                         {...cell.getCellProps()}

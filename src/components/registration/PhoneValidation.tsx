@@ -41,6 +41,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
     setIsLoading(true);
     phoneVerificationService(data)
       .then((res) => {
+        console.log(res);
         if (res.status === 'success') {
           setRegistrationData((prev) => {
             return {
@@ -58,6 +59,7 @@ export default function PhoneValidation(props: PhoneValidationProps) {
         }
       })
       .catch((err) => {
+        console.log(err);
         setError('phone', {
           type: 'custom',
           message: 'Network Error. Check if your internet is working properly',

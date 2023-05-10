@@ -10,6 +10,7 @@ type HeroProps = {
 
 const Hero = ({ openOrders, todaysSales, onlineProducts }: HeroProps) => {
   const [user, setUser] = useState('');
+
   useEffect(() => {
     try {
       const storageValue = localStorage.getItem('userDetails');
