@@ -37,6 +37,29 @@ export function getProductDescription(productId: string | number) {
     .then((res) => res.data.data[0]);
 }
 
+export function deleteProduct(productId: string | number) {
+  return httpClient.delete(`${productUrl}/${productId}`);
+}
+
+export function deactivateProduct(productId: string | number) {
+  return httpClient.get(`/seller/deactivate-product/${productId}`);
+}
+
+export function activateProduct(productId: string | number) {
+  return httpClient.get(`seller/activate-product/${productId}`);
+}
+
+export function updateProduct(
+  productId: string | number,
+  updatedField: FormData
+) {
+  return httpClient.post(`${productUrl}/${productId}`, updatedField, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}
+
 export function getProductById(productId: string | number) {
   return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
     const productDetails = {
@@ -131,31 +154,9 @@ export function getProductById(productId: string | number) {
   });
 }
 
-export function updateProduct(
-  productId: string | number,
-  updatedField: FormData
-) {
-  return httpClient.post(`${productUrl}/${productId}`, updatedField, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-}
-
-export function deleteProduct(productId: string | number) {
-  return httpClient.delete(`${productUrl}/${productId}`);
-}
-
-export function deactivateProduct(productId: string | number) {
-  return httpClient.get(`/seller/deactivate-product/${productId}`);
-}
-
-export function activateProduct(productId: string | number) {
-  return httpClient.get(`seller/activate-product/${productId}`);
-}
-
 export function addProduct(productDetails: any) {
   const formData = new FormData();
+
   formData.append('product_name', productDetails.product_name);
   formData.append('category_id', String(productDetails.category_id));
   formData.append('category_tree', String(productDetails.category_tree));

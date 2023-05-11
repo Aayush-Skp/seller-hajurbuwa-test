@@ -1,5 +1,13 @@
 import { httpClient } from '../config/httpClient';
 
+export function getBankList() {
+  return httpClient.get('/list-banks').then((res) => res?.data?.data);
+}
+
+export function getAllLocation() {
+  return httpClient.get('/get-locations').then((res) => res?.data?.data);
+}
+
 export function addBankDetails(data: any) {
   const formData = new FormData();
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Button from '../common/Button';
-import InputLabel from '../common/InputLabel';
 import TextInput from '../common/TextInput';
-import { getAllLocation } from '../../services/getLocations';
-import { addWarehouseInfo } from '../../services/profileService';
+import {
+  addWarehouseInfo,
+  getAllLocation,
+} from '../../services/profileService';
 import { useRouter } from 'next/router';
 import ErrorMessage from '../common/ErrorMessage';
 

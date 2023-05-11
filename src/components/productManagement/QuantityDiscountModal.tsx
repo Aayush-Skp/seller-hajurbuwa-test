@@ -14,16 +14,16 @@ type ProductAttribute = {
 
 type QuantityDiscountProps = {
   productId: string | number;
+  isQuantityDiscountModalOpen: boolean;
   quantityDiscountPrices: {
     quantityDiscounts: ProductAttribute[] | [];
     unit: '';
   };
-  isQuantityDiscountModalOpen: boolean;
-  setIsQuantityDiscountModelOpen: (value: boolean) => void;
   updateProductAttribute: (
     productId: string | number,
     updatedField: any
   ) => Promise<void>;
+  setIsQuantityDiscountModelOpen: (value: boolean) => void;
 };
 
 export default function QuantityDiscountModal(props: QuantityDiscountProps) {
@@ -250,7 +250,6 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
         </div>
         <div className="space-x-4 w-full flex">
           <button
-            // disabled={isLoading}
             onClick={() => setIsQuantityDiscountModelOpen(false)}
             className="px-5 py-2 w-full border border-accent-primary rounded text-accent-primary"
           >
@@ -258,7 +257,6 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
           </button>
           <button
             onClick={handleFormSubmit}
-            // disabled={bulkValidation.isValid}
             className={`px-5 py-2 w-full border ${
               bulkValidation.isValid
                 ? 'border-accent-primary bg-accent-primary cursor-pointer'
