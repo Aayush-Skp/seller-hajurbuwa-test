@@ -1,17 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Header from './TabsHeader';
 import ProductManagementTable from './ProductManagementTable';
+import Image from 'next/image';
+import searchIcon from '../../../public/icons/searchIcon.svg';
+import Pagination from '../Pagination';
+import { ProductStatus, ProductStatusLabel } from '../../../types/productType';
 import {
   getProductByStatus,
   searchProductsWithStatusAndKeyword,
 } from '../../services/productService';
-import Image from 'next/image';
-import searchIcon from '../../../public/icons/searchIcon.svg';
-import Pagination from '../Pagination';
 
 export type Tab = {
-  id: 'online' | 'pending' | 'deactivated' | 'suspended' | 'locked';
-  label: 'Online' | 'Pending QC' | 'Inactive' | 'Suspended' | 'Locked';
+  id: ProductStatus;
+  label: ProductStatusLabel;
 };
 
 const tabs: Tab[] = [
@@ -62,7 +63,6 @@ export default function ProductManagement() {
     getProductByStatus(currentTab.id, currentPageUrl)
       .then((res) => {
         setIsLoading(false);
-        console.log(res);
         setProductList(res?.data);
         setStatusArray(res?.statusCount);
         setPaginationData(res?.pagination);

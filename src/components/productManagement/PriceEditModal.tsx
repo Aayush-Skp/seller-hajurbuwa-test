@@ -34,7 +34,7 @@ export default function PriceEditModal(props: PriceEditModalProps) {
     useFormValidation(PriceSchema);
 
   useEffect(() => {
-    setValue('price_per_unit', String(value));
+    setValue('price_per_unit', value.toString());
   }, []);
 
   function handleFormSubmit(data: any) {
@@ -88,7 +88,7 @@ export default function PriceEditModal(props: PriceEditModalProps) {
             <div className="w-80">
               <TextInput {...register('price_per_unit')} />
               <ErrorMessage
-                message={errors.price_per_unit?.message as string}
+                message={errors?.price_per_unit?.message as string}
               />
             </div>
             <div className="flex space-x-2">

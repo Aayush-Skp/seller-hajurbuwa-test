@@ -7,12 +7,12 @@ import cancelIcon from '../../../public/icons/cancel.svg';
 import RightIcon from '../../../public/icons/chevron-right.svg';
 import ErrorMessage from '../common/ErrorMessage';
 import DiscardModal from './DiscardModal';
+import Spinner from '../loader/Spinner';
 import {
   getCategoryListById,
   searchCategory,
 } from '../../services/categoryService';
 import { useClickAwayListener } from '../../hooks/useClickAwayListener';
-import Spinner from '../loader/Spinner';
 
 export default function GeneralInformation(props: any) {
   const { productDetails, incStep, defaultValues, setProductDetails } = props;
@@ -237,8 +237,16 @@ export default function GeneralInformation(props: any) {
         </div>
         <div className="flex">
           <div className="w-[190px]">
-            <span className="italic text-gray-500 text-sm">
-              Selected Category
+            <span
+              className={`${
+                productDetails?.category_tree !== ''
+                  ? 'italic text-gray-500'
+                  : ''
+              }  text-sm`}
+            >
+              {productDetails?.category_tree !== ''
+                ? 'Selected Category'
+                : 'Select a Category*'}
             </span>
           </div>
           <div className="w-full space-y-3">
@@ -332,9 +340,6 @@ export default function GeneralInformation(props: any) {
                 </div>
               </div>
               <span className="block">OR</span>
-              <div className="absolute block left-52 bottom-[107px]">
-                <InputLabel label="Select a Category" required />
-              </div>
               <div
                 className={`h-56 border border-gray-500 divide-y divide-gray-500
                ${
