@@ -7,6 +7,7 @@ import Link from 'next/link';
 import PageWrapper from '../../components/PageWrapper';
 import authenticatedRoute from '../../components/WithAuth';
 import { imageServerBaseUrl } from '../../constants/serverConstants';
+import { MdOutlineProductionQuantityLimits } from 'react-icons/md';
 
 function ProductDescriptionPage() {
   const [product, setProduct] = useState<any>({});
@@ -25,35 +26,41 @@ function ProductDescriptionPage() {
   return (
     <>
       <PageWrapper>
-        <div className="space-y-2 h-20 flex border-b-4 justify-start items-end">
-          <span className="text-2xl font-bold pl-24 px-10">
-            Product Description
-          </span>
-        </div>
-        <section className="pl-24 py-1 pb-56">
-          <div className="flex items-center justify-between pl-2 pr-6 pt-4">
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <p className="w-36 text-gray-800">Product Id</p>
-                <p>{product.product_id}</p>
-              </div>
+        <section className="p-24 pt-10" >
+
+          <div className="flex flex-col rounded-md" style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}>
+          <div className="flex">
+            <div className="flex-row py-4 w-full flex items-center justify-start px-10 text-[1.5rem]">
+              <MdOutlineProductionQuantityLimits /> <span className="ml-4">Product Management </span>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <p className="w-36 text-gray-800">Product Name</p>
-                <p>{product.product_name}</p>
+            
+          </div>
+
+          <div className="flex items-center justify-between mx-10 pb-10 pt-4 border-t-2 border-[#d9d9d9] ">
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <p className="w-36 text-gray-800">Product Id</p>
+                  <p>{product.product_id}</p>
+                </div>
               </div>
-              <div className="flex items-center">
-                <p className="w-36 text-gray-800">Product Status</p>
-                <p className="capitalize">{product.status}</p>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <p className="w-36 text-gray-800">Product Name</p>
+                  <p>{product.product_name}</p>
+                </div>
+                <div className="flex items-center">
+                  <p className="w-36 text-gray-800">Product Status</p>
+                  <p className="capitalize">{product.status}</p>
+                </div>
               </div>
+              <Link href="/product-management">
+                <a className="flex items-center place-self-end space-x-1 text-blue-700">
+                  <BsArrowLeft className="font-bold" />
+                  <p>Back to Products List</p>
+                </a>
+              </Link>
             </div>
-            <Link href="/product-management">
-              <a className="flex items-center place-self-end space-x-1 text-blue-700">
-                <BsArrowLeft className="font-bold" />
-                <p>Back to Products List</p>
-              </a>
-            </Link>
+
           </div>
           <div className="py-2 pl-2 pr-6 space-y-3">
             <div>

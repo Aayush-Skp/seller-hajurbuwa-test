@@ -5,11 +5,13 @@ import authenticatedRoute from '../components/WithAuth';
 
 function Dashboard() {
   return (
+    <>
     <div>
       <PageWrapper>
         <LandingPage />
       </PageWrapper>
     </div>
+    </>
   );
 }
 
