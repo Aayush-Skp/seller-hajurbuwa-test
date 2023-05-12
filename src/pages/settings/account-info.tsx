@@ -2,10 +2,14 @@ import Link from 'next/link';
 import PageWrapper from '../../components/PageWrapper';
 import authenticatedRoute from '../../components/WithAuth';
 import AccountInfo from '../../components/settings/AccountInfo';
+import Head from 'next/head';
 
 function AccountInfoPage() {
   return (
-    <div>
+    <>
+      <Head>
+        <meta name="viewport" content="width=1360" />
+      </Head>
       <PageWrapper>
         <div>
           <div className="flex space-x-10">
@@ -35,7 +39,7 @@ function AccountInfoPage() {
           </div>
         </div>
       </PageWrapper>
-    </div>
+    </>
   );
 }
 

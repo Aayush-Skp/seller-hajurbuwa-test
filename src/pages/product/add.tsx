@@ -2,14 +2,20 @@ import React from 'react';
 import ProductListing from '../../components/productListing';
 import PageWrapper from '../../components/PageWrapper';
 import authenticatedRoute from '../../components/WithAuth';
+import Head from 'next/head';
 
 function ProductAddPage() {
   return (
-    <div className="w-full h-full">
-      <PageWrapper>
-        <ProductListing />
-      </PageWrapper>
-    </div>
+    <>
+      <Head>
+        <meta name="viewport" content="width=1360" />
+      </Head>
+      <div className="w-full h-full">
+        <PageWrapper>
+          <ProductListing />
+        </PageWrapper>
+      </div>
+    </>
   );
 }
 

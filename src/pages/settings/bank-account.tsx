@@ -3,10 +3,14 @@ import PageWrapper from '../../components/PageWrapper';
 import BankAccount from '../../components/settings/BankAccount';
 import authenticatedRoute from '../../components/WithAuth';
 import Link from 'next/link';
+import Head from 'next/head';
 
 function BankAccountPage() {
   return (
-    <div>
+    <>
+      <Head>
+        <meta name="viewport" content="width=1360" />
+      </Head>
       <PageWrapper>
         <div>
           <div className="flex space-x-10">
@@ -36,7 +40,7 @@ function BankAccountPage() {
           </div>
         </div>
       </PageWrapper>
-    </div>
+    </>
   );
 }
 

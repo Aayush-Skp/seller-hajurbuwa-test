@@ -12,6 +12,7 @@ import { HiOutlineInformationCircle } from 'react-icons/hi';
 import { BiDetail } from 'react-icons/bi';
 import { GrDeliver } from 'react-icons/gr';
 import { GiPriceTag } from 'react-icons/gi';
+import Head from 'next/head';
 
 function ProductDescriptionPage() {
   const [product, setProduct] = useState<any>({});
@@ -29,6 +30,9 @@ function ProductDescriptionPage() {
 
   return (
     <>
+      <Head>
+        <meta name="viewport" content="width=1360" />
+      </Head>
       <PageWrapper>
         <section className="p-24 pt-10" >
           <div className="flex flex-col rounded-md" style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}>
