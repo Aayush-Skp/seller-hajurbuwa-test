@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { getBrands } from '../../services/getBrandService';
 import { getUnits } from '../../services/getUnitService';
 import GeneralInformation from './GeneralInformation';
@@ -8,6 +8,7 @@ import ProductImagesAndVideos from './ProductImagesAndVideos';
 import ServicesAndDelivery from './ServicesAndDelivery';
 import { useRouter } from 'next/router';
 import { getProductById } from '../../services/productService';
+import { product, productReducer } from '../../reducers/addProductReducer';
 
 const listingSteps = [
   { id: 1, label: 'General Information' },
@@ -19,6 +20,7 @@ const listingSteps = [
 
 export default function ProductListing() {
   const [currentStep, setCurrentStep] = useState(1);
+
   const [defaultValues, setDefaultValues] = useState({
     brands: [],
     units: [],
@@ -57,6 +59,8 @@ export default function ProductListing() {
       eighth: '',
     },
   });
+
+  const [state, dispatch] = useReducer(productReducer, product);
 
   useEffect(() => {
     if (router.pathname === '/product/update' && router?.query?.id) {
