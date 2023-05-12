@@ -1,52 +1,58 @@
+import { useState } from 'react';
 import Image from 'next/image';
 import Info from '../../../public/icons/info.svg';
 import AddIcon from '../../../public/icons/addIcon.svg';
-import cancelIcon from '../../../public/icons/cancel.svg';
-import FileInput from '../common/FileInput';
 import Button from '../common/Button';
 import DiscardModal from './DiscardModal';
-import { useState } from 'react';
+import cancel from '../../../public/icons/cross.svg';
+import ImageInputFieldWithPreview from '../common/ImageUploadWithPreview';
 
 export default function ProductImagesAndVideos(props: any) {
   const { productDetails, decStep, incStep, setProductDetails } = props;
 
   const [isCoverImageValid, setIsCoverImageValid] = useState(true);
 
-  function handleImages(e: React.ChangeEvent<HTMLInputElement>) {
-    const { id, files } = e.target;
+  function handleMultipleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
 
     setProductDetails((prev: any) => ({
       ...prev,
       images: {
-        ...prev.images,
-        [id]: files![0],
+        first: files![0] ?? '',
+        second: files![1] ?? '',
+        third: files![2] ?? '',
+        fourth: files![3] ?? '',
+        fifth: files![4] ?? '',
+        sixth: files![5] ?? '',
+        seventh: files![6] ?? '',
+        eighth: files![7] ?? '',
       },
     }));
   }
 
-  function handleMultipleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleImageSelection(e: React.ChangeEvent<HTMLInputElement>) {
     setProductDetails((prev: any) => ({
       ...prev,
       images: {
-        first: e.target.files![0] ?? '',
-        second: e.target.files![1] ?? '',
-        third: e.target.files![2] ?? '',
-        fourth: e.target.files![3] ?? '',
-        fifth: e.target.files![4] ?? '',
-        sixth: e.target.files![5] ?? '',
-        seventh: e.target.files![6] ?? '',
-        eighth: e.target.files![7] ?? '',
+        ...prev.images,
+        [e.target.name]: e.target.files![0],
+      },
+    }));
+  }
+
+  function handleDeleteAndMakeCover(action: 'cover' | 'delete', name: string) {
+    setProductDetails((prev: any) => ({
+      ...prev,
+      cover_image: action === 'cover' ? prev.images[name] : prev.cover_image,
+      images: {
+        ...prev.images,
+        [name]: '',
       },
     }));
   }
 
   function handleSubmit() {
-    if (productDetails.cover_image === '') {
-      setIsCoverImageValid(false);
-      return;
-    }
-
-    incStep();
+    productDetails.cover_image === '' ? setIsCoverImageValid(false) : incStep();
   }
 
   return (
@@ -83,642 +89,86 @@ export default function ProductImagesAndVideos(props: any) {
           </div>
         </div>
 
-        <div className="flex items-center">
-          <div
-            className={`flex items-center justify-center w-80 h-80 border ${
-              isCoverImageValid ? 'border-gray-600' : 'border-error-primary'
-            } `}
-          >
-            {productDetails.cover_image ? (
-              <Image
-                width={500}
-                height={500}
-                src={
-                  typeof productDetails.cover_image === 'string' &&
-                  productDetails.cover_image !== ''
-                    ? productDetails.cover_image
-                    : URL.createObjectURL(productDetails.cover_image)
-                }
-                alt=""
-              />
-            ) : (
-              <span
-                className={`${!isCoverImageValid ? 'text-error-primary' : ''}`}
-              >
-                Please select a cover image
-              </span>
-            )}
+        <div className="flex items-center space-x-5">
+          <div className="flex flex-col items-center">
+            <div
+              className={`flex flex-col items-center justify-center w-80 h-80 border rounded ${
+                isCoverImageValid ? 'border-gray-600' : 'border-error-primary'
+              } `}
+            >
+              {productDetails.cover_image ? (
+                <Image
+                  width={500}
+                  height={500}
+                  src={
+                    typeof productDetails.cover_image === 'string' &&
+                    productDetails.cover_image !== ''
+                      ? productDetails.cover_image
+                      : URL.createObjectURL(productDetails.cover_image)
+                  }
+                  alt=""
+                />
+              ) : (
+                <span
+                  className={`${
+                    !isCoverImageValid ? 'text-error-primary' : ''
+                  }`}
+                >
+                  Please select a cover image
+                </span>
+              )}
+            </div>
+            <span className="text-success-primary font-semibold">
+              Cover Image
+            </span>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 md:pl-24 lg:pl-24 gap-x-6 gap-y-5 md:gap-y-10 lg:gap-y-10">
-            {productDetails?.images.first ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={200}
-                  width={200}
-                  src={
-                    typeof productDetails.images.first === 'string' &&
-                    productDetails.images.first !== ''
-                      ? productDetails.images.first
-                      : URL.createObjectURL(productDetails.images.first)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        first: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="first_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              first: e.target.files![0],
-                            },
-                          }))
-                        }
-                        type="file"
-                        className="hidden"
-                        id="first_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.first,
-                          images: {
-                            ...prev.images,
-                            first: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FileInput
-                id="first"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
 
-            {productDetails?.images.second ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={200}
-                  width={200}
-                  src={
-                    typeof productDetails.images.second === 'string' &&
-                    productDetails.images.second !== ''
-                      ? productDetails.images.second
-                      : URL.createObjectURL(productDetails.images.second)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        second: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute group-hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="second_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              second: e.target.files![0],
-                            },
-                          }))
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-5">
+            {Object.entries(productDetails.images)?.map((image) => (
+              <div
+                key={image[0]}
+                className="relative flex items-center justify-center"
+              >
+                <div className="group relative">
+                  <ImageInputFieldWithPreview
+                    id={image[0]}
+                    name={image[0]}
+                    image={image[1]}
+                    onChange={handleImageSelection}
+                  />
+
+                  {typeof image[1] === 'object' ||
+                  (typeof image[1] === 'string' && image[1].length !== 0) ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-sm space-y-2 text-white w-full h-full opacity-0 group-hover:opacity-100 group-hover:bg-opacity-30 group-hover:bg-white transition-all duration-300">
+                      <label
+                        htmlFor={image[0]}
+                        className="flex items-center justify-center bg-accent-primary w-2/3 h-8 rounded cursor-pointer"
+                      >
+                        Change
+                      </label>
+                      <button
+                        onClick={() =>
+                          handleDeleteAndMakeCover('cover', image[0])
                         }
-                        type="file"
-                        className="hidden"
-                        id="second_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.second,
-                          images: {
-                            ...prev.images,
-                            second: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
+                        className="flex items-center justify-center w-2/3 h-8 border border-accent-primary bg-white text-accent-primary rounded"
+                      >
+                        Set as cover
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
+
+                {typeof image[1] === 'object' ||
+                (typeof image[1] === 'string' && image[1].length !== 0) ? (
+                  <button
+                    onClick={() => handleDeleteAndMakeCover('delete', image[0])}
+                    className="absolute -top-2 -right-2 scale-75 hover:scale-95 transition-transform duration-300 border flex items-center justify-center w-[30px] h-[30px] bg-white rounded-full"
+                  >
+                    <Image src={cancel} alt="" />
+                  </button>
+                ) : null}
               </div>
-            ) : (
-              <FileInput
-                id="second"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
-            {productDetails?.images.third ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={200}
-                  width={200}
-                  src={
-                    typeof productDetails.images.third === 'string' &&
-                    productDetails.images.third !== ''
-                      ? productDetails.images.third
-                      : URL.createObjectURL(productDetails.images.third)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        third: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute group-hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="third_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              third: e.target.files![0],
-                            },
-                          }))
-                        }
-                        type="file"
-                        className="hidden"
-                        id="third_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.third,
-                          images: {
-                            ...prev.images,
-                            third: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FileInput
-                id="third"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
-            {productDetails?.images.fourth ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={200}
-                  width={200}
-                  src={
-                    typeof productDetails.images.fourth === 'string' &&
-                    productDetails.images.fourth !== ''
-                      ? productDetails.images.fourth
-                      : URL.createObjectURL(productDetails.images.fourth)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        fourth: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute group-hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="fourth_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              fourth: e.target.files![0],
-                            },
-                          }))
-                        }
-                        type="file"
-                        className="hidden"
-                        id="fourth_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.fourth,
-                          images: {
-                            ...prev.images,
-                            second: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FileInput
-                id="fourth"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
-            {productDetails?.images.fifth ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={200}
-                  width={200}
-                  src={
-                    typeof productDetails.images.fifth === 'string' &&
-                    productDetails.images.fifth !== ''
-                      ? productDetails.images.fifth
-                      : URL.createObjectURL(productDetails.images.fifth)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        fifth: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute group-hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="fifth_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              fifth: e.target.files![0],
-                            },
-                          }))
-                        }
-                        type="file"
-                        className="hidden"
-                        id="fifth_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.fifth,
-                          images: {
-                            ...prev.images,
-                            fifth: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FileInput
-                id="fifth"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
-            {productDetails?.images.sixth ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={150}
-                  width={150}
-                  src={
-                    typeof productDetails.images.sixth === 'string' &&
-                    productDetails.images.sixth !== ''
-                      ? productDetails.images.sixth
-                      : URL.createObjectURL(productDetails.images.sixth)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        sixth: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute group-hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="sixth_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              sixth: e.target.files![0],
-                            },
-                          }))
-                        }
-                        type="file"
-                        className="hidden"
-                        id="sixth_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.sixth,
-                          images: {
-                            ...prev.images,
-                            sixth: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FileInput
-                id="sixth"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
-            {productDetails?.images.seventh ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={200}
-                  width={200}
-                  src={
-                    typeof productDetails.images.seventh === 'string' &&
-                    productDetails.images.seventh !== ''
-                      ? productDetails.images.seventh
-                      : URL.createObjectURL(productDetails.images.seventh)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        seventh: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute group-hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="seventh_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              seventh: e.target.files![0],
-                            },
-                          }))
-                        }
-                        type="file"
-                        className="hidden"
-                        id="seventh_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.seventh,
-                          images: {
-                            ...prev.images,
-                            seventh: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FileInput
-                id="seventh"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
-            {productDetails?.images.eighth ? (
-              <div className="relative group hover:bg-opacity-50 hover:bg-black flex items-center justify-center border border-gray-300 w-36 h-36 rounded">
-                <Image
-                  height={200}
-                  width={200}
-                  src={
-                    typeof productDetails.images.eighth === 'string' &&
-                    productDetails.images.eighth !== ''
-                      ? productDetails.images.eighth
-                      : URL.createObjectURL(productDetails.images.eighth)
-                  }
-                  alt=""
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setProductDetails((prev: any) => ({
-                      ...prev,
-                      images: {
-                        ...prev.images,
-                        eighth: '',
-                      },
-                    }))
-                  }
-                  className="absolute -top-1 -right-1 flex items-center justify-center"
-                >
-                  <Image src={cancelIcon} alt="cancel icon" />
-                </button>
-                <div className="absolute group-hover:opacity-100 opacity-0">
-                  <div className="flex flex-col w-full h-full items-center justify-center space-y-4">
-                    <label
-                      htmlFor="eighth_change"
-                      className="px-2 py-1 w-24 text-center bg-success-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      <input
-                        onChange={(e) =>
-                          setProductDetails((prev: any) => ({
-                            ...prev,
-                            images: {
-                              ...prev.images,
-                              eighth: e.target.files![0],
-                            },
-                          }))
-                        }
-                        type="file"
-                        className="hidden"
-                        id="eighth_change"
-                      />
-                      Change
-                    </label>
-                    <p
-                      onClick={() =>
-                        setProductDetails((prev: any) => ({
-                          ...prev,
-                          cover_image: productDetails.images.eighth,
-                          images: {
-                            ...prev.images,
-                            eighth: '',
-                          },
-                        }))
-                      }
-                      className="px-2 py-1 w-24 bg-accent-primary text-white text-sm cursor-pointer rounded"
-                    >
-                      Make Cover
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FileInput
-                id="eighth"
-                placeholder="Select an image"
-                accept=".png, .jpg, .jpeg"
-                onChange={handleImages}
-              />
-            )}
+            ))}
           </div>
         </div>
       </div>
