@@ -1,14 +1,13 @@
 import Link from 'next/link';
 import PageWrapper from '../../components/PageWrapper';
 import authenticatedRoute from '../../components/WithAuth';
-import AccountInfo from '../../components/settings/AccountInfo';
 import WarehouseAddress from '../../components/settings/WarehouseAddress';
 import Head from 'next/head';
 
 function AccountInfoPage() {
   return (
     <>
-    <Head>
+      <Head>
         <meta name="viewport" content="width=1360" />
       </Head>
       <PageWrapper>
