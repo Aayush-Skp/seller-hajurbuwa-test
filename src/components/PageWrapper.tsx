@@ -19,17 +19,19 @@ const PageWrapper = ({ children }: PageWrapperProps) => {
   }, [router]);
 
   return (
-    <div className="">
-      {!isRoutePublic ? (
-        <div className="flex flex-col justify-between w-full min-h-screen">
-          <Navbar />
-          <div className="mt-[112px] mb-[112px]">{children}</div>
-          <Footer />
-        </div>
-      ) : (
-        <div>{children}</div>
-      )}
-    </div>
+    <>
+      <div className="">
+        {!isRoutePublic ? (
+          <div className="flex flex-col justify-between w-full min-h-screen">
+            <Navbar />
+            <div className="mt-[112px] mb-[112px]">{children}</div>
+            <Footer />
+          </div>
+        ) : (
+          <div>{children}</div>
+        )}
+      </div>
+    </>
   );
 };
 
