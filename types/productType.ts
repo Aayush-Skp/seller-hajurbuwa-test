@@ -35,7 +35,7 @@ export type Product = {
   price_per_unit: number | string;
   unitName: string;
   is_bulk_price: boolean;
-  bulk_pricing: [];
+  bulk_pricing: { quantity: number; price: number }[];
   in_stock: boolean;
   unit: number | string;
   cover_image: string | File;

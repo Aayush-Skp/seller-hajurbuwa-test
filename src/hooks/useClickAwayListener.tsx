@@ -17,7 +17,7 @@ export const useClickAwayListener = () => {
     return () => {
       document.removeEventListener('click', handleClickAway, true);
     };
-  }, [nodeRef]);
+  }, []);
 
   return { nodeRef, isNodeVisible, setIsNodeVisible };
 };

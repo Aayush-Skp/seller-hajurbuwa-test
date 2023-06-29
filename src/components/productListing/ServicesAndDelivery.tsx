@@ -142,6 +142,7 @@ export default function ServicesAndDelivery(props: any) {
         setIsProductAddSuccessModalOpen(true);
       })
       .catch((err) => {
+        console.log(err);
         setApiResponse({
           isLoading: false,
           isError: false,

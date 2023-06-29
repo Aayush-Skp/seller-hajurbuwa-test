@@ -26,17 +26,21 @@ export default function GeneralInformation(props: any) {
   const [categorySearchList, setCategorySearchList] = useState<any>([]);
   const [selectedCategoryStringFromList, setSelectedCategoryStringFromList] =
     useState<string>('');
+
   const [categoryValidation, setCategoryValidation] = useState({
     isValid: true,
     message: '',
   });
+
   const [productNameValidation, setProductNameValidation] = useState({
     isValid: true,
     message: '',
   });
+
   const [recentCategory, setRecentCategory] = useState<string | number | null>(
     null
   );
+
   const [brandValidation, setBrandValidation] = useState({
     isValid: true,
     message: '',

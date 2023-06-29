@@ -62,6 +62,7 @@ export function updateProduct(
 
 export function getProductById(productId: string | number) {
   return httpClient.get(`${productUrl}/${productId}/edit`).then((res) => {
+    console.log(res.data.data[0]);
     const productDetails = {
       productId: '',
       featured_highlights: [''],

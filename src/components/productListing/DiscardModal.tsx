@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import checkMark from '../../../public/icons/check-mark.svg';
 
 import Modal from 'react-modal';
-import Button from '../common/Button';
 import Link from 'next/link';
 import Image from 'next/image';
 

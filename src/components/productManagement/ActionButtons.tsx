@@ -106,7 +106,12 @@ export default function ActionButtons({
   function MoreButtons() {
     if (currentTab.id === 'online')
       return (
-        <div className="absolute -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
+        <div className="absolute -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
+          <Link href={`/product/duplicate?id=${productId}`}>
+            <a className="text-xs border border-success-primary text-success-primary px-5 py-2">
+              Duplicate
+            </a>
+          </Link>
           <button
             className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
             onClick={() => handleAction('Deactivate')}
@@ -124,7 +129,13 @@ export default function ActionButtons({
 
     if (currentTab.id === 'deactivated')
       return (
-        <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 h-28 p-4 bg-white border border-gray-300 rounded shadow-sm">
+        <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
+          <Link href={`/product/duplicate?id=${productId}`}>
+            <a className="text-xs border border-success-primary text-success-primary px-5 py-2">
+              Duplicate
+            </a>
+          </Link>
+
           <button
             className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
             onClick={() => handleAction('Activate')}
@@ -143,6 +154,11 @@ export default function ActionButtons({
     if (currentTab.id === 'pending')
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
+          <Link href={`/product/duplicate?id=${productId}`}>
+            <a className="text-xs border border-success-primary text-success-primary px-5 py-2">
+              Duplicate
+            </a>
+          </Link>
           <button
             className="text-xs border border-error-primary text-error-primary px-5 py-2"
             onClick={() => handleAction('Delete')}
@@ -155,6 +171,11 @@ export default function ActionButtons({
     if (currentTab.id === 'suspended')
       return (
         <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
+          <Link href={`/product/duplicate?id=${productId}`}>
+            <a className="text-xs border border-success-primary text-success-primary px-5 py-2">
+              Duplicate
+            </a>
+          </Link>
           <button
             className="text-xs border border-error-primary text-error-primary px-5 py-2"
             onClick={() => handleAction('Delete')}

@@ -60,11 +60,14 @@ export default function ProductListing() {
     },
   });
 
-  const [state, dispatch] = useReducer(productReducer, product);
+  // const [state, dispatch] = useReducer(productReducer, product);
 
   useEffect(() => {
-    if (router.pathname === '/product/update' && router?.query?.id) {
-      setIsUpdate(true);
+    if (
+      router.pathname === '/product/update' ||
+      (router.pathname === '/product/duplicate' && router?.query?.id)
+    ) {
+      router.pathname === '/product/update' && setIsUpdate(true);
       getProductById(router.query.id as string)
         .then((res) => {
           setProductDetails(res);

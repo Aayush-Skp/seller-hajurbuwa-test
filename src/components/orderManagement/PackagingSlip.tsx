@@ -16,7 +16,7 @@ export default function PackagingSlip({
   product_included_item,
   product_name,
   quantity,
-  payment_status
+  payment_status,
 }: {
   packing_slip_id: string;
   seller_pan_no: string;
@@ -73,7 +73,7 @@ export default function PackagingSlip({
                   </View>
                 </View>
                 <View style={{ fontSize: 15 }}>
-                  <Text>{`${seller_company_name} Trading Pvt. Ltd.`}</Text>
+                  <Text>{seller_company_name}</Text>
                   <Text>{`Tax Id: ${seller_pan_no}`}</Text>
                 </View>
               </View>
@@ -84,13 +84,15 @@ export default function PackagingSlip({
                   justifyContent: 'space-between',
                 }}
               >
-                <View style={{}}>
+                <View>
                   <Text style={{ fontSize: 20 }}>PACKING SLIP</Text>
                   <Text>{`# PS-${packing_slip_id}`}</Text>
                 </View>
                 <View style={{ fontSize: 15 }}>
                   <Text>Balance Due</Text>
-                  <Text>{`NPR ${payment_status === "paid" ? "0" :total_amount}`}</Text>
+                  <Text>{`NPR ${
+                    payment_status === 'paid' ? '0' : total_amount
+                  }`}</Text>
                 </View>
               </View>
             </View>
