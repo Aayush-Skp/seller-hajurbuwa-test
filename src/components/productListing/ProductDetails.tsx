@@ -52,7 +52,7 @@ export default function ProductDetails(props: any) {
         setProductDetails((prev: any) => {
           return {
             ...prev,
-            featured_highlights: [...prev.featured_highlights, ''],
+            featured_highlights: [...prev.featured_highlights, ''+ '\n'],
           };
         });
       }
