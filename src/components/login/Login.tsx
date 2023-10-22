@@ -183,21 +183,21 @@ export default function Login() {
               </div>
               <div className="w-full flex justify-end">
                 <Link href="/forgot-password">
-                  <a>Forgot Password?</a>
+                  Forgot Password?
                 </Link>
               </div>
               <div className="">
                 <p className="w-full text-sm">
                   By continuing you agree to Hajurbuwa.com’s
                   <span className="text-accent-primary">
-                    <Link href="https://www.hajurbuwa.com/policies/terms-of-use">
-                      <a target="_blank"> Terms of Use </a>
+                    <Link href="https://www.hajurbuwa.com/policies/terms-of-use" target="_blank">
+                       Terms of Use 
                     </Link>
                   </span>
                   and
                   <span className="text-accent-primary">
-                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy">
-                      <a target="_blank"> Privacy Policy.</a>
+                    <Link href="https://www.hajurbuwa.com/policies/privacy-policy" target="_blank">
+                       Privacy Policy.
                     </Link>
                   </span>
                 </p>
@@ -219,13 +219,13 @@ export default function Login() {
                 <p className="whitespace-nowrap"> New to Hajurbuwa? </p>
                 <div className="w-full h-[1px] bg-black" />
               </div>
-              <Link href="/register">
-                <a
-                  target="_blank"
-                  className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2 text-center"
-                >
+              <Link
+                href="/register"
+                target="_blank"
+                className="bg-white text-accent-primary border border-accent-primary rounded px-3 py-2 text-center">
+                
                   Register as Hajurbuwa seller
-                </a>
+                
               </Link>
             </div>
           </form>

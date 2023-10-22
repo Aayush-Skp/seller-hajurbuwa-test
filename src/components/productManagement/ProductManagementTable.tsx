@@ -216,13 +216,11 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                               <div className="flex flex-col items-start justify-center space-y-1">
                                 <Link
                                   href={`/product/description/?id=${row.original.id}`}
-                                >
-                                  <a
-                                    target="_blank"
-                                    className="text-sm text-accent-primary"
-                                  >
-                                    {cell.value}
-                                  </a>
+                                  target="_blank"
+                                  className="text-sm text-accent-primary">
+
+                                  {cell.value}
+
                                 </Link>
                                 <p className="text-sm space-x-2 items-center">
                                   <span>Id: {row.original.product_id}</span>

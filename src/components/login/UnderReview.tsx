@@ -21,10 +21,12 @@ export default function UnderReview({ username }: { username: string }) {
           <div>
             <Image src={accountUnderReview} alt="" />
           </div>
-          <Link href="/">
-            <a className="w-full text-center px-20 py-3 border border-accent-primary rounded text-accent-primary font-semibold">
+          <Link
+            href="/"
+            className="w-full text-center px-20 py-3 border border-accent-primary rounded text-accent-primary font-semibold">
+            
               Back To Homepage
-            </a>
+            
           </Link>
         </div>
       </div>

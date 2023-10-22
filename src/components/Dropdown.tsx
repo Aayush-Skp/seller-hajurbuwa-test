@@ -27,10 +27,12 @@ const Dropdown: React.FC<DropdownProps> = ({ title, links }) => {
           <ul className="py-1 sm:py-2 sm:px-3 flex flex-col max-w-max">
             {links.map((link) => (
               <li key={link.link}>
-                <Link href={link.link}>
-                  <a className="text-sm px-3 py-2 max-w-max whitespace-nowrap font-medium hover:underline hover:decoration-accent-primary hover:underline-offset-4">
-                    {link.title}
-                  </a>
+                <Link
+                  href={link.link}
+                  className="text-sm px-3 py-2 max-w-max whitespace-nowrap font-medium hover:underline hover:decoration-accent-primary hover:underline-offset-4">
+
+                  {link.title}
+
                 </Link>
               </li>
             ))}

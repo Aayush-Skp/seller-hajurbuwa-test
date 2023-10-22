@@ -20,8 +20,8 @@ export default function PasswordChangeSuccess() {
             Password Successfully Changed.
           </span>
           <Button>
-            <Link href="/login">
-              <a className="">Proceed to Login</a>
+            <Link href="/login" className="">
+              Proceed to Login
             </Link>
           </Button>
         </div>

@@ -58,11 +58,13 @@ export default function OrderDetails() {
           <span className="text-2xl">
             Order Details of Order Number {orderDetails.order_id}
           </span>
-          <Link href="/order-management">
-            <a className="flex items-center space-x-1 text-blue-700">
-              <BsArrowLeft className="font-bold" />
-              <span>Back to orders List</span>
-            </a>
+          <Link
+            href="/order-management"
+            className="flex items-center space-x-1 text-blue-700">
+
+            <BsArrowLeft className="font-bold" />
+            <span>Back to orders List</span>
+
           </Link>
         </div>
       </div>

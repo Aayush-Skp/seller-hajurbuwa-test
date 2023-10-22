@@ -62,10 +62,12 @@ export default function ProductAddSuccessModal(
             </div>
             <div className="flex justify-center">
               <div className="flex space-x-5">
-                <Link href="/product-management">
-                  <a className="px-3 py-2 rounded border border-accent-primary text-sm">
+                <Link
+                  href="/product-management"
+                  className="px-3 py-2 rounded border border-accent-primary text-sm">
+                  
                     View products list
-                  </a>
+                  
                 </Link>
                 <button
                   onClick={() => router.reload()}

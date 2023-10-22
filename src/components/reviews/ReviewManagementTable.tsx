@@ -122,9 +122,7 @@ const ReviewsManagementTable: React.FC<ProductManagementTableProps> = ({
                           </div>
                         ) : cell.column.Header === 'Product' ? (
                           <div>
-                            <Link
-                              href={`/product/description/?id=${row.original.id}`}
-                            >
+                            <Link href={`/product/description/?id=${row.original.id}`} legacyBehavior>
                               <div className="flex flex-col justify-start items-center text-md text-blue-700 space-y-1">
                                 <span>{row?.original?.product_name}</span>
                               </div>

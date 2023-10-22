@@ -71,9 +71,9 @@ export default function BusinessDetails(props: any) {
       className="flex flex-col pt-5 px-2 md:px-5 lg:px-10 pb-5 items-center justify-center text-black h-full w-full"
     >
       <Link href="/login">
-        <a>
-          <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
-        </a>
+
+        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+
       </Link>
       <div className="flex flex-col px-5 md:px-10 pt-0 items-center justify-center w-full">
         <Image src={businessSetup} alt="Business Setup Illustration" />

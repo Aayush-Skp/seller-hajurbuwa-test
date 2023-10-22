@@ -44,14 +44,14 @@ const Navbar = () => {
           <div className="flex items-center justify-start">
             <div className="flex-shrink-0 border-r-2 border-black mr-2">
               <Link href="/dashboard">
-                <a>
-                  <Image
-                    src={logo}
-                    alt="Hajurbuwa Logo"
-                    width={200}
-                    height={50}
-                  />
-                </a>
+
+                <Image
+                  src={logo}
+                  alt="Hajurbuwa Logo"
+                  width={200}
+                  height={50}
+                />
+
               </Link>
             </div>
             <div className="flex-shrink-0 flex items-center justify-center px-10 text-lg shadow-xl h-7">
@@ -84,7 +84,7 @@ const Navbar = () => {
                 <ul className="absolute flex flex-col top-10 px-5 py-2 shadow-2xl space-y-1 justify-center bg-white whitespace-nowrap">
                   <li>
                     <Link href="/settings/account-info">
-                      <a>Account Info</a>
+                      Account Info
                     </Link>
                   </li>
                   <li onClick={handleLogoutAction}>Logout?</li>
@@ -95,8 +95,8 @@ const Navbar = () => {
         </div>
         <ul className="flex items-center justify-center space-x-5">
           <li className="">
-            <Link href="/dashboard">
-              <a className="font-bold text-lg">Dashboard</a>
+            <Link href="/dashboard" className="font-bold text-lg">
+              Dashboard
             </Link>
           </li>
           <li className=" flex items-center">
@@ -126,8 +126,8 @@ const Navbar = () => {
             </span>
           </li> */}
           <li className="">
-            <Link href="/finance">
-              <a className="font-bold text-lg">Finance</a>
+            <Link href="/finance" className="font-bold text-lg">
+              Finance
             </Link>
           </li>
         </ul>

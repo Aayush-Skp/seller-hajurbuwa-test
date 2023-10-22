@@ -29,15 +29,17 @@ export default function Rejected(sellerData: any) {
               pathname: '/update-business-details',
               query: sellerData?.sellerData,
             }}
-          >
-            <a className="w-full px-20 text-center bg-accent-primary py-3 border border-accent-primary rounded text-white font-semibold">
+            className="w-full px-20 text-center bg-accent-primary py-3 border border-accent-primary rounded text-white font-semibold">
+            
               Update Seller Account
-            </a>
+            
           </Link>
-          <Link href="/">
-            <a className="w-full text-center px-20 py-3 border border-accent-primary rounded text-accent-primary font-semibold">
+          <Link
+            href="/"
+            className="w-full text-center px-20 py-3 border border-accent-primary rounded text-accent-primary font-semibold">
+            
               Back To Homepage
-            </a>
+            
           </Link>
         </div>
       </div>

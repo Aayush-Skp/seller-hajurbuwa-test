@@ -87,20 +87,18 @@ export default function Category({
       <div className={`flex flex-col space-y-3 pl-8`}>
         {isExpanded
           ? subCategories.map((subCategory) => (
-              <Link
+              (<Link
                 href={`/management/${id}/${subCategory.id}`}
                 key={subCategory.title}
-              >
-                <a
-                  className={`${
-                    selectedSubCategory === subCategory.id
-                      ? 'text-orange-400 font-semibold'
-                      : 'text-gray-400'
-                  } hover:text-blue-700`}
-                >
-                  {subCategory.title}
-                </a>
-              </Link>
+                className={`${
+                  selectedSubCategory === subCategory.id
+                    ? 'text-orange-400 font-semibold'
+                    : 'text-gray-400'
+                } hover:text-blue-700`}>
+
+                {subCategory.title}
+
+              </Link>)
             ))
           : ''}
       </div>
