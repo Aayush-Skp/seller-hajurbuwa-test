@@ -46,8 +46,8 @@ export default function ProductDetails(props: any) {
   }
 
   function addFeaturedHightLight(e: React.KeyboardEvent<HTMLInputElement>) {
+    // alert(e.key);
     if (e.key === 'Enter') {
-      alert(e.key);
       e.preventDefault();
       if (productDetails.featured_highlights.length <= 21) {
         setProductDetails((prev: any) => {
