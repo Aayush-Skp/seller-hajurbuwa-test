@@ -129,6 +129,7 @@ export default function ProductDetails(props: any) {
                             : ''
                         }
                         onKeyDown={addFeaturedHightLight}
+                        enterKeyHint="enter"
                         onChange={(e) => handleOnChange(e, index)}
                         className="outline-none focus:shadow-none border-none"
                       />
