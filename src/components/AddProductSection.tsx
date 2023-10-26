@@ -15,12 +15,11 @@ const AddProductSection = () => {
             <div className="border-t-2 w-11/12 pt-2 text-xl">
             Easy to list a product system steps through all the requirements for creating your 1st listing.
                 <div className="row py-4 w-full flex items-start justify-start">
-                   <Link href="/product/add"><a> <Button> Add Product </Button></a></Link>
+                   <Link href="/product/add"> <Button> Add Product </Button></Link>
                 </div>
             </div>
         </div>
-
-    )
+    );
 }
 
 export default AddProductSection

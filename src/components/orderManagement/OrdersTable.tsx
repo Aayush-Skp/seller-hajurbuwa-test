@@ -193,13 +193,11 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                 </div>
                                 <Link
                                   href={`/order?order_id=${row.original.id}`}
-                                >
-                                  <a
-                                    target="_blank"
-                                    className="text-xs text-accent-primary hover:underline"
-                                  >
+                                  target="_blank"
+                                  className="text-xs text-accent-primary hover:underline">
+                                  
                                     See order details
-                                  </a>
+                                  
                                 </Link>
                               </div>
                             </div>

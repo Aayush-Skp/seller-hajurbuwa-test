@@ -72,9 +72,9 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
   return (
     <div className="relative w-full xs:w-full sm:w-full md:w-1/2 lg:w-1/3 2xl:w-1/4 bg-white z-10 shadow-lg">
       <Link href="/login">
-        <a>
-          <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
-        </a>
+
+        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl cursor-pointer" />
+
       </Link>
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
@@ -123,13 +123,13 @@ export default function EnterEmailOrPassword(props: EnterEmailOrPasswordProps) {
             <p className="whitespace-nowrap">New to Hajurbuwa?</p>
             <div className="w-full h-[1px] bg-black" />
           </div>
-          <Link href="/register">
-            <a
-              target="_blank"
-              className="bg-white text-accent-primary border border-accent-primary text-center rounded px-3 py-2"
-            >
+          <Link
+            href="/register"
+            target="_blank"
+            className="bg-white text-accent-primary border border-accent-primary text-center rounded px-3 py-2">
+            
               Register as Hajurbuwa seller
-            </a>
+            
           </Link>
         </div>
       </form>

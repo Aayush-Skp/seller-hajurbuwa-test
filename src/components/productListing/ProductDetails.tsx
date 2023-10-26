@@ -47,6 +47,7 @@ export default function ProductDetails(props: any) {
 
   function addFeaturedHightLight(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
+      alert(e.key);
       e.preventDefault();
       if (productDetails.featured_highlights.length <= 21) {
         setProductDetails((prev: any) => {
@@ -121,6 +122,7 @@ export default function ProductDetails(props: any) {
                       <div className="w-2 h-2 bg-accent-primary rounded-full" />
                       <TextInputField
                         value={point}
+                        autoFocus={true}
                         placeholder={
                           index === 0
                             ? 'Press enter for adding more featured highlights'

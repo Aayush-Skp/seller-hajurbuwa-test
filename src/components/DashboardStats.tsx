@@ -27,32 +27,41 @@ const DashboardStats = ({
         Important! To increase buyer satisfaction, you need to check them
         reguralry.
         <div className="row py-4 w-full flex items-start justify-start">
-          <Link href="/order-management">
-            <a style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }} className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg" >
-              <DashboardElements
-                number={pendingOrders}
-                text="Pending Orders"
-                icon={<HiOutlineDocumentText />}
-              />
-            </a>
+          <Link
+            href="/order-management"
+            style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}
+            className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
+
+            <DashboardElements
+              number={pendingOrders}
+              text="Pending Orders"
+              icon={<HiOutlineDocumentText />}
+            />
+
           </Link>
-          <Link href="/order-management">
-            <a style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }} className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
-              <DashboardElements
-                number={unshippedOrders}
-                text="Unshipped Orders"
-                icon={<FaShippingFast />}
-              />
-            </a>
+          <Link
+            href="/order-management"
+            style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}
+            className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
+
+            <DashboardElements
+              number={unshippedOrders}
+              text="Unshipped Orders"
+              icon={<FaShippingFast />}
+            />
+
           </Link>
-          <Link href={"/review-management"}>
-            <a  style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }} className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
-              <DashboardElements
-                number={newReviews}
-                text="New Reviews"
-                icon={<MdOutlineRateReview />}
-              />
-            </a>
+          <Link
+            href={"/review-management"}
+            style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}
+            className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
+
+            <DashboardElements
+              number={newReviews}
+              text="New Reviews"
+              icon={<MdOutlineRateReview />}
+            />
+
           </Link>
         </div>
       </div>

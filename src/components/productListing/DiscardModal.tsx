@@ -53,10 +53,12 @@ export default function DiscardModal() {
                 >
                   No, Cancel
                 </button>
-                <Link href="/dashboard">
-                  <a className="px-3 py-2 rounded border text-white bg-accent-primary border-accent-primary text-sm">
+                <Link
+                  href="/dashboard"
+                  className="px-3 py-2 rounded border text-white bg-accent-primary border-accent-primary text-sm">
+                  
                     Yes, Confirm
-                  </a>
+                  
                 </Link>
               </div>
             </div>

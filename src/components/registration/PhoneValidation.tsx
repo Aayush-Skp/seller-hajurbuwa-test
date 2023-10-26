@@ -74,9 +74,9 @@ export default function PhoneValidation(props: PhoneValidationProps) {
       className="flex flex-col px-10 pt-10 pb-5 items-around justify-center text-black h-full w-full"
     >
       <Link href="/login">
-        <a>
-          <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl" />
-        </a>
+
+        <BiArrowBack className="absolute inset-0 top-0 left-0 m-2 text-3xl" />
+
       </Link>
       <Image
         src={registerPhoneNumber}
@@ -114,21 +114,18 @@ export default function PhoneValidation(props: PhoneValidationProps) {
           <Link
             href="https://www.hajurbuwa.com/policies/terms-of-use"
             className="text-accent-tertiary"
-          >
-            <a target="_blank" className="text-accent-primary">
-              {' '}
-              Terms of Use{' '}
-            </a>
+            target="_blank">
+
+            {' '}Terms of Use{' '}
+
           </Link>
           and
           <Link
             href="https://www.hajurbuwa.com/policies/privacy-policy"
             className="text-accent-tertiary"
-          >
-            <a target="_blank" className="text-accent-primary">
-              {' '}
-              Privacy Policy.
-            </a>
+            target="_blank">
+
+            {' '}Privacy Policy.
           </Link>
         </p>
         <Button type="submit" onSubmit={handleSubmit(handleFormSubmit)}>

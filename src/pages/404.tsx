@@ -25,7 +25,7 @@ const NotFoundPage = () => {
           </div>
           <div className="flex flex-row items-center justify-start bg-black text-white px-[35px] py-[14px] mt-4 lg:mt-8 rounded-full border-white border-2">
             <div className="flex flex-col px-4">
-             <Link href="/"><a><div className="text-[20px] font-medium cursor-pointer">Return Home</div></a></Link> 
+             <Link href="/"><div className="text-[20px] font-medium cursor-pointer">Return Home</div></Link> 
             </div>
           </div>
         </div>

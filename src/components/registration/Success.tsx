@@ -20,10 +20,12 @@ const Success = () => {
           in next 1-2 days. Thank you.
         </p>
       </div>
-      <Link href="/login">
-        <a className="w-full text-white text-center px-4 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity">
+      <Link
+        href="/login"
+        className="w-full text-white text-center px-4 py-2 bg-blue-700 rounded hover:opacity-80 transition-opacity">
+        
           OK
-        </a>
+        
       </Link>
     </div>
   );

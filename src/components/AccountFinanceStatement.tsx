@@ -270,12 +270,10 @@ export default function AccountFinanceStatement() {
                                         className="flex justify-between w-full"
                                         key={order?.id}
                                       >
-                                        <Link
-                                          href={`/order?order_id=${order.id}`}
-                                        >
-                                          <a target="_blank">
-                                            {order?.order_id}
-                                          </a>
+                                        <Link href={`/order?order_id=${order.id}`} target="_blank">
+
+                                          {order?.order_id}
+
                                         </Link>
                                         <span className="text-black">
                                           {order?.total_amount} NPR
