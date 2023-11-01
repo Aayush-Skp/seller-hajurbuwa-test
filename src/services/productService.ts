@@ -94,6 +94,7 @@ export function getProductById(productId: string | number) {
       },
     };
 
+    if (res?.data?.data[0]?.sub_images) {
     productDetails.images.first = res?.data?.data[0]?.sub_images[0]
       ? `${imageServerBaseUrl}${res.data.data[0].sub_images[0]}`
       : '';
@@ -125,7 +126,8 @@ export function getProductById(productId: string | number) {
     productDetails.images.eighth = res?.data?.data[0]?.sub_images[7]
       ? `${imageServerBaseUrl}${res.data.data[0].sub_images[7]}`
       : '';
-
+    }
+    
     productDetails.product_name = res.data.data[0].product_name;
     productDetails.included_items = res.data.data[0].included_items;
     productDetails.minimum_order = res.data.data[0].minimum_order;
