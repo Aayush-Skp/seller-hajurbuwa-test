@@ -21,6 +21,7 @@ export default function OrderDetails() {
     amount: '',
     seller_name: '',
     seller_pan_no: '',
+    buyer_pan_number: '',
   });
 
   const [_, copyOrderId] = useCopyToClipboard();
@@ -153,7 +154,7 @@ export default function OrderDetails() {
           <li className="border-b py-2 border-gray-300">
             <div className="flex items-center">
               <span className="w-40 text-gray-400">Pan Number</span>
-              <span>{orderDetails.seller_pan_no}</span>
+              <span>{orderDetails.buyer_pan_number}</span>
             </div>
           </li>
         </ul>
