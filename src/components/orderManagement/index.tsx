@@ -88,6 +88,8 @@ export default function Orders() {
   }, []);
 
   function handleOrderSearch(e: React.ChangeEvent<HTMLInputElement>) {
+    // setIsLoading(true);
+
     e.target.value === ''
       ? getAllOrders()
       : searchOrdersWithStatusAndKeyword(currentTab.id, e.target.value)
