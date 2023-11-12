@@ -342,26 +342,6 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                       </span>
                                     )}
                                   </button>
-
-                                  {isAddQuantityDiscountModalOpen ? (
-                                    <AddQuantityDiscountModal
-                                      productId={
-                                        minOrderForNewQuantityDiscount.productId
-                                      }
-                                      minimumOrder={
-                                        minOrderForNewQuantityDiscount.minOrder
-                                      }
-                                      isQuantityDiscountModalOpen={
-                                        isAddQuantityDiscountModalOpen
-                                      }
-                                      setIsQuantityDiscountModelOpen={
-                                        setIsAddQuantityDiscountModalOpen
-                                      }
-                                      updateProductAttribute={
-                                        updateProductAttribute
-                                      }
-                                    />
-                                  ) : null}
                                 </div>
                               ) : (
                                 <div className="text-sm flex space-x-3 justify-center items-center">
@@ -495,6 +475,25 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                 );
               })}
             </tbody>
+            {isAddQuantityDiscountModalOpen ? (
+                                    <AddQuantityDiscountModal
+                                      productId={
+                                        minOrderForNewQuantityDiscount.productId
+                                      }
+                                      minimumOrder={
+                                        minOrderForNewQuantityDiscount.minOrder
+                                      }
+                                      isQuantityDiscountModalOpen={
+                                        isAddQuantityDiscountModalOpen
+                                      }
+                                      setIsQuantityDiscountModelOpen={
+                                        setIsAddQuantityDiscountModalOpen
+                                      }
+                                      updateProductAttribute={
+                                        updateProductAttribute
+                                      }
+                                    />
+                                  ) : null}
           </table>
         )
       ) : (
