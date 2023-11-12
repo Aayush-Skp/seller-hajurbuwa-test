@@ -390,23 +390,6 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
                                   </button>
                                 </div>
                               )}
-                              {isQuantityDiscountModalOpen ? (
-                                <QuantityDiscountModal
-                                  productId={quantityDiscountToBeEdited.id}
-                                  quantityDiscountPrices={
-                                    newQuantityDiscountsToBeAdded
-                                  }
-                                  setIsQuantityDiscountModelOpen={
-                                    setIsQuantityDiscountModalOpen
-                                  }
-                                  isQuantityDiscountModalOpen={
-                                    isQuantityDiscountModalOpen
-                                  }
-                                  updateProductAttribute={
-                                    updateProductAttribute
-                                  }
-                                />
-                              ) : null}
                             </div>
                           ) : cell.column.Header === 'Stock Availability' ? (
                             <div>
@@ -476,24 +459,41 @@ const ProductManagementTable: React.FC<ProductManagementTableProps> = ({
               })}
             </tbody>
             {isAddQuantityDiscountModalOpen ? (
-                                    <AddQuantityDiscountModal
-                                      productId={
-                                        minOrderForNewQuantityDiscount.productId
-                                      }
-                                      minimumOrder={
-                                        minOrderForNewQuantityDiscount.minOrder
-                                      }
-                                      isQuantityDiscountModalOpen={
-                                        isAddQuantityDiscountModalOpen
-                                      }
-                                      setIsQuantityDiscountModelOpen={
-                                        setIsAddQuantityDiscountModalOpen
-                                      }
-                                      updateProductAttribute={
-                                        updateProductAttribute
-                                      }
-                                    />
-                                  ) : null}
+              <AddQuantityDiscountModal
+                productId={
+                  minOrderForNewQuantityDiscount.productId
+                }
+                minimumOrder={
+                  minOrderForNewQuantityDiscount.minOrder
+                }
+                isQuantityDiscountModalOpen={
+                  isAddQuantityDiscountModalOpen
+                }
+                setIsQuantityDiscountModelOpen={
+                  setIsAddQuantityDiscountModalOpen
+                }
+                updateProductAttribute={
+                  updateProductAttribute
+                }
+              />
+            ) : null}
+          {isQuantityDiscountModalOpen ? (
+            <QuantityDiscountModal
+              productId={quantityDiscountToBeEdited.id}
+              quantityDiscountPrices={
+                newQuantityDiscountsToBeAdded
+              }
+              setIsQuantityDiscountModelOpen={
+                setIsQuantityDiscountModalOpen
+              }
+              isQuantityDiscountModalOpen={
+                isQuantityDiscountModalOpen
+              }
+              updateProductAttribute={
+                updateProductAttribute
+              }
+            />
+          ) : null}
           </table>
         )
       ) : (
