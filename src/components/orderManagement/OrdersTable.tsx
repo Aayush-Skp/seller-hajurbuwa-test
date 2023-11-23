@@ -182,7 +182,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                 <div className="space-x-1">
                                   <span>Item Subtotal:</span>
                                   <span className="font-semibold">
-                                    {row.original.amount*row.original.quantity} NPR
+                                    {row.original.total_amount} NPR
                                   </span>
                                 </div>
                                 <div className="space-x-1">

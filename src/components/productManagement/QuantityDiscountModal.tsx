@@ -154,6 +154,8 @@ export default function QuantityDiscountModal(props: QuantityDiscountProps) {
         formData.append(`bulk_pricing[${i}][${j}]`, `${updated[i][j]}`);
       }
     }
+    
+    console.log(formData);
 
     updateProductAttribute(productId, formData)
       .then(() => setIsQuantityDiscountModelOpen(false))
