@@ -146,7 +146,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                               <div className="flex flex-col items-start space-y-1">
                                 <div className="text-sm text-accent-primary text-start">
                                   <p>{row.original.product_name}</p>
-                                  <p>{row.original.product_included_item}</p>
+                                  {/* <p>{row.original.product_included_item}</p> */}
                                 </div>
                                 <p className="text-sm space-x-2 items-center">
                                   <span>Id: {row.original.product_id}</span>
@@ -177,6 +177,12 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                     {row.original.unit === 'per pc'
                                       ? 'pcs'
                                       : row.original.unit}
+                                  </span>
+                                </div>
+                                <div className="space-x-1">
+                                  <span>Price per {row.original.product_unit}:</span>
+                                  <span className="font-semibold">
+                                    {row.original.is_bulk ? row.original.bulk_price : row.original.product_price_per_unit} NPR
                                   </span>
                                 </div>
                                 <div className="space-x-1">
