@@ -226,7 +226,7 @@ export default function GeneralInformation(props: any) {
               } rounded cursor-pointer`}
             >
               <option value="">Select a Brand</option>
-              {defaultValues?.brands?.map((brand: any) => (
+              {defaultValues?.brands?.brands?.map((brand: any) => (
                 <option
                   key={brand.id}
                   value={brand.id}
