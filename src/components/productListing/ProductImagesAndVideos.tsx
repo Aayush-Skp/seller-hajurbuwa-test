@@ -11,9 +11,13 @@ export default function ProductImagesAndVideos(props: any) {
   const { productDetails, decStep, incStep, setProductDetails } = props;
 
   const [isCoverImageValid, setIsCoverImageValid] = useState(true);
+  const [isAtleast1ImageIsUploaded, setIsAtleast1ImageIsUploaded] = useState(true);
 
   function handleMultipleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
+
+    setIsCoverImageValid(true);
+    setIsAtleast1ImageIsUploaded(true);
 
     setProductDetails((prev: any) => ({
       ...prev,
@@ -31,6 +35,9 @@ export default function ProductImagesAndVideos(props: any) {
   }
 
   function handleImageSelection(e: React.ChangeEvent<HTMLInputElement>) {
+    setIsCoverImageValid(true);
+    setIsAtleast1ImageIsUploaded(true);
+
     setProductDetails((prev: any) => ({
       ...prev,
       images: {
@@ -41,6 +48,9 @@ export default function ProductImagesAndVideos(props: any) {
   }
 
   function handleDeleteAndMakeCover(action: 'cover' | 'delete', name: string) {
+    setIsCoverImageValid(true);
+    setIsAtleast1ImageIsUploaded(true);
+
     setProductDetails((prev: any) => ({
       ...prev,
       cover_image: action === 'cover' ? prev.images[name] : prev.cover_image,
@@ -51,8 +61,34 @@ export default function ProductImagesAndVideos(props: any) {
     }));
   }
 
+  const atleast1ImageIsUploaded = () => {
+    let count = 0;
+
+    productDetails?.images?.first && count++;
+    productDetails?.images?.second && count++;
+    productDetails?.images?.third && count++;
+    productDetails?.images?.fourth && count++;
+    productDetails?.images?.fifth && count++;
+    productDetails?.images?.sixth && count++;
+    productDetails?.images?.seventh && count++;
+    productDetails?.images?.eighth && count++;
+    return count > 0;
+  }
+
   function handleSubmit() {
-    productDetails.cover_image === '' ? setIsCoverImageValid(false) : incStep();
+    if (productDetails.cover_image === '') {
+      setIsCoverImageValid(false);
+    }
+
+    if (!atleast1ImageIsUploaded()) {
+      setIsAtleast1ImageIsUploaded(false);
+    }
+
+    if (productDetails.cover_image === '' || !atleast1ImageIsUploaded()) {
+      return;
+    }
+    
+    incStep();
   }
 
   return (
@@ -169,6 +205,7 @@ export default function ProductImagesAndVideos(props: any) {
                 ) : null}
               </div>
             ))}
+            {!isAtleast1ImageIsUploaded && <span className='text-error-primary'>Please upload at least 2 images</span>}
           </div>
         </div>
       </div>

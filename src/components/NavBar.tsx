@@ -125,11 +125,11 @@ const Navbar = () => {
               Voucher Manager
             </span>
           </li> */}
-          <li className="">
+          {/* <li className="">
             <Link href="/finance" className="font-bold text-lg">
               Finance
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </nav>

@@ -102,6 +102,7 @@ export default function ServicesAndDelivery(props: any) {
         if (typeof productDetails.images[key] === 'object') {
           params.append(`sub_images[]`, productDetails.images[key]);
         }
+        
         if (
           typeof productDetails.images[key] === 'string' &&
           productDetails.images[key] !== ''
