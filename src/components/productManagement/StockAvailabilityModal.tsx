@@ -42,6 +42,7 @@ export default function StockAvailabilityModal(
 
     formData.append('in_stock', value.value);
     formData.append('_method', 'PUT');
+    formData.append('update_type', '2');
 
     updateProductAttribute(`${value.id}`, formData)
       .then((res) => {

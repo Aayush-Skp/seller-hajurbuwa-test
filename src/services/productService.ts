@@ -170,9 +170,9 @@ export function addProduct(productDetails: any) {
   formData.append('package_weight', String(productDetails.package_weight));
   formData.append('is_bulk_price', `${Number(productDetails.is_bulk_price)}`);
 
-  if (typeof productDetails.cover_image !== 'string') {
+  // if (typeof productDetails.cover_image !== 'string') {
     formData.append('cover_image', productDetails.cover_image);
-  }
+  // }
 
   const filteredHighlights = productDetails.featured_highlights.filter(
     (item: string) => item !== ''
