@@ -46,6 +46,7 @@ export default function PriceEditModal(props: PriceEditModalProps) {
     formData.append('bulk_price', '');
     formData.append('price_per_unit', data.price_per_unit.toString());
     formData.append('_method', 'PUT');
+    formData.append('update_type', '1');
 
     updateProductAttribute(productId, formData)
       .then(() => setIsPriceModalOpen(false))

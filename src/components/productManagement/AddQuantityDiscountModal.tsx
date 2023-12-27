@@ -147,6 +147,7 @@ export default function AddQuantityDiscountModal(
     formData.append('price_per_unit', '');
     formData.append('is_bulk_price', '1');
     formData.append('_method', 'PUT');
+    formData.append('update_type', '1');
 
     let updated = bulkPrices.map((price: any) => {
       return [price.quantity, price.price];

@@ -205,7 +205,7 @@ export default function ProductImagesAndVideos(props: any) {
                 ) : null}
               </div>
             ))}
-            {!isAtleast1ImageIsUploaded && <span className='text-error-primary'>Please upload at least 2 images</span>}
+            {!isAtleast1ImageIsUploaded && <span className='text-error-primary'>Please upload at least 1 image</span>}
           </div>
         </div>
       </div>
