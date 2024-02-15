@@ -219,7 +219,7 @@ export default function GeneralInformation(props: any) {
             <InputLabel label="Brand Specification" required />
           </div>
           <div className="w-full">
-          <TextInputWithDropdownAndSearch data={defaultValues?.brands?.brands} 
+          {/* <TextInputWithDropdownAndSearch data={defaultValues?.brands?.brands} 
           handleBrandSelect={(selectedBrandID: String) => {
             setProductDetails((prev: any) => {
               return {
@@ -232,8 +232,8 @@ export default function GeneralInformation(props: any) {
               isValid: true,
               message: '',
             });
-          }}/>
-            {/* <select
+          }}/> */}
+            <select
               onChange={handleBrandChange}
               className={`w-full h-10 outline-none border ${
                 !brandValidation.isValid
@@ -251,7 +251,7 @@ export default function GeneralInformation(props: any) {
                   {brand?.name}
                 </option>
               ))}
-            </select> */}
+            </select>
             <ErrorMessage message={brandValidation.message} />
           </div>
         </div>
