@@ -13,6 +13,8 @@ import {
   searchCategory,
 } from '../../services/categoryService';
 import { useClickAwayListener } from '../../hooks/useClickAwayListener';
+import InputWithDropdown from '../common/TextInputWithDropdownAndSearch';
+import TextInputWithDropdownAndSearch from '../common/TextInputWithDropdownAndSearch';
 
 export default function GeneralInformation(props: any) {
   const { productDetails, incStep, defaultValues, setProductDetails } = props;
@@ -217,6 +219,20 @@ export default function GeneralInformation(props: any) {
             <InputLabel label="Brand Specification" required />
           </div>
           <div className="w-full">
+          {/* <TextInputWithDropdownAndSearch data={defaultValues?.brands?.brands} 
+          handleBrandSelect={(selectedBrandID: String) => {
+            setProductDetails((prev: any) => {
+              return {
+                ...prev,
+                brand: selectedBrandID,
+              };
+            });
+        
+            setBrandValidation({
+              isValid: true,
+              message: '',
+            });
+          }}/> */}
             <select
               onChange={handleBrandChange}
               className={`w-full h-10 outline-none border ${
