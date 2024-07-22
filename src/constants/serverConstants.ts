@@ -1,2 +1,2 @@
 export const imageServerBaseUrl =
-  'https://hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com/';
+  'https://dashboard.hajurbuwa.com/hajurbuwa-bucket/';
