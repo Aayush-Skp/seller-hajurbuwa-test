@@ -117,6 +117,11 @@ const Navbar = () => {
               ]}
             />
           </li>
+          <li>
+    <Link href="/group-order-management" className="font-bold text-lg">
+      Group Order Management
+    </Link>
+  </li>
           {/* <li className="">
             <Link href="/#">
               <a className="font-bold text-lg">Voucher Manager</a>
