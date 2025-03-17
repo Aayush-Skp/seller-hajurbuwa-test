@@ -1,6 +1,6 @@
 // pages/group-order-management.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import PageWrapper from '../components/PageWrapper';
 import authenticatedRoute from '../components/WithAuth';
@@ -8,9 +8,45 @@ import GroupOrders from '../components/groupOrderManagement';
 
 import Image from 'next/image';
 import searchIcon from '../../public/icons/searchIcon.svg'; // Adjust path if needed
+import { httpClient } from '../config/httpClient';
 
 function GroupOrderManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [groupOrders, setGroupOrders] = useState([]); // State for fetched data
+
+  useEffect(() => {
+    async function fetchGroupOrders() {
+      try {
+        // Retrieve token from localStorage (stored during login)
+        const storedUserDetails = localStorage.getItem('userDetails');
+        const userDetails = storedUserDetails ? JSON.parse(storedUserDetails) : null;
+        const token = userDetails?.token || '';
+
+        // Make the API call using httpClient with POST
+        const response = await httpClient.post(
+          '/seller/get-group-orders',
+          {}, // If no request body is needed, pass an empty object
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+
+        const result = response.data;
+        if (result.status === 'success') {
+          setGroupOrders(result.data); // Store the fetched group orders
+        } else {
+          console.error('Failed to fetch group orders');
+        }
+      } catch (error) {
+        console.error('Error fetching group orders:', error);
+      }
+    }
+
+    fetchGroupOrders();
+  }, []);
 
   // Placeholder search handler
   function handleSearch(e: React.FormEvent) {
@@ -25,15 +61,9 @@ function GroupOrderManagementPage() {
       </Head>
 
       <PageWrapper>
-        {/* 
-          1) Heading + search bar on the same line 
-          Add some top margin (mt-4) to push it down from the nav,
-          and bottom margin (mb-2) for spacing before the lines.
-        */}
+        {/* Heading + search bar */}
         <div className="flex items-center justify-between mt-10 mb-2">
           <h2 className="text-xl font-bold">Group Order Management</h2>
-
-          {/* Search bar */}
           <form onSubmit={handleSearch} className="relative">
             <div className="absolute flex items-center h-full pl-2 pointer-events-none">
               <Image src={searchIcon} alt="search" width={16} height={16} />
@@ -48,19 +78,12 @@ function GroupOrderManagementPage() {
           </form>
         </div>
 
-        {/* 
-          2) Two horizontal lines below the heading. 
-          The first line is border-gray-300, 
-          the second line also border-gray-300 (you can change colors if you want).
-        */}
+        {/* Horizontal lines */}
         <div className="border-b border-gray-300" />
         <div className="border-b border-gray-300 mb-4" />
 
-        {/* 
-          3) The row of 4 clickable headings + placeholder table 
-          from your existing "groupOrderManagement.tsx" in components.
-        */}
-        <GroupOrders />
+        {/* Group Orders Table */}
+        <GroupOrders groupOrders={groupOrders} />
       </PageWrapper>
     </>
   );

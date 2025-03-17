@@ -1,3 +1,5 @@
+// services/loginService.ts
+
 import { httpClient } from '../config/httpClient';
 
 type LoginServiceArgs = {
@@ -7,7 +9,6 @@ type LoginServiceArgs = {
 
 export function loginService(data: LoginServiceArgs) {
   const formData = new FormData();
-
   formData.append('email', data.email);
   formData.append('password', data.password);
 
