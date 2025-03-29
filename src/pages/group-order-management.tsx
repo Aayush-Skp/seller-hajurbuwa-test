@@ -5,7 +5,6 @@ import Head from 'next/head';
 import PageWrapper from '../components/PageWrapper';
 import authenticatedRoute from '../components/WithAuth';
 import GroupOrders from '../components/groupOrderManagement';
-
 import Image from 'next/image';
 import searchIcon from '../../public/icons/searchIcon.svg'; // Adjust path if needed
 import { httpClient } from '../config/httpClient';
@@ -17,26 +16,24 @@ function GroupOrderManagementPage() {
   useEffect(() => {
     async function fetchGroupOrders() {
       try {
-        // Retrieve token from localStorage (stored during login)
         const storedUserDetails = localStorage.getItem('userDetails');
         const userDetails = storedUserDetails ? JSON.parse(storedUserDetails) : null;
         const token = userDetails?.token || '';
 
-        // Make the API call using httpClient with POST
         const response = await httpClient.post(
           '/seller/get-group-orders',
-          {}, // If no request body is needed, pass an empty object
+          {},
           {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
 
         const result = response.data;
         if (result.status === 'success') {
-          setGroupOrders(result.data); // Store the fetched group orders
+          setGroupOrders(result.data);
         } else {
           console.error('Failed to fetch group orders');
         }
