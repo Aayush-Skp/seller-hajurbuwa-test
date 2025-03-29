@@ -1,6 +1,7 @@
 // components/groupOrderManagement.tsx
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image'; // <-- Import Next.js Image for optimized images
 
 type GroupOrderTab = 'PENDING' | 'NEAR_DEADLINE' | 'SUCCESSFUL' | 'FAILED';
 
@@ -12,14 +13,13 @@ type FetchedGroupOrder = {
   total_required_orders: number;
   status: string;
   created_at: string;
-  expires_at: string;     // <-- We'll use this for the countdown
+  expires_at: string; // We'll use this for the countdown
   product_name: string;
-  cover_image: string;
+  cover_image: string; // We want to display this in the table
 };
 
 interface GroupOrdersProps {
-  // If parent doesn't pass anything, default to empty array
-  groupOrders?: FetchedGroupOrder[];
+  groupOrders?: FetchedGroupOrder[]; // If parent doesn't pass anything, default to empty array
 }
 
 export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
@@ -41,8 +41,7 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
       setTableData((prevData) => {
         return prevData.map((item) => ({
           ...item,
-          // You can store "timeLeft" in a separate field if you want,
-          // but we’ll calculate it on the fly in the render below.
+          // We can keep timeLeft calculation in the render below
         }));
       });
     }, 1000);
@@ -80,7 +79,6 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
   // 3) Convert each item into the structure needed by the table
   //    (and also handle status -> tab mapping)
   function convertToTableItem(order: FetchedGroupOrder) {
-    // You can rename fields or keep them as is
     return {
       id: String(order.group_id),
       productName: order.product_name,
@@ -98,6 +96,7 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
       // We'll call our helper function to get the live countdown
       timeLeft: calculateTimeLeft(order.expires_at),
       originalStatus: order.status, // We'll use this to filter by tab
+      coverImage: order.cover_image, // <-- store cover image path here
     };
   }
 
@@ -115,7 +114,8 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
     if (item.originalStatus !== 'group_pending') return false;
     // Check if < 2 hours left
     const now = new Date().getTime();
-    const expiry = new Date(groupOrders.find((o) => o.group_id === +item.id)?.expires_at || '').getTime();
+    const original = groupOrders.find((o) => o.group_id === +item.id);
+    const expiry = original ? new Date(original.expires_at).getTime() : 0;
     const diff = expiry - now;
     return diff > 0 && diff < 2 * 60 * 60 * 1000; // < 2 hours
   });
@@ -238,9 +238,20 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
                 {/* PRODUCT column */}
                 <td className="px-4 py-3">
                   <div className="flex items-center space-x-2">
-                    {/* placeholder image */}
-                    <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded">
-                      IMG
+                    <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded overflow-hidden">
+                      {item.coverImage ? (
+                        <Image
+                          // Adjust the URL if your images live in a different path:
+                          src={`https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/${item.coverImage}`}
+                          alt={item.productName}
+                          width={52}
+                          height={52}
+                          className="object-cover"
+                        />
+                      ) : (
+                        // Fallback if no coverImage is provided
+                        'IMG'
+                      )}
                     </div>
                     <div>
                       <div className="font-bold">{item.productName}</div>
