@@ -1,7 +1,8 @@
 // components/groupOrderManagement.tsx
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image'; // <-- Import Next.js Image for optimized images
+import Image from 'next/image';
+import { httpClient } from '../config/httpClient'; // Import httpClient to call APIs
 
 type GroupOrderTab = 'PENDING' | 'NEAR_DEADLINE' | 'SUCCESSFUL' | 'FAILED';
 
@@ -30,6 +31,10 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
   // so we can recalculate the countdown every second
   const [tableData, setTableData] = useState<FetchedGroupOrder[]>([]);
 
+  // State for modal visibility and selected group ID
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+
   // 1) On initial load, copy groupOrders into state
   useEffect(() => {
     setTableData(groupOrders);
@@ -38,35 +43,31 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
   // 2) Recalculate countdown every second
   useEffect(() => {
     const timer = setInterval(() => {
-      setTableData((prevData) => {
-        return prevData.map((item) => ({
+      setTableData((prevData) =>
+        prevData.map((item) => ({
           ...item,
-          // We can keep timeLeft calculation in the render below
-        }));
-      });
+          // We recalc timeLeft in the render below
+        }))
+      );
     }, 1000);
-
-    // Cleanup on unmount
     return () => clearInterval(timer);
   }, []);
 
   // Helper: Convert "expires_at" into a countdown string (e.g. "1h 35m 20s")
   function calculateTimeLeft(expiresAt: string) {
     const now = new Date().getTime();
-    const expiry = new Date(expiresAt).getTime(); // parse from your API's format
+    const expiry = new Date(expiresAt).getTime();
     const diff = expiry - now;
 
     if (diff <= 0) {
       return 'Expired';
     }
 
-    // Calculate days, hours, minutes, seconds
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((diff / (1000 * 60)) % 60);
     const seconds = Math.floor((diff / 1000) % 60);
 
-    // Build a friendly string
     if (days > 0) {
       return `${days}d ${hours}h ${minutes}m ${seconds}s`;
     } else if (hours > 0) {
@@ -76,8 +77,7 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
     }
   }
 
-  // 3) Convert each item into the structure needed by the table
-  //    (and also handle status -> tab mapping)
+  // Convert each item into the structure needed by the table
   function convertToTableItem(order: FetchedGroupOrder) {
     return {
       id: String(order.group_id),
@@ -93,48 +93,41 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
           : order.status === 'group_failed'
           ? 'Failed Group Order'
           : 'Unknown Status',
-      // We'll call our helper function to get the live countdown
       timeLeft: calculateTimeLeft(order.expires_at),
-      originalStatus: order.status, // We'll use this to filter by tab
-      coverImage: order.cover_image, // <-- store cover image path here
+      originalStatus: order.status,
+      coverImage: order.cover_image,
     };
   }
 
-  // 4) Transform tableData for rendering
+  // Transform tableData for rendering
   const transformedData = tableData.map(convertToTableItem);
 
-  // 5) Filter by tab
+  // Filter by tab
   const pendingOrders = transformedData.filter(
     (item) => item.originalStatus === 'group_pending'
   );
-
-  // If you have a special logic for near-deadline (e.g., less than 2 hours left),
-  // do something like:
   const nearDeadlineOrders = transformedData.filter((item) => {
     if (item.originalStatus !== 'group_pending') return false;
-    // Check if < 2 hours left
     const now = new Date().getTime();
     const original = groupOrders.find((o) => o.group_id === +item.id);
     const expiry = original ? new Date(original.expires_at).getTime() : 0;
     const diff = expiry - now;
-    return diff > 0 && diff < 2 * 60 * 60 * 1000; // < 2 hours
+    return diff > 0 && diff < 2 * 60 * 60 * 1000;
   });
-
   const successfulOrders = transformedData.filter(
     (item) => item.originalStatus === 'group_completed'
   );
-
   const failedOrders = transformedData.filter(
     (item) => item.originalStatus === 'group_failed'
   );
 
-  // 6) For the "red circle" counts
+  // Counts for the tab headings
   const pendingGroupOrderCount = pendingOrders.length;
   const pendingNearDeadlineCount = nearDeadlineOrders.length;
   const successfulCount = successfulOrders.length;
   const failedCount = failedOrders.length;
 
-  // 7) Decide which data to show based on the active tab
+  // Decide which data to show based on the active tab
   let currentData = [];
   switch (activeTab) {
     case 'PENDING':
@@ -150,6 +143,56 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
       currentData = failedOrders;
       break;
   }
+
+  // Function to call the confirm-group-order API
+  const confirmGroupOrder = (groupId: number) => {
+    try {
+      const storedUserDetails = localStorage.getItem('userDetails');
+      const userDetails = storedUserDetails ? JSON.parse(storedUserDetails) : null;
+      const token = userDetails?.token || '';
+
+      httpClient
+        .post(
+          '/seller/confirm-group-order',
+          { group_id: groupId },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          const result = response.data;
+          if (result.status === 'success') {
+            alert(result.message);
+          } else {
+            alert('Failed to confirm group order.');
+          }
+        })
+        .catch((error) => {
+          console.error('Error confirming group order:', error);
+          alert('Error confirming group order.');
+        });
+    } catch (error) {
+      console.error('Error confirming group order:', error);
+      alert('Error confirming group order.');
+    }
+  };
+
+  // Handler when user clicks "Yes" in the modal
+  const handleConfirmYes = () => {
+    if (selectedGroupId !== null) {
+      confirmGroupOrder(selectedGroupId);
+    }
+    setModalVisible(false);
+  };
+
+  // Opens modal for confirmation
+  const openConfirmModal = (groupId: number) => {
+    setSelectedGroupId(groupId);
+    setModalVisible(true);
+  };
 
   return (
     <div className="mx-8">
@@ -241,7 +284,6 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
                     <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded overflow-hidden">
                       {item.coverImage ? (
                         <Image
-                          // Adjust the URL if your images live in a different path:
                           src={`https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/${item.coverImage}`}
                           alt={item.productName}
                           width={52}
@@ -249,7 +291,6 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
                           className="object-cover"
                         />
                       ) : (
-                        // Fallback if no coverImage is provided
                         'IMG'
                       )}
                     </div>
@@ -268,16 +309,35 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
                 </td>
 
                 {/* ORDER STATUS column */}
-                <td className="px-4 py-3 text-red-600">{item.orderStatus}</td>
+                <td
+                  className={`px-4 py-3 ${
+                    item.originalStatus === 'group_completed'
+                      ? 'text-green-600'
+                      : 'text-red-600'
+                  }`}
+                >
+                  {item.orderStatus}
+                </td>
 
-                {/* TIME LEFT column (the live countdown) */}
-                <td className="px-4 py-3 text-orange-600">{item.timeLeft}</td>
+                {/* TIME LEFT column */}
+                <td className="px-4 py-3 text-orange-600">
+                  {activeTab !== 'SUCCESSFUL' ? item.timeLeft : ''}
+                </td>
 
                 {/* ACTION column */}
                 <td className="px-4 py-3">
-                  <button className="bg-blue-600 text-white px-4 py-2 rounded">
-                    Confirm Order
-                  </button>
+                  {activeTab !== 'SUCCESSFUL' ? (
+                    <button
+                      onClick={() => openConfirmModal(Number(item.groupId))}
+                      className="bg-[#0056b3] hover:bg-[#004a9c] text-white px-4 py-2 rounded text-sm font-semibold text-center leading-tight"
+                    >
+                      Confirm Order For
+                      <br />
+                      Committed Quantity
+                    </button>
+                  ) : (
+                    ''
+                  )}
                 </td>
               </tr>
             ))}
@@ -292,6 +352,32 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Confirmation */}
+      {modalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          {/* Modal Content */}
+          <div className="bg-white p-6 rounded shadow-lg z-10 w-80">
+            <p className="mb-4">Are you sure you want to confirm order?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleConfirmYes}
+                className="text-black underline"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setModalVisible(false)}
+                className="text-black underline"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
