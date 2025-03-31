@@ -1,151 +1,146 @@
-// components/groupOrderManagement.tsx
-
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { httpClient } from '../config/httpClient'; // Import httpClient to call APIs
+import { useRouter } from 'next/router';
+import { httpClient } from '../config/httpClient';
 
+// Tab definitions
 type GroupOrderTab = 'PENDING' | 'NEAR_DEADLINE' | 'SUCCESSFUL' | 'FAILED';
 
-// Match the shape of the data your API returns
-type FetchedGroupOrder = {
+// The shape of data from the API
+export interface FetchedGroupOrder {
   group_id: number;
   product_id: number;
   orders_count: number;
   total_required_orders: number;
-  status: string;
+  status: string;  // e.g. "group_pending", "group_completed", "group_failed"
   created_at: string;
-  expires_at: string; // We'll use this for the countdown
+  expires_at: string;
   product_name: string;
-  cover_image: string; // We want to display this in the table
-};
+  cover_image: string;
+}
 
 interface GroupOrdersProps {
-  groupOrders?: FetchedGroupOrder[]; // If parent doesn't pass anything, default to empty array
+  groupOrders?: FetchedGroupOrder[];
 }
 
 export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
-  // Which tab is active
+  const router = useRouter();
+
+  // Active tab
   const [activeTab, setActiveTab] = useState<GroupOrderTab>('PENDING');
 
-  // We'll store a "transformed" version of groupOrders in state
-  // so we can recalculate the countdown every second
+  // Local state for group orders
   const [tableData, setTableData] = useState<FetchedGroupOrder[]>([]);
 
-  // State for modal visibility and selected group ID
+  // Confirmation modal
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
-  // 1) On initial load, copy groupOrders into state
+  // On mount or whenever groupOrders changes, copy them to tableData
   useEffect(() => {
     setTableData(groupOrders);
   }, [groupOrders]);
 
-  // 2) Recalculate countdown every second
+  // Re-render every second to update countdown
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTableData((prevData) =>
-        prevData.map((item) => ({
-          ...item,
-          // We recalc timeLeft in the render below
-        }))
-      );
+    const intervalId = setInterval(() => {
+      setTableData((prev) => [...prev]);
     }, 1000);
-    return () => clearInterval(timer);
+    return () => clearInterval(intervalId);
   }, []);
 
-  // Helper: Convert "expires_at" into a countdown string (e.g. "1h 35m 20s")
-  function calculateTimeLeft(expiresAt: string) {
-    const now = new Date().getTime();
+  // Time Left: "X hours Y minutes" ignoring days/seconds
+  function calculateTimeLeft(expiresAt: string): string {
+    const now = Date.now();
     const expiry = new Date(expiresAt).getTime();
     const diff = expiry - now;
-
     if (diff <= 0) {
       return 'Expired';
     }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
-
-    if (days > 0) {
-      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    } else if (hours > 0) {
-      return `${hours}h ${minutes}m ${seconds}s`;
-    } else {
-      return `${minutes}m ${seconds}s`;
-    }
+    const totalMinutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    return `${hours} hours ${minutes} minutes`;
   }
 
-  // Convert each item into the structure needed by the table
-  function convertToTableItem(order: FetchedGroupOrder) {
-    return {
-      id: String(order.group_id),
-      productName: order.product_name,
-      groupId: String(order.group_id),
-      quantityCommitted: order.orders_count,
-      leftToCommit: order.total_required_orders - order.orders_count,
-      orderStatus:
-        order.status === 'group_pending'
-          ? 'Pending Group Order'
-          : order.status === 'group_completed'
-          ? 'Successful Group Order'
-          : order.status === 'group_failed'
-          ? 'Failed Group Order'
-          : 'Unknown Status',
-      timeLeft: calculateTimeLeft(order.expires_at),
-      originalStatus: order.status,
-      coverImage: order.cover_image,
-    };
-  }
-
-  // Transform tableData for rendering
-  const transformedData = tableData.map(convertToTableItem);
-
-  // Filter by tab
-  const pendingOrders = transformedData.filter(
-    (item) => item.originalStatus === 'group_pending'
-  );
-  const nearDeadlineOrders = transformedData.filter((item) => {
-    if (item.originalStatus !== 'group_pending') return false;
-    const now = new Date().getTime();
-    const original = groupOrders.find((o) => o.group_id === +item.id);
-    const expiry = original ? new Date(original.expires_at).getTime() : 0;
+  // Separate data by status
+  const pendingData = tableData.filter((o) => o.status === 'group_pending');
+  const nearDeadlineData = tableData.filter((o) => {
+    if (o.status !== 'group_pending') return false;
+    const now = Date.now();
+    const expiry = new Date(o.expires_at).getTime();
     const diff = expiry - now;
-    return diff > 0 && diff < 2 * 60 * 60 * 1000;
+    return diff > 0 && diff < 2 * 60 * 60 * 1000; // < 2 hours
   });
-  const successfulOrders = transformedData.filter(
-    (item) => item.originalStatus === 'group_completed'
-  );
-  const failedOrders = transformedData.filter(
-    (item) => item.originalStatus === 'group_failed'
-  );
+  const successfulData = tableData.filter((o) => o.status === 'group_completed');
+  const failedData = tableData.filter((o) => o.status === 'group_failed');
 
-  // Counts for the tab headings
-  const pendingGroupOrderCount = pendingOrders.length;
-  const pendingNearDeadlineCount = nearDeadlineOrders.length;
-  const successfulCount = successfulOrders.length;
-  const failedCount = failedOrders.length;
+  // Tab badge counts
+  const pendingCount = pendingData.length;
+  const nearDeadlineCount = nearDeadlineData.length;
+  const successfulCount = successfulData.length;
+  const failedCount = failedData.length;
 
-  // Decide which data to show based on the active tab
-  let currentData = [];
+  // Decide which data to show
+  let currentData: FetchedGroupOrder[] = [];
   switch (activeTab) {
     case 'PENDING':
-      currentData = pendingOrders;
+      currentData = pendingData;
       break;
     case 'NEAR_DEADLINE':
-      currentData = nearDeadlineOrders;
+      currentData = nearDeadlineData;
       break;
     case 'SUCCESSFUL':
-      currentData = successfulOrders;
+      currentData = successfulData;
       break;
     case 'FAILED':
-      currentData = failedOrders;
+      currentData = failedData;
       break;
   }
 
-  // Function to call the confirm-group-order API
-  const confirmGroupOrder = (groupId: number) => {
+  // Return multiline status text
+  function getStatusLabel(): string {
+    if (activeTab === 'SUCCESSFUL') {
+      return 'SUCCESSFUL';
+    } else if (activeTab === 'FAILED') {
+      return 'FAILED';
+    } else if (activeTab === 'PENDING') {
+      return `PENDING
+GROUP
+ORDER`;
+    } else if (activeTab === 'NEAR_DEADLINE') {
+      return `PENDING
+GROUP ORDER
+with Near Deadline`;
+    }
+    return '';
+  }
+
+  // Return inline style to ensure color isn't overridden
+  function getStatusStyle(): React.CSSProperties {
+    if (activeTab === 'SUCCESSFUL') {
+      // Green italics
+      return { color: '#10B981', fontStyle: 'italic' };
+    } else if (activeTab === 'FAILED') {
+      // Red italics
+      return { color: '#EF4444', fontStyle: 'italic' };
+    } else if (activeTab === 'PENDING') {
+      // Yellow italics
+      return { color: '#FACC15', fontStyle: 'italic', whiteSpace: 'pre-line' };
+    } else if (activeTab === 'NEAR_DEADLINE') {
+      // Red italics
+      return { color: '#EF4444', fontStyle: 'italic', whiteSpace: 'pre-line' };
+    }
+    return {};
+  }
+
+  // Hide time left & button for successful/failed
+  function shouldHideTimeAndAction(): boolean {
+    return activeTab === 'SUCCESSFUL' || activeTab === 'FAILED';
+  }
+
+  // Confirm group order API call
+  function confirmGroupOrder(groupId: number) {
     try {
       const storedUserDetails = localStorage.getItem('userDetails');
       const userDetails = storedUserDetails ? JSON.parse(storedUserDetails) : null;
@@ -178,21 +173,21 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
       console.error('Error confirming group order:', error);
       alert('Error confirming group order.');
     }
-  };
+  }
 
-  // Handler when user clicks "Yes" in the modal
-  const handleConfirmYes = () => {
+  // Modal confirm yes
+  function handleConfirmYes() {
     if (selectedGroupId !== null) {
       confirmGroupOrder(selectedGroupId);
     }
     setModalVisible(false);
-  };
+  }
 
-  // Opens modal for confirmation
-  const openConfirmModal = (groupId: number) => {
+  // Open confirm modal
+  function openConfirmModal(groupId: number) {
     setSelectedGroupId(groupId);
     setModalVisible(true);
-  };
+  }
 
   return (
     <div className="mx-8">
@@ -206,7 +201,7 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
           }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
-            {pendingGroupOrderCount}
+            {pendingCount}
           </div>
           <span className="font-semibold text-gray-700">Pending Group Order</span>
         </div>
@@ -219,7 +214,7 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
           }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
-            {pendingNearDeadlineCount}
+            {nearDeadlineCount}
           </div>
           <span className="font-semibold text-gray-700">
             Pending G.O with Near Deadline
@@ -253,94 +248,137 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
         </div>
       </div>
 
-      {/* Table for whichever tab is active */}
+      {/* Table */}
       <div className="overflow-x-auto mb-10">
         <table className="min-w-full border text-sm text-gray-700">
           <thead className="bg-gray-100 border-b text-xs uppercase">
             <tr>
-              <th scope="col" className="px-4 py-3 font-semibold text-left">
-                PRODUCT
-              </th>
-              <th scope="col" className="px-4 py-3 font-semibold text-left">
-                GROUP ORDER DETAILS
-              </th>
-              <th scope="col" className="px-4 py-3 font-semibold text-left">
-                ORDER STATUS
-              </th>
-              <th scope="col" className="px-4 py-3 font-semibold text-left">
-                TIME LEFT
-              </th>
-              <th scope="col" className="px-4 py-3 font-semibold text-left">
-                ACTION
-              </th>
+              <th className="px-4 py-3 font-semibold text-left">PRODUCT</th>
+              <th className="px-4 py-3 font-semibold text-left">GROUP ORDER DETAILS</th>
+              <th className="px-4 py-3 font-semibold text-left">ORDER STATUS</th>
+              <th className="px-4 py-3 font-semibold text-left">TIME LEFT</th>
+              <th className="px-4 py-3 font-semibold text-left">ACTION</th>
             </tr>
           </thead>
           <tbody>
-            {currentData.map((item, idx) => (
-              <tr key={idx} className="border-b">
-                {/* PRODUCT column */}
-                <td className="px-4 py-3">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded overflow-hidden">
-                      {item.coverImage ? (
-                        <Image
-                          src={`https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/${item.coverImage}`}
-                          alt={item.productName}
-                          width={52}
-                          height={52}
-                          className="object-cover"
-                        />
-                      ) : (
-                        'IMG'
-                      )}
+            {currentData.map((order, idx) => {
+              // Choose the multiline status text
+              let statusLabel = '';
+              let statusStyle: React.CSSProperties = {};
+
+              if (activeTab === 'SUCCESSFUL') {
+                statusLabel = 'SUCCESSFUL';
+                statusStyle = { color: '#10B981', fontStyle: 'italic' };
+              } else if (activeTab === 'FAILED') {
+                statusLabel = 'FAILED';
+                statusStyle = { color: '#EF4444', fontStyle: 'italic' };
+              } else if (activeTab === 'PENDING') {
+                statusLabel = `PENDING
+GROUP
+ORDER`;
+                statusStyle = {
+                  color: '#FACC15',
+                  fontStyle: 'italic',
+                  whiteSpace: 'pre-line',
+                };
+              } else if (activeTab === 'NEAR_DEADLINE') {
+                statusLabel = `PENDING
+GROUP ORDER
+with Near Deadline`;
+                statusStyle = {
+                  color: '#EF4444',
+                  fontStyle: 'italic',
+                  whiteSpace: 'pre-line',
+                };
+              }
+
+              const hideTimeAndAction =
+                activeTab === 'SUCCESSFUL' || activeTab === 'FAILED';
+              const totalLeft = order.total_required_orders - order.orders_count;
+              const timeLeft = calculateTimeLeft(order.expires_at);
+
+              return (
+                <tr key={idx} className="border-b">
+                  {/* PRODUCT */}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded overflow-hidden">
+                        {order.cover_image ? (
+                          <Image
+                            src={`https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/${order.cover_image}`}
+                            alt={order.product_name}
+                            width={52}
+                            height={52}
+                            className="object-cover"
+                          />
+                        ) : (
+                          'IMG'
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-black">
+                          {order.product_name}
+                        </div>
+                        <div className="text-black">ID: {order.group_id}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-bold">{item.productName}</div>
-                      <div>ID: {item.id}</div>
+                  </td>
+
+                  {/* GROUP ORDER DETAILS */}
+                  <td className="px-4 py-3">
+                    <div className="text-black">Group ID: {order.group_id}</div>
+                    <div className="text-black">
+                      Quantity Committed: {order.orders_count} pcs
                     </div>
-                  </div>
-                </td>
+                    {/* Hide "Left to Commit" for successful */}
+                    {activeTab !== 'SUCCESSFUL' && (
+                      <div className="text-black">
+                        Left to Commit: {totalLeft} pcs
+                      </div>
+                    )}
+                  </td>
 
-                {/* GROUP ORDER DETAILS column */}
-                <td className="px-4 py-3">
-                  <div>Group ID: {item.groupId}</div>
-                  <div>Quantity Committed: {item.quantityCommitted} pcs</div>
-                  <div>Left to Commit: {item.leftToCommit} pcs</div>
-                </td>
+                  {/* ORDER STATUS (inline style for color) */}
+                  <td className="px-4 py-3 whitespace-pre-line" style={statusStyle}>
+                    {statusLabel}
+                  </td>
 
-                {/* ORDER STATUS column */}
-                <td
-                  className={`px-4 py-3 ${
-                    item.originalStatus === 'group_completed'
-                      ? 'text-green-600'
-                      : 'text-red-600'
-                  }`}
-                >
-                  {item.orderStatus}
-                </td>
+                  {/* TIME LEFT */}
+                  <td className="px-4 py-3">
+                    {hideTimeAndAction ? (
+                      ''
+                    ) : (
+                      <div>
+                        <div className="text-black">
+                          For Completion of
+                          <br />
+                          Group Purchase Target
+                        </div>
+                        <div className="text-xs mt-1" style={{ color: '#EF4444' }}>
+                          {timeLeft}
+                        </div>
+                      </div>
+                    )}
+                  </td>
 
-                {/* TIME LEFT column */}
-                <td className="px-4 py-3 text-orange-600">
-                  {activeTab !== 'SUCCESSFUL' ? item.timeLeft : ''}
-                </td>
-
-                {/* ACTION column */}
-                <td className="px-4 py-3">
-                  {activeTab !== 'SUCCESSFUL' ? (
-                    <button
-                      onClick={() => openConfirmModal(Number(item.groupId))}
-                      className="bg-[#0056b3] hover:bg-[#004a9c] text-white px-4 py-2 rounded text-sm font-semibold text-center leading-tight"
-                    >
-                      Confirm Order For
-                      <br />
-                      Committed Quantity
-                    </button>
-                  ) : (
-                    ''
-                  )}
-                </td>
-              </tr>
-            ))}
+                  {/* ACTION */}
+                  <td className="px-4 py-3">
+                    {hideTimeAndAction ? (
+                      ''
+                    ) : (
+                      <button
+                        onClick={() => openConfirmModal(order.group_id)}
+                        className="bg-[#0056b3] hover:bg-[#004a9c] text-white px-4 py-2 rounded text-sm font-semibold text-center leading-tight"
+                      >
+                        Confirm Order For
+                        <br />
+                        Committed Quantity
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
 
             {currentData.length === 0 && (
               <tr>
@@ -353,7 +391,7 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
         </table>
       </div>
 
-      {/* Modal Confirmation */}
+      {/* Confirmation Modal */}
       {modalVisible && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           {/* Overlay */}
@@ -362,16 +400,10 @@ export default function GroupOrders({ groupOrders = [] }: GroupOrdersProps) {
           <div className="bg-white p-6 rounded shadow-lg z-10 w-80">
             <p className="mb-4">Are you sure you want to confirm order?</p>
             <div className="flex justify-end space-x-4">
-              <button
-                onClick={handleConfirmYes}
-                className="text-black underline"
-              >
+              <button onClick={handleConfirmYes} className="text-black underline">
                 Yes
               </button>
-              <button
-                onClick={() => setModalVisible(false)}
-                className="text-black underline"
-              >
+              <button onClick={() => setModalVisible(false)} className="text-black underline">
                 No
               </button>
             </div>
