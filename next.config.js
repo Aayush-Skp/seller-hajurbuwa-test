@@ -13,7 +13,8 @@ const nextConfig = {
       'hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com',
       'dipencompany.com',
       'cdn.pixabay.com',
-      'devdashboard.hajurbuwa.com'
+      'devdashboard.hajurbuwa.com',
+      'dashboard.hajurbuwa.com'
     ],
   },
   // Add the next-sitemap configuration
