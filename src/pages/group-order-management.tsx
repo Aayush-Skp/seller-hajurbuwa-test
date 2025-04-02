@@ -1,5 +1,3 @@
-// pages/group-order-management.tsx
-
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import PageWrapper from '../components/PageWrapper';
@@ -13,35 +11,37 @@ function GroupOrderManagementPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [groupOrders, setGroupOrders] = useState([]); // State for fetched data
 
-  useEffect(() => {
-    async function fetchGroupOrders() {
-      try {
-        const storedUserDetails = localStorage.getItem('userDetails');
-        const userDetails = storedUserDetails ? JSON.parse(storedUserDetails) : null;
-        const token = userDetails?.token || '';
+  // Fetch group orders function
+  async function fetchGroupOrders() {
+    try {
+      const storedUserDetails = localStorage.getItem('userDetails');
+      const userDetails = storedUserDetails ? JSON.parse(storedUserDetails) : null;
+      const token = userDetails?.token || '';
 
-        const response = await httpClient.post(
-          '/seller/get-group-orders',
-          {},
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        const result = response.data;
-        if (result.status === 'success') {
-          setGroupOrders(result.data);
-        } else {
-          console.error('Failed to fetch group orders');
+      const response = await httpClient.post(
+        '/seller/get-group-orders',
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
         }
-      } catch (error) {
-        console.error('Error fetching group orders:', error);
-      }
-    }
+      );
 
+      const result = response.data;
+      if (result.status === 'success') {
+        setGroupOrders(result.data);
+      } else {
+        console.error('Failed to fetch group orders');
+      }
+    } catch (error) {
+      console.error('Error fetching group orders:', error);
+    }
+  }
+
+  // Fetch orders on mount
+  useEffect(() => {
     fetchGroupOrders();
   }, []);
 
@@ -80,7 +80,7 @@ function GroupOrderManagementPage() {
         <div className="border-b border-gray-300 mb-4" />
 
         {/* Group Orders Table */}
-        <GroupOrders groupOrders={groupOrders} />
+        <GroupOrders groupOrders={groupOrders} fetchGroupOrders={fetchGroupOrders} />
       </PageWrapper>
     </>
   );
