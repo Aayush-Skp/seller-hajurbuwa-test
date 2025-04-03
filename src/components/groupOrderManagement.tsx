@@ -65,7 +65,14 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
   }
 
   // Separate data by status
-  const pendingData = tableData.filter((o) => o.status === 'group_pending');
+  const pendingData = tableData.filter((o) => {
+    if (o.status !== 'group_pending') return false;
+    const now = Date.now();
+    const expiry = new Date(o.expires_at).getTime();
+    const diff = expiry - now;
+    // Exclude orders that are near deadline: diff > 0 and diff < 2 hours.
+    return !(diff > 0 && diff < 2 * 60 * 60 * 1000);
+  });  
   const nearDeadlineData = tableData.filter((o) => {
     if (o.status !== 'group_pending') return false;
     const now = Date.now();
@@ -74,8 +81,11 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     return diff > 0 && diff < 2 * 60 * 60 * 1000; // less than 2 hours
   });
   const successfulData = tableData.filter((o) => o.status === 'group_completed');
-  const failedData = tableData.filter((o) => o.status === 'group_failed');
-
+  const failedData = tableData.filter((o) =>
+    o.status === 'group_failed' ||
+    o.status === 'group_cancelled' ||
+    o.status === 'group_expired'
+  );
   // Tab badge counts
   const pendingCount = pendingData.length;
   const nearDeadlineCount = nearDeadlineData.length;
@@ -374,21 +384,30 @@ with Near Deadline`;
 
       {/* Confirmation Modal */}
       {modalVisible && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black opacity-50"></div>
-          <div className="bg-white p-6 rounded shadow-lg z-10 w-80">
-            <p className="mb-4">Are you sure you want to confirm order?</p>
-            <div className="flex justify-end space-x-4">
-              <button onClick={handleConfirmYes} className="text-black underline">
-                Yes
-              </button>
-              <button onClick={() => setModalVisible(false)} className="text-black underline">
-                No
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="absolute inset-0 bg-black opacity-50"></div>
+    <div className="bg-white p-6 rounded shadow-lg z-10 w-80">
+      <p className="mb-4">Are you sure you want to confirm order?</p>
+      <div className="flex justify-end space-x-4">
+        <button
+          onClick={handleConfirmYes}
+          style={{ backgroundColor: '#008000', color: '#fff' }}
+          className="px-4 py-2 rounded"
+        >
+          Yes
+        </button>
+        <button
+          onClick={() => setModalVisible(false)}
+          style={{ backgroundColor: '#C70101', color: '#fff' }}
+          className="px-4 py-2 rounded"
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

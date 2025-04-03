@@ -20,6 +20,7 @@ type ITableData = {
   cover_image: string;
   order_code: string;
   quantity: number;
+  group_id?: number;
   sub_total: number;
   order_date: string;
   order_status: string;
@@ -164,6 +165,13 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                           ) : cell.column.Header === 'Order Details' ? (
                             <div className="w-full flex items-center justify-center">
                               <div className="flex flex-col items-start justify-between space-y-1 text-xs">
+                              {/* Conditionally display Group ID if it exists */}
+                              {row.original.group_id && (
+                                <div className="space-x-1">
+                                  <span>Group ID: </span>
+                                  <span className="font-semibold">{row.original.group_id}</span>
+                                </div>
+                              )}
                                 <div className="space-x-1">
                                   <span>Order Id: </span>
                                   <span className="font-semibold">
