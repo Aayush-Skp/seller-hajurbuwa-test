@@ -21,12 +21,12 @@ const Home: NextPage = () => {
         <link rel="canonical" href="https://sell.hajurbuwa.com/" />
         <meta property="og:title" content="Sell on Hajurbuwa | Build Your Wholesale Store" />
         <meta property="og:description" content="Discover a new way to sell your products online with Hajurbuwa's B2B ecommerce marketplace. Sell to a wider audience and enjoy hassle-free transactions. Register as a Hajurbuwa Seller now!" />
-        <meta property="og:image" content="https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/public/og_image.png" />
+        <meta property="og:image" content="https://dashboard.hajurbuwa.com/hajurbuwa-bucket/public/og_image.png" />
         <meta property="og:url" content="https://sell.hajurbuwa.com/" />
         <meta property="og:type" content="website" />
         <meta name="twitter:title" content="Sell on Hajurbuwa | Build Your Wholesale Store" />
         <meta name="twitter:description" content="Discover a new way to sell your products online with Hajurbuwa's B2B ecommerce marketplace. Sell to a wider audience and enjoy hassle-free transactions. Register as a Hajurbuwa Seller now!" />
-        <meta name="twitter:image" content="https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/public/og_image.png" />
+        <meta name="twitter:image" content="https://dashboard.hajurbuwa.com/hajurbuwa-bucket/public/og_image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />

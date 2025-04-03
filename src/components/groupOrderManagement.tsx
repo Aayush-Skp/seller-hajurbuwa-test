@@ -290,7 +290,7 @@ with Near Deadline`;
                       <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded overflow-hidden">
                         {order.cover_image ? (
                           <Image
-                            src={`https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/${order.cover_image}`}
+                            src={`https://dashboard.hajurbuwa.com/hajurbuwa-bucket/${order.cover_image}`}
                             alt={order.product_name}
                             width={52}
                             height={52}
