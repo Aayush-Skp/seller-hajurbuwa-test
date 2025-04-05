@@ -206,7 +206,7 @@ with Near Deadline`;
         <div
           onClick={() => setActiveTab('PENDING')}
           className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'PENDING' ? 'border-green-600' : 'border-gray-300'
+            activeTab === 'PENDING' ? 'border-[#1366A8]' : 'border-gray-300'
           }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
@@ -217,7 +217,7 @@ with Near Deadline`;
         <div
           onClick={() => setActiveTab('NEAR_DEADLINE')}
           className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'NEAR_DEADLINE' ? 'border-green-600' : 'border-gray-300'
+            activeTab === 'NEAR_DEADLINE' ? 'border-[#1366A8]' : 'border-gray-300'
           }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
@@ -230,7 +230,7 @@ with Near Deadline`;
         <div
           onClick={() => setActiveTab('SUCCESSFUL')}
           className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'SUCCESSFUL' ? 'border-green-600' : 'border-gray-300'
+            activeTab === 'SUCCESSFUL' ? 'border-[#1366A8]' : 'border-gray-300'
           }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
@@ -241,7 +241,7 @@ with Near Deadline`;
         <div
           onClick={() => setActiveTab('FAILED')}
           className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'FAILED' ? 'border-green-600' : 'border-gray-300'
+            activeTab === 'FAILED' ? 'border-[#1366A8]' : 'border-gray-300'
           }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">

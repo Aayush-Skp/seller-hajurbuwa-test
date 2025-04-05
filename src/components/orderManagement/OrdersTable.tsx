@@ -190,7 +190,9 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                 <div className="space-x-1">
                                   <span>Price per {row.original.product_unit}:</span>
                                   <span className="font-semibold">
-                                    {row.original.is_bulk ? row.original.bulk_price : row.original.product_price_per_unit} NPR
+                                    {row.original.quantity > 0
+                                      ? (row.original.total_amount / row.original.quantity).toFixed(0)
+                                      : 'Please wait...'} NPR
                                   </span>
                                 </div>
                                 <div className="space-x-1">
