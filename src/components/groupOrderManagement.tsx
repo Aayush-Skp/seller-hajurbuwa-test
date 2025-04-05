@@ -64,8 +64,10 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     const now = Date.now();
     const expiry = new Date(o.expires_at).getTime();
     const diff = expiry - now;
-    return !(diff > 0 && diff < 2 * 60 * 60 * 1000);
+    // Only include orders that are not expired and not near deadline (>=2 hours left)
+    return diff > 2 * 60 * 60 * 1000;
   });
+  
   const nearDeadlineData = tableData.filter((o) => {
     if (o.status !== 'group_pending') return false;
     const now = Date.now();
@@ -74,12 +76,24 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     return diff > 0 && diff < 2 * 60 * 60 * 1000;
   });
   const successfulData = tableData.filter((o) => o.status === 'group_completed');
-  const failedData = tableData.filter(
-    (o) =>
+  const failedData = tableData.filter((o) => {
+    // Include orders already marked as failed/cancelled/expired
+    if (
       o.status === 'group_failed' ||
       o.status === 'group_cancelled' ||
       o.status === 'group_expired'
-  );
+    ) {
+      return true;
+    }
+    // Also include group_pending orders that are expired
+    if (o.status === 'group_pending') {
+      const now = Date.now();
+      const expiry = new Date(o.expires_at).getTime();
+      return now >= expiry;
+    }
+    return false;
+  });
+  
 
   const pendingCount = pendingData.length;
   const nearDeadlineCount = nearDeadlineData.length;
@@ -290,7 +304,7 @@ with Near Deadline`;
                       <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded overflow-hidden">
                         {order.cover_image ? (
                           <Image
-                            src={`https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/${order.cover_image}`}
+                            src={`https://dashboard.hajurbuwa.com/hajurbuwa-bucket/${order.cover_image}`}
                             alt={order.product_name}
                             width={52}
                             height={52}
