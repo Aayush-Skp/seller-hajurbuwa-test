@@ -3,6 +3,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { httpClient } from '../config/httpClient';
 import { FaCopy } from 'react-icons/fa';
+import useCopyToClipBoard from '../hooks/useCopyToClipBoard';
+
+
 
 type GroupOrderTab = 'PENDING' | 'NEAR_DEADLINE' | 'SUCCESSFUL' | 'FAILED';
 
@@ -29,6 +32,8 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
   const [tableData, setTableData] = useState<FetchedGroupOrder[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [copiedText, copy] = useCopyToClipBoard();
+
 
   useEffect(() => {
     setTableData(groupOrders);
@@ -42,9 +47,10 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
   }, []);
 
   function copyToClipboard(text: string) {
-    
-    
+    copy(text);
   }
+
+  
 
   function calculateTimeLeft(expiresAt: string): string {
     const now = Date.now();
