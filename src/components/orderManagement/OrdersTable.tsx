@@ -87,6 +87,26 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
     });
   }
 
+  function getRemainingTime(targetTime: string): string {
+    const now = new Date();
+    const target = new Date(targetTime);
+    let diff = target.getTime() - now.getTime();
+  
+    if (diff <= 0) {
+      return 'Time Crossed';
+    }
+  
+    const hrs = Math.floor(diff / (1000 * 60 * 60));
+    diff %= (1000 * 60 * 60);
+    const mins = Math.floor(diff / (1000 * 60));
+    diff %= (1000 * 60);
+    const secs = Math.floor(diff / 1000);
+  
+    return `${hrs} hrs ${mins} mins ${secs} secs`;
+  }
+  
+  
+
   return (
     <div className="border-3 border-gray-150">
       {!isLoading ? (
@@ -181,7 +201,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                 <div className="space-x-1">
                                   <span>Quantity: </span>
                                   <span className="font-semibold">
-                                    {row.original.quantity}{' '}
+                                    {row.original.total_items}{' '}
                                     {row.original.unit === 'per pc'
                                       ? 'pcs'
                                       : row.original.unit}
@@ -190,8 +210,8 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                 <div className="space-x-1">
                                   <span>Price per {row.original.product_unit}:</span>
                                   <span className="font-semibold">
-                                    {row.original.quantity > 0
-                                      ? (row.original.total_amount / row.original.quantity).toFixed(0)
+                                    {row.original.total_items > 0
+                                      ? (row.original.total_amount / row.original.total_items).toFixed(0)
                                       : 'Please wait...'} NPR
                                   </span>
                                 </div>
@@ -306,7 +326,7 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                           row.original.product_included_item
                                         }
                                         product_name={row.original.product_name}
-                                        quantity={row.original.quantity}
+                                        quantity={row.original.total_items}
                                         payment_status={row.original.payment_status}
                                       />
                                     </div>
@@ -366,7 +386,9 @@ const OrdersTable: React.FC<ProductManagementTableProps> = ({
                                   <p className="">
                                     For packing and scheduling for pickup
                                   </p>
-                                  <p className="text-red-200">{cell.value}</p>
+                                  <p className={`text-red-200 ${getRemainingTime(cell.value) === 'Time Crossed' ? 'font-semibold' : ''}`}>
+                                    {getRemainingTime(cell.value)}
+                                  </p>
                                 </div>
                               ) : null}
                             </div>
