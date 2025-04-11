@@ -53,8 +53,13 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
   
 
   function calculateTimeLeft(expiresAt: string): string {
-    const now = Date.now();
-    const expiry = new Date(expiresAt).getTime();
+    // Force expiresAt to be interpreted as UTC
+    const utcExpiresAt = expiresAt.endsWith("Z") ? expiresAt : expiresAt + "Z";
+    const expiry = new Date(utcExpiresAt).getTime();
+    
+    // Get the current UTC time
+    const now = new Date(new Date().toISOString()).getTime();
+  
     const diff = expiry - now;
     if (diff <= 0) {
       return 'Expired';
@@ -64,6 +69,7 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     const minutes = totalMinutes % 60;
     return `${hours} hours ${minutes} minutes`;
   }
+  
 
   const pendingData = tableData.filter((o) => {
     if (o.status !== 'group_pending') return false;
@@ -323,7 +329,7 @@ with Near Deadline`;
                       <div>
                         <div className="font-bold text-black">{order.product_name}</div>
                         <div className="text-black">
-                          ID: {order.group_id}
+                          ID: {order.product_id}
                           <FaCopy
                             className="inline ml-2 cursor-pointer text-gray-400 hover:text-gray-600"
                             onClick={() => copyToClipboard(order.group_id.toString())}
