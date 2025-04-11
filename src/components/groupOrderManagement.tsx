@@ -19,6 +19,8 @@ export interface FetchedGroupOrder {
   expires_at: string;
   product_name: string;
   cover_image: string;
+  unit_value: string;
+  price_per_piece: string;
 }
 
 interface GroupOrdersProps {
@@ -349,6 +351,9 @@ with Near Deadline`;
                     </div>
                     <div className="text-black">
                       Quantity Committed: {order.orders_count} pcs
+                    </div>
+                    <div className="text-black">
+                      Price per {order.unit_value}: NPR {order.price_per_piece}
                     </div>
                     {activeTab !== 'SUCCESSFUL' && (
                       <div className="text-black">Left to Commit: {totalLeft} pcs</div>
