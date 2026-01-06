@@ -1,21 +1,53 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  siteUrl: 'https://sell.hajurbuwa.com',
-  generateRobotsTxt: true,
-  sitemapSize: 7000,
+  // siteUrl: 'https://sell.hajurbuwa.com',
+  // generateRobotsTxt: true,
+  // sitemapSize: 7000,
   reactStrictMode: true,
   swcMinify: true,
-  sourceDir: '.next',
-  outDir: 'public',
+  // sourceDir: '.next',
+  // outDir: 'public',
   images: {
-    domains: [
-      'www.fjallraven.com',
-      'hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com',
-      'dipencompany.com',
-      'cdn.pixabay.com',
-      'devdashboard.hajurbuwa.com',
-      'dashboard.hajurbuwa.com'
-    ],
+    // domains: [
+    //   'www.fjallraven.com',
+    //   'hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com',
+    //   'dipencompany.com',
+    //   'cdn.pixabay.com',
+    //   'devdashboard.hajurbuwa.com',
+    //   'dashboard.hajurbuwa.com'
+    // ],
+    remotePatterns:[
+      {
+        protocol : "https",
+        hostname : "www.fjallraven.com",
+        pathname : "/**"
+      },
+      {
+        protocol : "https",
+        hostname : "hajurbuwa-s3-bucket.s3.ap-south-1.amazonaws.com",
+        pathname : "/**"
+      },
+      {
+        protocol : "https",
+        hostname : "dipencompany.com",
+        pathname : "/**"
+      },
+      {
+        protocol : "https",
+        hostname : "cdn.pixabay.com",
+        pathname : "/**"
+      },
+      {
+        protocol : "https",
+        hostname : "devdashboard.hajurbuwa.com",
+        pathname : "/**"
+      },
+      {
+        protocol : "https",
+        hostname : "dashboard.hajurbuwa.com",
+        pathname : "/**"
+      },
+    ]
   },
   // Add the next-sitemap configuration
   async rewrites() {
@@ -39,21 +71,21 @@ const nextConfig = {
   async generateBuildId() {
     return 'build';
   },
-  exclude: [
-    '/api/*',
-    '/admin/*',
-    '/test/',
-    '/update-business-details/',
-    '/review-management/',
-    '/product-management/',
-    '/order-management/',
-    '/finance/',
-    '/404/',
-    '/500',
-    '/settings/',
-    '/product',
-    '/order',
-  ],
+  // exclude: [
+  //   '/api/*',
+  //   '/admin/*',
+  //   '/test/',
+  //   '/update-business-details/',
+  //   '/review-management/',
+  //   '/product-management/',
+  //   '/order-management/',
+  //   '/finance/',
+  //   '/404/',
+  //   '/500',
+  //   '/settings/',
+  //   '/product',
+  //   '/order',
+  // ],
 };
 
 module.exports = nextConfig;
