@@ -7,6 +7,10 @@ import bestTradePractices from '/public/icons/best_trade_practices.svg';
 import easyAndSecurePayments from '/public/icons/easy_and_secure_payment.svg';
 import bestInClassLogistics from '/public/icons/best_in_class_logistics.svg';
 
+interface WhyHajurbuwaProps{
+  toggle : boolean;
+}
+
 const features = [
   {
     id: 1,
@@ -40,14 +44,8 @@ const features = [
   },
 ];
 
-const WhyHajurbuwa = React.forwardRef<any, any>(function WhyHajurbuwa(
-  {
-    toggle,
-  }: {
-    toggle: boolean;
-  },
-  ref
-) {
+const WhyHajurbuwa = React.forwardRef<HTMLDivElement, WhyHajurbuwaProps>(
+  function WhyHajurbuwa({toggle},ref) {
   return !toggle ? (
     <div
       ref={ref}

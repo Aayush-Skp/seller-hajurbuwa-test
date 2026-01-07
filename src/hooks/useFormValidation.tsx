@@ -1,8 +1,8 @@
-import { z } from 'zod';
+import { z , ZodSchema } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-export default function useFormValidation(validationSchema: Zod.Schema) {
+export default function useFormValidation(validationSchema: ZodSchema) {
   const formOptions = { resolver: zodResolver(validationSchema) };
 
   const {

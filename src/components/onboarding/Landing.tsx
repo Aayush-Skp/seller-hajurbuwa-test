@@ -2,16 +2,13 @@ import React from 'react';
 import Navbar from './Navbar';
 import Hero from './Hero';
 
-const Landing = React.forwardRef<any, any>(function Land(
-  {
-    toggle,
-    setToggle,
-  }: {
-    toggle: boolean;
-    setToggle: React.Dispatch<React.SetStateAction<boolean>>;
-  },
-  ref
-) {
+interface LandingProps {
+  toggle: boolean;
+  setToggle: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Landing = React.forwardRef<HTMLDivElement, LandingProps>(
+  function Land({toggle,setToggle}, ref) {
   return (
     <div
       className={`${

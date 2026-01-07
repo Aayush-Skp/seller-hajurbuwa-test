@@ -108,14 +108,14 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
           </div>
           <div className="mb-5 flex flex-col">
             <OtpInput
-              className={`border-b-2 outline-none border-black
-             text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
               containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
-              inputStyle={`outline-none`}
+              inputStyle={`outline-none border-b-2 outline-none border-black
+             text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
               numInputs={6}
               value={registrationData.phoneOtp}
               onChange={handleOtpChange}
-              separator={<span></span>}
+              renderSeparator={<span></span>}
+              renderInput={(props) => <input {...props} />}
             />
             <span>
               <ErrorMessage message={otpValidation.message} />

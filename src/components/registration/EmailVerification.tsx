@@ -122,13 +122,23 @@ export default function EmailVerification(props: PhoneVerificationProps) {
             <p className="text-accent-primary">{registrationData.email}</p>
           </div>
           <div className="mb-5 mt-4 flex flex-col">
-            <OtpInput
+            {/* <OtpInput
               className={`border-b-2 outline-none border-black
              text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
               containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
               inputStyle={`outline-none`}
               numInputs={4}
               separator={<span></span>}
+              onChange={handleOtpChange}
+              value={registrationData.emailOtp}
+            /> */}
+            <OtpInput
+              containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
+              inputStyle={`border-b-2 outline-none border-black
+             text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
+              numInputs={4}
+              renderSeparator={<span></span>}
+              renderInput={(props) => <input {...props} />}
               onChange={handleOtpChange}
               value={registrationData.emailOtp}
             />
@@ -138,9 +148,8 @@ export default function EmailVerification(props: PhoneVerificationProps) {
             <div className="text-xs text-accent-primary flex justify-between">
               <button onClick={decStep}>Change email</button>
               <button
-                className={`${
-                  !!otpTimeOut ? 'cursor-not-allowed text-gray-400' : ''
-                }`}
+                className={`${!!otpTimeOut ? 'cursor-not-allowed text-gray-400' : ''
+                  }`}
                 disabled={otpTimeOut !== 0}
                 onClick={handleSendOTP}
               >

@@ -87,14 +87,23 @@ export default function OPTVerification(props: OPTVerificationProps) {
 
         <div className="flex flex-col w-full space-y-5">
           <div className="mb-5 flex flex-col">
-            <OtpInput
-              className="border-b-2 outline-none border-black text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2"
-              containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
+            {/* <OtpInput
+            containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
+             className ="border-b-2 outline-none border-black text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2"
               inputStyle={`outline-none`}
               numInputs={4}
               separator={<span></span>}
               onChange={handleOTPChange}
               value={otp}
+            /> */}
+            <OtpInput
+            containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
+            inputStyle={`outline-none border-b-2 outline-none border-black text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
+            numInputs={4}
+            renderSeparator={<span></span>}
+            renderInput={(props) => <input {...props} />}
+            onChange={handleOTPChange}
+            value={otp}
             />
             {!isOTPValid ? (
               <ErrorMessage message={'Invalid OTP code. Please try again.'} />
