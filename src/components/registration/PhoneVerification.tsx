@@ -108,14 +108,19 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
           </div>
           <div className="mb-5 flex flex-col">
             <OtpInput
-              containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
-              inputStyle={`outline-none border-b-2 outline-none border-black
-             text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
+              containerStyle={`border-2 border-gray-250 rounded-md p-4 flex justify-between`}
               numInputs={6}
               value={registrationData.phoneOtp}
               onChange={handleOtpChange}
               renderSeparator={<span></span>}
-              renderInput={(props) => <input {...props} />}
+              renderInput={(props) => (
+                <input
+                  {...props}
+                  className="border-b-2 outline-none border-black text-gray-600 h-10  w-10 text-center text-lg focus:border-accent-primary transition-all"
+                />
+              )}
+              inputType="tel"
+              shouldAutoFocus={true}
             />
             <span>
               <ErrorMessage message={otpValidation.message} />
@@ -123,9 +128,8 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
             <div className="text-xs text-accent-primary flex justify-between">
               <button onClick={decStep}>Change Phone Number</button>
               <button
-                className={`${
-                  !!otpTimeout ? 'text-gray-400 cursor-not-allowed' : ''
-                }`}
+                className={`${!!otpTimeout ? 'text-gray-400 cursor-not-allowed' : ''
+                  }`}
                 disabled={otpTimeout === 0 ? false : true}
                 onClick={handleSendOTP}
               >
@@ -138,7 +142,7 @@ export default function PhoneVerification(props: PhoneVerificationProps) {
       <Button
         type="submit"
         onClick={handleSubmit}
-        disabled={registrationData.emailOtp === ''}
+        disabled={registrationData.phoneOtp === ''}
       >
         {isLoading ? (
           <div className="flex items-center justify-center space-x-2">

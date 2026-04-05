@@ -133,14 +133,19 @@ export default function EmailVerification(props: PhoneVerificationProps) {
               value={registrationData.emailOtp}
             /> */}
             <OtpInput
-              containerStyle={`border-2 border-gray-275 rounded-md p-4 `}
-              inputStyle={`border-b-2 outline-none border-black
-             text-gray-875 h-10 px-4 w-11/12 mr-2 mt-2`}
+              containerStyle={`border-2 border-gray-250 rounded-md p-4 flex justify-between`}
               numInputs={4}
               renderSeparator={<span></span>}
-              renderInput={(props) => <input {...props} />}
+              renderInput={(props) => (
+                <input
+                  {...props}
+                  className="border-b-2 outline-none border-black text-gray-600 h-10 w-10 text-center text-lg focus:border-accent-primary transition-all"
+                />
+              )}
               onChange={handleOtpChange}
               value={registrationData.emailOtp}
+              inputType="tel"
+              shouldAutoFocus={true}
             />
             <span>
               <ErrorMessage message={otpValidation.message} />
