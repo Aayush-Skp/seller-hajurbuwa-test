@@ -52,16 +52,16 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     copy(text);
   }
 
-  
+
 
   function calculateTimeLeft(expiresAt: string): string {
     // Force expiresAt to be interpreted as UTC
     const utcExpiresAt = expiresAt.endsWith("Z") ? expiresAt : expiresAt + "Z";
     const expiry = new Date(utcExpiresAt).getTime();
-    
+
     // Get the current UTC time
     const now = new Date(new Date().toISOString()).getTime();
-  
+
     const diff = expiry - now;
     if (diff <= 0) {
       return 'Expired';
@@ -71,7 +71,7 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     const minutes = totalMinutes % 60;
     return `${hours} hours ${minutes} minutes`;
   }
-  
+
 
   const pendingData = tableData.filter((o) => {
     if (o.status !== 'group_pending') return false;
@@ -81,7 +81,7 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     // Only include orders that are not expired and not near deadline (>=2 hours left)
     return diff > 2 * 60 * 60 * 1000;
   });
-  
+
   const nearDeadlineData = tableData.filter((o) => {
     if (o.status !== 'group_pending') return false;
     const now = Date.now();
@@ -107,7 +107,7 @@ export default function GroupOrders({ groupOrders = [], fetchGroupOrders }: Grou
     }
     return false;
   });
-  
+
 
   const pendingCount = pendingData.length;
   const nearDeadlineCount = nearDeadlineData.length;
@@ -219,9 +219,8 @@ with Near Deadline`;
       <div className="flex justify-around items-center mb-6">
         <div
           onClick={() => setActiveTab('PENDING')}
-          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'PENDING' ? 'border-[#1366A8]' : 'border-gray-300'
-          }`}
+          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${activeTab === 'PENDING' ? 'border-[#1366A8]' : 'border-gray-300'
+            }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
             {pendingCount}
@@ -230,9 +229,8 @@ with Near Deadline`;
         </div>
         <div
           onClick={() => setActiveTab('NEAR_DEADLINE')}
-          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'NEAR_DEADLINE' ? 'border-[#1366A8]' : 'border-gray-300'
-          }`}
+          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${activeTab === 'NEAR_DEADLINE' ? 'border-[#1366A8]' : 'border-gray-300'
+            }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
             {nearDeadlineCount}
@@ -243,9 +241,8 @@ with Near Deadline`;
         </div>
         <div
           onClick={() => setActiveTab('SUCCESSFUL')}
-          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'SUCCESSFUL' ? 'border-[#1366A8]' : 'border-gray-300'
-          }`}
+          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${activeTab === 'SUCCESSFUL' ? 'border-[#1366A8]' : 'border-gray-300'
+            }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
             {successfulCount}
@@ -254,9 +251,8 @@ with Near Deadline`;
         </div>
         <div
           onClick={() => setActiveTab('FAILED')}
-          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${
-            activeTab === 'FAILED' ? 'border-[#1366A8]' : 'border-gray-300'
-          }`}
+          className={`flex items-center space-x-2 px-3 py-1 cursor-pointer border-b-4 ${activeTab === 'FAILED' ? 'border-[#1366A8]' : 'border-gray-300'
+            }`}
         >
           <div className="bg-red-600 text-white px-2 py-1 rounded-full text-sm font-bold">
             {failedCount}
@@ -318,7 +314,7 @@ with Near Deadline`;
                       <div className="w-12 h-12 bg-gray-300 flex items-center justify-center rounded overflow-hidden">
                         {order.cover_image ? (
                           <Image
-                            src={`https://dashboard.hajurbuwa.com/hajurbuwa-bucket/${order.cover_image}`}
+                            src={`https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/${order.cover_image}`}
                             alt={order.product_name}
                             width={52}
                             height={52}
