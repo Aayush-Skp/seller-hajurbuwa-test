@@ -40,7 +40,7 @@ const DashboardStats = ({
 
           </Link>
           <Link
-            href="/order-management"
+            href="/order-management?tab=unshipped"
             style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.25)" }}
             className="flex flex-col justify-around items-start space-x-8 h-42 py-5 w-full m-2 rounded-lg">
 
