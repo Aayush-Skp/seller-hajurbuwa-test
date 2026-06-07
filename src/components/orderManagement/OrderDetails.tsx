@@ -1,164 +1,124 @@
-import React, { useEffect, useState } from 'react';
-import { MdContentCopy } from 'react-icons/md';
-import { BsArrowLeft } from 'react-icons/bs';
-import Link from 'next/link';
-import { getSingleOrderDetails } from '../../services/orderServices';
-import { useRouter } from 'next/router';
-import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
+import React from 'react';
+import Image from 'next/image';
+import {
+  getRetailerProductUrl,
+  imageServerBaseUrl,
+} from '../../constants/serverConstants';
+import {
+  getOrderLineTotal,
+  getOrderUnitPrice,
+  getPricePerLabel,
+  getQuantityLabel,
+} from '../../utils/orderPricing';
+import { CopyableText } from './OrderDetailCard';
 
-export default function OrderDetails() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [orderDetails, setOrderDetails] = useState({
-    order_id: '',
-    order_status: '',
-    order_date: '',
-    product_name: '',
-    product_id: '',
-    quantity: '',
-    total_amount: '',
-    buyer_company_name: '',
-    pan_number: '',
-    amount: '',
-    seller_name: '',
-    seller_pan_no: '',
-    buyer_pan_number: '',
-  });
+const formatRs = (amount: number) =>
+  `Rs ${Math.round(Number(amount || 0)).toLocaleString('en-IN')}`;
 
-  const [_, copyOrderId] = useCopyToClipboard();
-  const [__, copyProductId] = useCopyToClipboard();
+const LineItem = ({
+  label,
+  value,
+  emphasize = false,
+}: {
+  label: string;
+  value: string;
+  emphasize?: boolean;
+}) => (
+  <div className="flex items-center justify-between gap-4 py-2">
+    <span className="text-sm text-gray-600">{label}</span>
+    <span
+      className={`tabular-nums ${emphasize ? 'text-base font-semibold text-black' : 'text-sm font-medium text-black'}`}
+    >
+      {value}
+    </span>
+  </div>
+);
 
-  const { query } = useRouter();
-
-  useEffect(() => {
-    getSingleOrderDetails(`${query.order_id}`)
-      .then((res) => {
-        console.log(res);
-        setIsLoading(false);
-        setOrderDetails(res[0]);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-      });
-  }, [query]);
-
-  function formatDate(date: string) {
-    return new Date(date).toLocaleDateString('en-us', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  }
-
-  if (isLoading) return <div>Loading...</div>;
+const OrderDetails = ({ order }: { order: any }) => {
+  const pricingOrder = {
+    ...order,
+    total_items: order.total_items ?? order.quantity,
+    total_amount: order.total_amount ?? order.amount,
+  };
+  const unitPrice = getOrderUnitPrice(pricingOrder);
+  const lineTotal = getOrderLineTotal(pricingOrder);
+  const pricePerLabel = getPricePerLabel(pricingOrder);
+  const quantityLabel = getQuantityLabel(pricingOrder);
 
   return (
-    <section className="space-y-2 ">
-      <div className="pt-5 border-b border-gray-300">
-        <div className="flex justify-between px-16">
-          <span className="text-2xl">
-            Order Details of Order Number {orderDetails.order_id}
-          </span>
-          <Link
-            href="/order-management"
-            className="flex items-center space-x-1 text-blue-700">
+    <div className="overflow-hidden rounded-lg border border-gray-300 bg-white">
+      <div className="flex items-center justify-between border-b border-gray-300 bg-gray-150 px-4 py-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-600">
+          Order Item
+        </h3>
+      </div>
 
-            <BsArrowLeft className="font-bold" />
-            <span>Back to orders List</span>
+      <div className="p-4">
+        <div className="flex gap-4 sm:gap-6">
+          <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-gray-300 bg-gray-150 sm:h-28 sm:w-28">
+            {order?.product_cover_image ? (
+              <Image
+                height={112}
+                width={112}
+                src={`${imageServerBaseUrl}${order.product_cover_image}`}
+                alt={order.product_name}
+                className="h-full w-full object-cover"
+              />
+            ) : null}
+          </div>
 
-          </Link>
+          <div className="min-w-0 flex-1 space-y-2">
+            {order.product_id ? (
+              <a
+                href={getRetailerProductUrl(order.product_id)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-base font-semibold leading-snug text-accent-primary hover:underline"
+              >
+                {order.product_name}
+              </a>
+            ) : (
+              <p className="text-base font-semibold leading-snug text-black">
+                {order.product_name}
+              </p>
+            )}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-xs text-gray-600">Product ID</span>
+              <CopyableText
+                value={order.product_id}
+                className="text-xs font-medium text-accent-primary"
+                label="product ID"
+              />
+            </div>
+            {order.product_included_item ? (
+              <p className="text-xs leading-relaxed text-gray-600">
+                {order.product_included_item}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="mt-4 border-t border-gray-300 pt-2">
+          <LineItem label={pricePerLabel} value={formatRs(unitPrice)} />
+          <LineItem label="Quantity" value={quantityLabel} />
+          <LineItem label="Subtotal" value={formatRs(lineTotal)} />
+          {order?.shipping_name ? (
+            <LineItem
+              label={`Delivery (${order.shipping_name})`}
+              value={formatRs(order.shipping_charge)}
+            />
+          ) : null}
+          <div className="mt-1 border-t border-gray-300 pt-2">
+            <LineItem
+              label="Order Total"
+              value={formatRs(order.shipping_plus_amount)}
+              emphasize
+            />
+          </div>
         </div>
       </div>
-      <div className="px-16">
-        <ul className="w-2/4 space-y-4">
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Order ID</span>
-              <div className="flex items-center justify-center space-x-2">
-                <span>{orderDetails?.order_id}</span>
-                <button
-                  className="group"
-                  onClick={() => copyOrderId(orderDetails.order_id)}
-                >
-                  <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
-                </button>
-              </div>
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Order Status</span>
-              {orderDetails.order_status === 'pending' ? (
-                <span>Pending</span>
-              ) : orderDetails.order_status === 'unshipped' ? (
-                <span>Unshipped</span>
-              ) : orderDetails.order_status === 'picked_up' ? (
-                <span>Picked up</span>
-              ) : orderDetails.order_status === 'waiting_for_pickup' ? (
-                <span>Waiting for pickup</span>
-              ) : orderDetails.order_status === 'failed' ? (
-                <span>Failed</span>
-              ) : orderDetails.order_status === 'cancelled' ? (
-                <span>Cancelled</span>
-              ) : orderDetails.order_status === 'sent' ? (
-                <span>Sent for delivery</span>
-              ) : orderDetails.order_status === 'delivered' ? (
-                <span>Delivered</span>
-              ) : null}
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Order Date</span>
-              <span>{formatDate(orderDetails.order_date)}</span>
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Product Name</span>
-              <span>{orderDetails.product_name}</span>
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Product Id</span>
-              <div className="flex items-center justify-center space-x-2">
-                <span>{orderDetails.product_id}</span>
-                <button
-                  className="group"
-                  onClick={() => copyProductId(orderDetails.product_id)}
-                >
-                  <MdContentCopy className="group-hover:w-5 group-hover:h-5 transition-transform duration-300" />
-                </button>
-              </div>
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Ordered Quantity</span>
-              <span>{orderDetails.quantity}</span>
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Item Subtotal</span>
-              <span>Rs. {orderDetails.total_amount}</span>
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Customer Name</span>
-              <span>{orderDetails.buyer_company_name}</span>
-            </div>
-          </li>
-          <li className="border-b py-2 border-gray-300">
-            <div className="flex items-center">
-              <span className="w-40 text-gray-400">Pan Number</span>
-              <span>{orderDetails.buyer_pan_number}</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </section>
+    </div>
   );
-}
+};
+
+export default OrderDetails;
