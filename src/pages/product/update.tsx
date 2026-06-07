@@ -8,10 +8,11 @@ function ProductUpdatePage() {
   return (
     <>
       <Head>
+        <title>Edit Product | Hajurbuwa Seller</title>
         <meta name="viewport" content="width=1360" />
       </Head>
       <PageWrapper>
-        <ProductListing />
+        <ProductListing mode="edit" />
       </PageWrapper>
     </>
   );

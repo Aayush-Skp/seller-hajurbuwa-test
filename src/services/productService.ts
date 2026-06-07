@@ -3,6 +3,10 @@ import { imageServerBaseUrl } from '../constants/serverConstants';
 
 const productUrl = '/seller/product';
 
+export function getProductsByStatus(url: string) {
+  return httpClient.get(url).then((res) => res.data);
+}
+
 type ProductStatus =
   | 'pending'
   | 'pending'
@@ -34,7 +38,13 @@ export function getProductByStatus(
 export function getProductDescription(productId: string | number) {
   return httpClient
     .get(`${productUrl}/${productId}`)
-    .then((res) => res.data.data[0]);
+    .then((res) => ({
+      ...res.data.data[0],
+      featured_highlights: normalizeFeaturedHighlights(
+        res.data.data[0]?.featured_highlights,
+        []
+      ),
+    }));
 }
 
 export function deleteProduct(productId: string | number) {
@@ -46,7 +56,68 @@ export function deactivateProduct(productId: string | number) {
 }
 
 export function activateProduct(productId: string | number) {
-  return httpClient.get(`seller/activate-product/${productId}`);
+  return httpClient.get(`/seller/activate-product/${productId}`);
+}
+
+export type ProductBulkTier = {
+  quantity: number;
+  price: number;
+};
+
+function normalizeFeaturedHighlights(
+  value: unknown,
+  fallback: string[] = ['']
+): string[] {
+  if (Array.isArray(value) && value.length > 0) {
+    return value.map(String);
+  }
+  return fallback;
+}
+
+export function updateProductStock(
+  productId: string | number,
+  in_stock: number
+) {
+  const formData = new FormData();
+  formData.append('in_stock', String(in_stock));
+  formData.append('update_type', '2');
+  formData.append('_method', 'PUT');
+  return updateProduct(productId, formData);
+}
+
+export function updateProductPricing(
+  productId: string | number,
+  payload: {
+    is_bulk_price: number;
+    minimum_order?: number;
+    price_per_unit?: number;
+    bulk_pricing?: ProductBulkTier[];
+  }
+) {
+  const formData = new FormData();
+  formData.append('update_type', '1');
+  formData.append('_method', 'PUT');
+  formData.append('is_bulk_price', String(payload.is_bulk_price));
+
+  if (payload.minimum_order != null && payload.minimum_order > 0) {
+    formData.append('minimum_order', String(payload.minimum_order));
+  }
+
+  if (payload.is_bulk_price === 0) {
+    formData.append('bulk_price', '');
+    if (payload.price_per_unit != null) {
+      formData.append('price_per_unit', String(payload.price_per_unit));
+    }
+  }
+
+  if (payload.is_bulk_price === 1 && payload.bulk_pricing) {
+    payload.bulk_pricing.forEach((tier, index) => {
+      formData.append(`bulk_pricing[${index}][0]`, String(tier.quantity));
+      formData.append(`bulk_pricing[${index}][1]`, String(tier.price));
+    });
+  }
+
+  return updateProduct(productId, formData);
 }
 
 export function updateProduct(
@@ -54,6 +125,17 @@ export function updateProduct(
   updatedField: FormData
 ) {
   return httpClient.post(`${productUrl}/${productId}`, updatedField, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}
+
+export function duplicateProduct(
+  productId: string | number,
+  duplicateField: FormData
+) {
+  return httpClient.post(`/seller/duplicate-product/${productId}`, duplicateField, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -135,19 +217,27 @@ export function getProductById(productId: string | number) {
     productDetails.price_per_unit = !res.data.data[0].price_per_unit
       ? ''
       : res.data.data[0].price_per_unit.toString();
-    productDetails.category_id = res.data.data[0].product_type;
+    productDetails.category_id = res.data.data[0].product_type ?? null;
     productDetails.in_stock = res.data.data[0].stock_availability;
-    productDetails.unit = res.data.data[0].unit_selection;
-    productDetails.unitName = res.data.data[0].unit_name;
-    productDetails.is_bulk_price = res.data.data[0].is_bulk_price;
+    productDetails.unit =
+      res.data.data[0].unit_selection != null
+        ? String(res.data.data[0].unit_selection)
+        : '';
+    productDetails.unitName = res.data.data[0].unit_name ?? '';
+    productDetails.is_bulk_price = Boolean(res.data.data[0].is_bulk_price);
     productDetails.bulk_pricing = res.data.data[0].is_bulk_price
-      ? res.data.data[0].bulk_pricing
+      ? res.data.data[0].bulk_pricing ?? []
       : [{ quantity: res.data.data[0].minimum_order, price: 0 }];
-    productDetails.brand = res.data.data[0].brand_specification.toString();
+    productDetails.brand =
+      res.data.data[0].brand_specification != null
+        ? String(res.data.data[0].brand_specification)
+        : '';
     productDetails.description = res.data.data[0].description ?? '';
-    productDetails.featured_highlights = res.data.data[0].featured_highlights;
+    productDetails.featured_highlights = normalizeFeaturedHighlights(
+      res.data.data[0].featured_highlights
+    );
     productDetails.productId = res.data.data[0].id;
-    productDetails.category_tree = res.data.data[0]?.category_tree;
+    productDetails.category_tree = res.data.data[0]?.category_tree ?? '';
     productDetails.cover_image = `${imageServerBaseUrl}${res.data.data[0].cover_image}`;
 
     return productDetails;

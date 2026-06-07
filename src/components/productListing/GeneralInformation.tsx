@@ -17,7 +17,18 @@ import InputWithDropdown from '../common/TextInputWithDropdownAndSearch';
 import TextInputWithDropdownAndSearch from '../common/TextInputWithDropdownAndSearch';
 
 export default function GeneralInformation(props: any) {
-  const { productDetails, incStep, defaultValues, setProductDetails } = props;
+  const {
+    productDetails,
+    incStep,
+    defaultValues,
+    setProductDetails,
+    isFormLoading = false,
+  } = props;
+
+  const hasSelectedCategory = Boolean(
+    productDetails?.category_id ||
+      String(productDetails?.category_tree ?? '').trim()
+  );
 
   const { isNodeVisible, nodeRef, setIsNodeVisible } = useClickAwayListener();
 
@@ -173,7 +184,7 @@ export default function GeneralInformation(props: any) {
       return;
     }
 
-    if (productDetails.category_id === null) {
+    if (!hasSelectedCategory) {
       setCategoryValidation({
         isValid: false,
         message: 'Please select a category',
@@ -194,6 +205,12 @@ export default function GeneralInformation(props: any) {
 
   return (
     <div className="px-8 space-y-5">
+      {isFormLoading ? (
+        <div className="flex items-center space-x-2 py-6">
+          <Spinner className="h-8 w-8" />
+          <span>Loading product details...</span>
+        </div>
+      ) : null}
       <div className="flex items-center space-x-3">
         <Image src={Info} alt="" />
         <p>Fields with asterisks* should be filled.</p>
@@ -234,6 +251,7 @@ export default function GeneralInformation(props: any) {
             });
           }}/> */}
             <select
+              value={productDetails.brand ?? ''}
               onChange={handleBrandChange}
               className={`w-full h-10 outline-none border ${
                 !brandValidation.isValid
@@ -243,11 +261,7 @@ export default function GeneralInformation(props: any) {
             >
               <option value="">Select a Brand</option>
               {defaultValues?.brands?.brands?.map((brand: any) => (
-                <option
-                  key={brand.id}
-                  value={brand.id}
-                  selected={`${brand.id}` === productDetails.brand}
-                >
+                <option key={brand.id} value={String(brand.id)}>
                   {brand?.name}
                 </option>
               ))}
@@ -259,19 +273,15 @@ export default function GeneralInformation(props: any) {
           <div className="w-[190px]">
             <span
               className={`${
-                productDetails?.category_tree !== ''
-                  ? 'italic text-gray-500'
-                  : ''
+                hasSelectedCategory ? 'italic text-gray-500' : ''
               }  text-sm`}
             >
-              {productDetails?.category_tree !== ''
-                ? 'Selected Category'
-                : 'Select a Category*'}
+              {hasSelectedCategory ? 'Selected Category' : 'Select a Category*'}
             </span>
           </div>
           <div className="w-full space-y-3">
             <div className="flex items-center space-x-2">
-              {productDetails?.category_tree !== '' ? (
+              {hasSelectedCategory ? (
                 <div className="flex items-center space-x-2">
                   <span className="">{productDetails?.category_tree}</span>
                   <button
@@ -362,11 +372,7 @@ export default function GeneralInformation(props: any) {
               <span className="block">OR</span>
               <div
                 className={`h-56 border border-gray-500 divide-y divide-gray-500
-               ${
-                 productDetails?.category_tree !== ''
-                   ? 'text-gray-500'
-                   : 'text-black'
-               } }`}
+               ${hasSelectedCategory ? 'text-gray-500' : 'text-black'} }`}
               >
                 <p className="px-4 py-1">
                   {selectedCategoryStringFromList !== '' ? (
@@ -396,12 +402,10 @@ export default function GeneralInformation(props: any) {
                       <li key={category.id}>
                         <button
                           type="button"
-                          disabled={productDetails?.category_tree !== ''}
+                          disabled={hasSelectedCategory}
                           onClick={() => handleSelectedCategory(category)}
                           className={`flex justify-between items-center w-full ${
-                            productDetails?.category_tree !== ''
-                              ? 'cursor-not-allowed'
-                              : ''
+                            hasSelectedCategory ? 'cursor-not-allowed' : ''
                           }`}
                         >
                           <span className="pl-4 py-2">{category.name}</span>

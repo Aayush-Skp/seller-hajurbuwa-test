@@ -1,41 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import Header from './TabsHeader';
+import TabsHeader from './TabsHeader';
 import ProductManagementTable from './ProductManagementTable';
-import Image from 'next/image';
-import searchIcon from '../../../public/icons/searchIcon.svg';
-import Pagination from '../Pagination';
-import { ProductStatus, ProductStatusLabel } from '../../../types/productType';
-import {
-  getProductByStatus,
-  searchProductsWithStatusAndKeyword,
-} from '../../services/productService';
+import { getProductsByStatus } from '../../services/productService';
+import Pagination from '../common/Pagination';
+import Search from '../common/Search';
+import Loader from '../common/Loader';
+import { normalizeStatusCounts, StatusCountItem } from '../../utils/tabStatusCounts';
+
+export type ProductState =
+  | 'online'
+  | 'pending'
+  | 'deactivated'
+  | 'suspended'
+  | 'locked';
 
 export type Tab = {
-  id: ProductStatus;
-  label: ProductStatusLabel;
+  id: ProductState;
+  label: 'Online' | 'Pending QC' | 'Inactive' | 'Suspended' | 'Locked';
 };
 
 const tabs: Tab[] = [
-  {
-    id: 'online',
-    label: 'Online',
-  },
-  {
-    id: 'pending',
-    label: 'Pending QC',
-  },
-  {
-    id: 'deactivated',
-    label: 'Inactive',
-  },
-  {
-    id: 'suspended',
-    label: 'Suspended',
-  },
-  {
-    id: 'locked',
-    label: 'Locked',
-  },
+  { id: 'online', label: 'Online' },
+  { id: 'pending', label: 'Pending QC' },
+  { id: 'deactivated', label: 'Inactive' },
+  { id: 'suspended', label: 'Suspended' },
+  { id: 'locked', label: 'Locked' },
 ];
 
 export default function ProductManagement() {
@@ -44,93 +33,110 @@ export default function ProductManagement() {
     label: 'Online',
   });
 
-  const [productList, setProductList] = useState([]);
-  const [statusArray, setStatusArray] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [paginationData, setPaginationData] = useState<any>({
-    links: [],
-  });
+  const [productList, setProductList] = useState<unknown[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [statusArray, setStatusArray] = useState<StatusCountItem[]>([]);
+  const [pagination, setPagination] = useState<{
+    links?: unknown[];
+    last_page?: number;
+  }>({});
+  const [reqUrl, setReqUrl] = useState('/seller/product?page=1');
+  const [notFound, setNotFound] = useState(true);
+  const [keyword, setKeyword] = useState('');
 
-  const [currentPageUrl, setCurrentPageUrl] = useState<string | null>(null);
-
-  const handleTabChange = useCallback((tab: Tab) => {
-    setCurrentTab(tab);
-    setCurrentPageUrl(null);
-  }, []);
+  const handleTabChange = useCallback(
+    (tab: Tab) => {
+      setCurrentTab(tab);
+      if (keyword === '') {
+        setReqUrl('/seller/product?page=1');
+      } else {
+        setReqUrl(
+          `/seller/products/search?keyword=${encodeURIComponent(keyword)}&page=1`
+        );
+      }
+    },
+    [keyword]
+  );
 
   function getAllProducts() {
+    setProductList([]);
     setIsLoading(true);
-    getProductByStatus(currentTab.id, currentPageUrl)
+    const url = `${reqUrl}&status=${currentTab.id}`;
+    getProductsByStatus(url)
       .then((res) => {
+        setProductList(res.data);
+        setStatusArray(
+          normalizeStatusCounts(res.statusCount || res.status_array || [])
+        );
+        setPagination(res.pagination);
         setIsLoading(false);
-        setProductList(res?.data);
-        setStatusArray(res?.statusCount);
-        setPaginationData(res?.pagination);
+        setNotFound(false);
       })
       .catch((err) => {
-        if (err?.response?.status === 404) {
-          setProductList([]);
-          setStatusArray(err?.response?.data?.statusCount);
-        }
+        err?.response?.status === 404 && setProductList([]);
+        err?.response?.status === 404 &&
+          setStatusArray(
+            normalizeStatusCounts(
+              err.response.data.statusCount ||
+                err.response.data.status_array ||
+                []
+            )
+          );
+        err?.response?.status === 404 && setNotFound(true);
         setIsLoading(false);
       });
   }
 
-  function handleProductSearch(e: React.ChangeEvent<HTMLInputElement>) {
-    e.target.value === ''
-      ? getAllProducts()
-      : searchProductsWithStatusAndKeyword(currentTab.id, e.target.value)
-          .then((res) => {
-            setIsLoading(false);
-            setProductList(res?.data);
-            setStatusArray(res?.statusCount);
-          })
-          .catch((err) => {
-            if (err?.response?.status === 404) {
-              setProductList([]);
-              setStatusArray(err?.response?.data?.statusCount);
-            }
-            setIsLoading(false);
-          });
-  }
-
   useEffect(() => {
     getAllProducts();
-  }, [currentTab, currentPageUrl]);
+  }, [currentTab, reqUrl]);
+
+  useEffect(() => {
+    if (keyword === '') {
+      setReqUrl('/seller/product?page=1');
+    } else {
+      setReqUrl(
+        `/seller/products/search?keyword=${encodeURIComponent(keyword)}&page=1`
+      );
+    }
+  }, [keyword]);
 
   return (
-    <section className="">
-      <Header
-        tabs={tabs}
-        currentTab={currentTab}
-        onTabClick={handleTabChange}
-        statusArray={statusArray}
-      />
-
-      <div className="absolute top-10 right-10">
-        <div className="relative">
-          <div className="absolute flex items-center h-full pl-2">
-            <Image src={searchIcon} alt="search" />
-          </div>
-          <input
-            onChange={handleProductSearch}
-            className="pl-10 text-base font-normal w-[542px] h-[35px] bg-gray-100 rounded-md outline-none"
-            placeholder="Search Product(s) by Product Id or product name"
-          />
-        </div>
+    <section className="flex flex-col justify-center items-center w-full">
+      <div className="flex items-end justify-between w-full bg-white h-[82px] px-4 pt-2 text-2xl border-b-[3px] border-gray-300">
+        <span>Product Management</span>
+        <Search
+          placeholder="Search by product name or product ID"
+          pageName="products"
+          setUrl={() => {}}
+          setKeyword={setKeyword}
+        />
       </div>
-
-      <ProductManagementTable
-        data={productList}
-        isLoading={isLoading}
-        productStatus={currentTab}
-        getAllProducts={getAllProducts}
-      />
-
-      <div className="w-full flex justify-end">
+      <div className="w-4/5 min-h-[73vh] mb-4 flex flex-col justify-between">
+        <div>
+          <TabsHeader
+            tabs={tabs}
+            currentTab={currentTab}
+            onTabClick={handleTabChange}
+            statusArray={statusArray}
+          />
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <ProductManagementTable
+              data={productList}
+              currentTab={currentTab}
+              onRefresh={getAllProducts}
+            />
+          )}
+          {notFound ? (
+            <div className="text-center text-xl mt-2">No products available</div>
+          ) : null}
+        </div>
         <Pagination
-          paginationData={paginationData}
-          setCurrentPageUrl={setCurrentPageUrl}
+          pagination={pagination}
+          setReqUrl={setReqUrl}
+          keyword={keyword}
         />
       </div>
     </section>
