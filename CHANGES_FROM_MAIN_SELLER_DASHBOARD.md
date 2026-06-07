@@ -1,59 +1,84 @@
 # Seller Dashboard Changes from `main`
 
 Repository: `hajurbuwa-seller-dashboard`  
-Base branch: `main` (`a09ec46`)
+Base branch: `main` (`a09ec46` — *added price per unit in group orders*)
 
-This document describes all seller-dashboard changes on feature branches compared to `main`.
+This document lists **only** application changes on the two feature branches below compared to `main`. Nothing here is merged into `main` yet.
+
+**Excluded from all branch diffs:** `bun.lock`, `SELLER_PAGES_REFERENCE.md`, and local `.env` changes. Do not commit secrets.
 
 ---
 
 ## Branch overview
 
-| Branch | Commit | Files | +Lines | −Lines |
-|--------|--------|-------|--------|--------|
-| `feat/product-management` | `dce22ea` | 26 | 1,699 | 1,006 |
-| `feat/order-management` | `68a81c4` | 34 | 2,509 | 730 |
+| Branch | HEAD | Commits ahead of `main` | Files | +Lines / −Lines | Purpose |
+|--------|------|-------------------------|-------|-----------------|---------|
+| `feat/product-management` | `dce22ea` | 1 | 26 | +1,699 / −1,006 | Product wizard, table, pricing modals, shared table UI |
+| `feat/order-management` | `d522161` | 2 | 35 | +2,787 / −730 | Order listing, filters, detail page, timeline |
 
-Both branches introduce shared utilities. The order branch is based on `main` and cherry-picks shared files from the product branch so it can run independently.
+### How the branches relate
+
+```
+main (a09ec46)
+├── feat/product-management (dce22ea)
+│     └── dce22ea  product wizard, table, pricing modals, shared components
+└── feat/order-management (d522161)
+      ├── 68a81c4  order listing, detail views, filters, routing
+      └── d522161  this changelog
+```
+
+- `feat/order-management` is based on `main` and **re-introduces** shared utilities from the product branch (`Loader`, `Pagination`, `Search`, `TabStatusBadge`, `removeBaseUrl`, `tabStatusCounts`) so it can run without merging product-management first.
+- Both branches can be merged independently, but **product + order together** requires merging both (shared files are identical in spirit).
 
 ---
 
 ## 1. `feat/product-management`
 
-### Summary
+**Commit:** `dce22ea` — *Revamp seller product management UI and API integration.*
 
-Revamps the seller product listing wizard, product management table, pricing/stock modals, and API service layer. Introduces reusable table UI components used by both product and order features.
+### Files changed (26)
 
----
+| Status | File |
+|--------|------|
+| Added | `src/components/common/Loader.tsx` |
+| Added | `src/components/common/ModalButtons.tsx` |
+| Added | `src/components/common/Pagination.tsx` |
+| Added | `src/components/common/Search.tsx` |
+| Added | `src/components/common/TabStatusBadge.tsx` |
+| Added | `src/utils/removeBaseUrl.ts` |
+| Added | `src/utils/tabStatusCounts.ts` |
+| Modified | `src/components/productListing/*` (6 files) |
+| Modified | `src/components/productManagement/*` (5 files) |
+| Modified | `src/pages/product-management.tsx`, `product/add.tsx`, `update.tsx`, `duplicate.tsx` |
+| Modified | `src/services/productService.ts` |
+| Modified | `src/config/httpClient.ts` |
+| Modified | `src/constants/EnvironmentConstant.ts` |
+| Modified | `src/constants/serverConstants.ts` |
 
-### New files
+### New shared components
 
 | File | Description |
 |------|-------------|
-| `src/components/common/Loader.tsx` | Centered loading spinner |
-| `src/components/common/ModalButtons.tsx` | `YesButton` / `NoButton` for confirmation modals |
-| `src/components/common/Pagination.tsx` | Server-side pagination; syncs page with URL via `removeBaseUrl` |
-| `src/components/common/Search.tsx` | Debounced keyword search input |
-| `src/components/common/TabStatusBadge.tsx` | Count badge on status tabs |
-| `src/utils/tabStatusCounts.ts` | Normalizes `status_array` / `statusCount` from API |
-| `src/utils/removeBaseUrl.ts` | Strips API base URL from Laravel pagination links |
+| `Loader.tsx` | Centered loading spinner |
+| `ModalButtons.tsx` | `YesButton` / `NoButton` for confirmation modals |
+| `Pagination.tsx` | Server-side pagination; syncs page with URL via `removeBaseUrl` |
+| `Search.tsx` | Debounced keyword search input |
+| `TabStatusBadge.tsx` | Count badge on status tabs |
+| `tabStatusCounts.ts` | Normalizes `status_array` / `statusCount` from API |
+| `removeBaseUrl.ts` | Strips API base URL from Laravel pagination links |
 
----
-
-### Modified files
-
-#### Product listing wizard — `src/components/productListing/`
+### Product listing wizard — `src/components/productListing/`
 
 | File | Changes |
 |------|---------|
 | `index.tsx` | Refactored add/edit/duplicate orchestration; mode-aware step flow |
-| `GeneralInformation.tsx` | Form field layout, validation, category/brand/unit pickers |
+| `GeneralInformation.tsx` | Form layout, validation, category/brand/unit pickers |
 | `PriceAndStock.tsx` | Bulk pricing tiers, minimum order, stock fields |
 | `ProductDetails.tsx` | Description and highlight fields |
 | `ServicesAndDelivery.tsx` | Delivery options, weight, service toggles |
 | `ProductAddSuccessModal.tsx` | Post-add success state and navigation |
 
-#### Product management — `src/components/productManagement/`
+### Product management — `src/components/productManagement/`
 
 | File | Changes |
 |------|---------|
@@ -63,16 +88,7 @@ Revamps the seller product listing wizard, product management table, pricing/sto
 | `PriceEditModal.tsx` | Inline price/stock/bulk-tier editing modal |
 | `TabsHeader.tsx` | Status tabs with `TabStatusBadge` counts |
 
-#### Pages
-
-| File | Changes |
-|------|---------|
-| `src/pages/product-management.tsx` | Wires updated `productManagement/index` |
-| `src/pages/product/add.tsx` | Passes `mode="add"` to listing wizard |
-| `src/pages/product/update.tsx` | Passes `mode="edit"` |
-| `src/pages/product/duplicate.tsx` | Passes `mode="duplicate"` |
-
-#### Services — `src/services/productService.ts`
+### Services — `src/services/productService.ts`
 
 | Function | Change |
 |----------|--------|
@@ -85,28 +101,24 @@ Revamps the seller product listing wizard, product management table, pricing/sto
 
 New type: `ProductBulkTier { quantity, price }`
 
-#### Config & constants
+### Config & constants
 
 | File | Changes |
 |------|---------|
-| `src/config/httpClient.ts` | Local dev API: `http://127.0.0.1:8000/api` when `ENVIRONMENT_TYPE_TEST` |
-| `src/constants/EnvironmentConstant.ts` | Default env switched to `ENVIRONMENT_TYPE_TEST` for local dev |
-| `src/constants/serverConstants.ts` | Added `storefrontBaseUrl`, `getRetailerProductUrl()`, `resolveImageUrl()`; image base from `NEXT_PUBLIC_IMAGE_BASE_URL` |
+| `httpClient.ts` | Local dev API: `http://127.0.0.1:8000/api` when `ENVIRONMENT_TYPE_TEST` |
+| `EnvironmentConstant.ts` | Default env switched to `ENVIRONMENT_TYPE_TEST` for local dev |
+| `serverConstants.ts` | Added `storefrontBaseUrl`, `getRetailerProductUrl()`, `resolveImageUrl()`; image base from `NEXT_PUBLIC_IMAGE_BASE_URL` |
 
----
-
-### Key UX / behaviour changes
+### Key UX / behaviour
 
 1. **Status tab counts** — Tabs read `status_array` from API (falls back to `statusCount`).
-2. **Pagination** — Page changes update URL query string; works with backend Laravel pagination links.
+2. **Pagination** — Page changes update URL query string.
 3. **Search** — Debounced keyword search on product management table.
-4. **Price edit modal** — Edit stock, unit price, bulk tiers, and minimum order without leaving the table.
-5. **Image URLs** — `resolveImageUrl()` handles both full URLs and relative bucket paths.
-6. **Storefront link** — `getRetailerProductUrl(productId)` for "view on storefront" actions.
+4. **Price edit modal** — Edit stock, unit price, bulk tiers, minimum order in-table.
+5. **Image URLs** — `resolveImageUrl()` handles full URLs and relative bucket paths.
+6. **Storefront link** — `getRetailerProductUrl(productId)` for "view on storefront".
 
----
-
-### Routes affected
+### Routes
 
 | Route | Component |
 |-------|-----------|
@@ -115,76 +127,62 @@ New type: `ProductBulkTier { quantity, price }`
 | `/product/update?id=` | `productListing/index.tsx` (edit) |
 | `/product/duplicate?id=` | `productListing/index.tsx` (duplicate) |
 
+### Backend pairing
+
+Requires `feat/seller-product-management` on `hajurbuwa-backend` for `status_array`, local image paths, and pricing fields.
+
 ---
 
 ## 2. `feat/order-management`
 
-### Summary
+**HEAD:** `d522161` — *Add seller dashboard changelog documenting changes from main.*
 
-Revamps order listing with filters, pagination, and status tabs. Adds a dedicated order detail page with timeline, buyer info, shipping, and payment panels. Migrates routing from a flat page file to a directory-based route.
+**Prior commit:** `68a81c4` — *Revamp seller order management UI with detail views and filters.*
 
----
+### Files changed (35)
 
-### New files
+Includes everything in the shared-component table from Section 1 (re-added on this branch) plus:
 
-#### Order components — `src/components/orderManagement/`
+| Status | File |
+|--------|------|
+| Added | `CHANGES_FROM_MAIN_SELLER_DASHBOARD.md` |
+| Added | `src/components/orderManagement/BuyerDetails.tsx` |
+| Added | `src/components/orderManagement/OrderDescription.tsx` |
+| Added | `src/components/orderManagement/OrderDetailCard.tsx` |
+| Added | `src/components/orderManagement/OrderFilters.tsx` |
+| Added | `src/components/orderManagement/OrderTimeline.tsx` |
+| Added | `src/components/orderManagement/SectionTabsHeader.tsx` |
+| Added | `src/components/orderManagement/SellerPayments.tsx` |
+| Added | `src/components/orderManagement/SellerShippings.tsx` |
+| Added | `src/components/orderManagement/ShippingAndPayment.tsx` |
+| Added | `src/components/orderManagement/ShippingDetails.tsx` |
+| Added | `src/components/orderManagement/buildOrderTimeline.ts` |
+| Added | `src/constants/orderPayment.ts` |
+| Added | `src/pages/order-management/index.tsx` |
+| Added | `src/pages/order-management/[orderId].tsx` |
+| Added | `src/utils/dateformat.ts` |
+| Added | `src/utils/orderPricing.ts` |
+| Deleted | `src/pages/order-management.tsx` |
+| Modified | `OrdersTable.tsx`, `OrderDetails.tsx`, `TabsHeader.tsx`, `index.tsx` |
+| Modified | `src/pages/order/index.tsx` (legacy redirect) |
+| Modified | `src/components/DashboardStats.tsx` |
+| Modified | `src/services/orderServices.ts` |
+
+### Order components — `src/components/orderManagement/`
 
 | File | Description |
 |------|-------------|
 | `BuyerDetails.tsx` | Buyer name, PAN, phone, email card |
 | `OrderDescription.tsx` | Full order detail page layout |
-| `OrderDetailCard.tsx` | Reusable labelled detail card (`DetailCard`, `DetailRow`, `CopyableText`) |
-| `OrderFilters.tsx` | Date range picker + payment type/status filters |
-| `OrderTimeline.tsx` | Visual step-by-step order status timeline |
+| `OrderDetailCard.tsx` | `DetailCard`, `DetailRow`, `CopyableText` |
+| `OrderFilters.tsx` | Date range + payment type/status filters |
+| `OrderTimeline.tsx` | Visual step-by-step status timeline |
 | `SectionTabsHeader.tsx` | Section navigation within order detail |
 | `SellerPayments.tsx` | Payment mode, status, amount display |
 | `SellerShippings.tsx` | Shipping address, carrier, delivery estimate |
-| `ShippingAndPayment.tsx` | Combined shipping + payment section wrapper |
+| `ShippingAndPayment.tsx` | Combined shipping + payment wrapper |
 | `ShippingDetails.tsx` | Address line display |
-| `buildOrderTimeline.ts` | Builds timeline steps from order status history |
-
-#### Pages
-
-| File | Description |
-|------|-------------|
-| `src/pages/order-management/index.tsx` | Order list page (new) |
-| `src/pages/order-management/[orderId].tsx` | Order detail page (new) |
-
-#### Utils & constants
-
-| File | Description |
-|------|-------------|
-| `src/constants/orderPayment.ts` | `PAYMENT_MODE_OPTIONS`, `PAYMENT_TYPE_FILTER_OPTIONS`, `formatPaymentModeLabel()` |
-| `src/utils/dateformat.ts` | `formatDate()` for display timestamps |
-| `src/utils/orderPricing.ts` | `getOrderUnitPrice()`, `getOrderLineTotal()`, price label helpers |
-| + shared `common/*`, `tabStatusCounts.ts`, `removeBaseUrl.ts` | Same as product branch |
-
----
-
-### Deleted files
-
-| File | Replaced by |
-|------|-------------|
-| `src/pages/order-management.tsx` | `src/pages/order-management/index.tsx` |
-
----
-
-### Modified files
-
-| File | Changes |
-|------|---------|
-| `OrdersTable.tsx` | Full redesign: filters, pagination, status actions, expandable rows, pricing display |
-| `OrderDetails.tsx` | Richer detail drawer with shipping fields and `orderPricing` helpers |
-| `TabsHeader.tsx` | Status tabs with badge counts |
-| `index.tsx` | Orchestrates list, search, filters, pagination, tab state from URL `?tab=` |
-| `src/pages/order/index.tsx` | Redirects `/order?order_id=X` → `/order-management/X` |
-| `src/components/DashboardStats.tsx` | Unshipped orders link → `/order-management?tab=unshipped` |
-| `src/services/orderServices.ts` | See service changes below |
-| `src/config/httpClient.ts` | Same local dev URL change as product branch |
-| `src/constants/EnvironmentConstant.ts` | Same test env default |
-| `src/constants/serverConstants.ts` | Same `resolveImageUrl()` additions |
-
----
+| `buildOrderTimeline.ts` | Builds timeline steps from status history |
 
 ### Services — `src/services/orderServices.ts`
 
@@ -195,7 +193,7 @@ Revamps order listing with filters, pagination, and status tabs. Adds a dedicate
 | `getSingleOrderDetails` | Returns `res.data.data` | Returns full `res.data` |
 | `changeOrderStatus` | Path `seller/set-order-status/` | Path `/seller/set-order-status/` (leading slash) |
 
-**New POST body fields sent with order list requests:**
+**New POST body fields on order list requests:**
 
 ```typescript
 {
@@ -206,20 +204,16 @@ Revamps order listing with filters, pagination, and status tabs. Adds a dedicate
 }
 ```
 
----
+### Key UX / behaviour
 
-### Key UX / behaviour changes
-
-1. **URL-driven tabs** — `/order-management?tab=unshipped` opens the correct status tab on load.
-2. **Order detail route** — `/order-management/[orderId]` is a dedicated page, not a modal-only flow.
+1. **URL-driven tabs** — `/order-management?tab=unshipped` opens the correct status tab.
+2. **Order detail route** — `/order-management/[orderId]` is a dedicated page.
 3. **Order timeline** — `buildOrderTimeline()` renders status progression with timestamps.
-4. **Filters** — Date range and payment filters passed to backend (pairs with `feat/seller-order-management` API).
-5. **Legacy redirect** — Old `/order?order_id=` links still work via redirect page.
-6. **Dashboard deep link** — "Unshipped Orders" card links directly to unshipped tab.
+4. **Filters** — Date range and payment filters passed to backend.
+5. **Legacy redirect** — `/order?order_id=` → `/order-management/[orderId]`.
+6. **Dashboard deep link** — "Unshipped Orders" card → `/order-management?tab=unshipped`.
 
----
-
-### Routes affected
+### Routes
 
 | Route | Before | After |
 |-------|--------|-------|
@@ -228,11 +222,15 @@ Revamps order listing with filters, pagination, and status tabs. Adds a dedicate
 | `/order-management/[orderId]` | — | **New** order detail page |
 | `/order?order_id=` | Order view | Redirect to `/order-management/[orderId]` |
 
+### Backend pairing
+
+Requires `feat/seller-order-management` on `hajurbuwa-backend` for filter params, shipping fields on list rows, and enriched order detail responses.
+
+> **Note:** Backend `feat/order-management` also touches seller order APIs with a different approach. Align backend branch before merging both seller and admin order work.
+
 ---
 
 ## Shared between both branches
-
-These files appear in both `feat/product-management` and `feat/order-management`:
 
 | Category | Files |
 |----------|-------|
@@ -242,37 +240,67 @@ These files appear in both `feat/product-management` and `feat/order-management`
 
 ---
 
-## Backend API dependencies
+## Cross-repo feature map
 
-| Seller dashboard branch | Required backend branch |
-|------------------------|------------------------|
-| `feat/product-management` | `feat/seller-product-management` |
-| `feat/order-management` | `feat/seller-order-management` |
-
-Key API contract changes the frontend expects:
+| Seller dashboard | Backend branch | Key API contract |
+|------------------|----------------|------------------|
+| `feat/product-management` | `feat/seller-product-management` | `status_array`, `minimum_order`, image path normalization |
+| `feat/order-management` | `feat/seller-order-management` | `date_from`, `date_to`, `payment_mode`, `payment_status`, shipping address fields on rows |
 
 | API field / param | Used by |
 |-------------------|---------|
-| `status_array` in list responses | Tab badge counts |
+| `status_array` in list responses | Tab badge counts (product + order) |
 | `minimum_order` on product update | Price edit modal |
-| `date_from`, `date_to`, `payment_mode`, `payment_status` on order list POST | Order filters |
+| `date_from`, `date_to`, `payment_mode`, `payment_status` | Order filters |
 | `shipping_state/city/area/address_*` on order rows | Orders table + detail pages |
+
+---
+
+## Environment variables
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api
+NEXT_PUBLIC_IMAGE_BASE_URL=http://127.0.0.1:8000/hajurbuwa-bucket/
+NEXT_PUBLIC_STOREFRONT_URL=https://www.hajurbuwa.com
+```
+
+Local dev uses `ENVIRONMENT_TYPE_TEST` in `EnvironmentConstant.ts` (both branches).
+
+---
+
+## Deployment checklist
+
+1. Deploy matching backend branch first (see cross-repo map).
+2. Merge `feat/product-management` and/or `feat/order-management` as needed.
+3. Set env vars for API and image base URLs.
+4. Do **not** commit `bun.lock` or local env overrides.
 
 ---
 
 ## Not included in branches
 
-| File | Status |
+| Item | Status |
 |------|--------|
-| `SELLER_PAGES_REFERENCE.md` | Untracked locally — documentation only |
-| `bun.lock` | Untracked — lockfile, not committed |
+| `SELLER_PAGES_REFERENCE.md` | Untracked — documentation only |
+| `bun.lock` | Untracked lockfile |
+| Uncommitted `reviews/index.tsx`, `EnvironmentConstant.ts` tweaks | Working tree — not on remote |
 
 ---
 
-## Regenerate this document
+## Regenerate / verify diffs
 
 ```bash
 cd hajurbuwa-seller-dashboard
+
+git log main..feat/product-management --oneline
+git log main..feat/order-management --oneline
+
 git diff main...feat/product-management --stat
 git diff main...feat/order-management --stat
+
+git diff feat/product-management...feat/order-management --name-status
 ```
+
+---
+
+*Last updated from branch tips: `dce22ea`, `d522161`.*
