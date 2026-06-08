@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { AiFillCloseCircle } from 'react-icons/ai';
 import { HiOutlineMail } from 'react-icons/hi';
 import { IoCallOutline, IoLocationOutline } from 'react-icons/io5';
 import { MdContentCopy } from 'react-icons/md';
@@ -16,6 +17,8 @@ import { useClickAwayListener } from '../../hooks/useClickAwayListener';
 import { formatDate } from '../../utils/dateformat';
 import { getOrderUnitPrice } from '../../utils/orderPricing';
 import { changeOrderStatus } from '../../services/orderServices';
+import { buildInvoiceFromOrders } from './buildInvoiceFromOrders';
+import InvoicePDF, { Invoice } from './InvoicePDF';
 import Button from '../common/Button';
 import { YesButton, NoButton } from '../common/ModalButtons';
 import TextInput from '../common/TextInput';
@@ -77,6 +80,20 @@ const CANCEL_TABS: Tab['id'][] = [
 
 const compactButtonClass =
   '!w-auto whitespace-nowrap !px-3 !py-1 !text-xs !font-medium';
+
+const MULTI_BUYER_INVOICE_ERROR =
+  'Invoice cannot be generated because selected orders belong to more than one buyer. Print invoice can only be generated for one buyer at a time.';
+
+const getUniqueBuyerIds = (
+  rows: { id: string | number; buyer_id?: string | number }[],
+  selectedIds: (string | number)[]
+) => {
+  const buyerIds = rows
+    .filter((row) => selectedIds.includes(row.id))
+    .map((row) => row.buyer_id)
+    .filter((id) => id != null && id !== '');
+  return Array.from(new Set(buyerIds));
+};
 
 const getStatusAction = (tabId: Tab['id']): StatusAction | null => {
   switch (tabId) {
@@ -235,6 +252,10 @@ const OrdersTable = ({
   } | null>(null);
   const [cancelReason, setCancelReason] = useState('');
   const [statusConfirmModal, setStatusConfirmModal] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [deliveryChargeModal, setDeliveryChargeModal] = useState(false);
+  const [deliveryChargeInput, setDeliveryChargeInput] = useState('0');
 
   const statusAction = getStatusAction(currentTab.id);
   const allSelected = data.length > 0 && selectedIds.length === data.length;
@@ -250,6 +271,36 @@ const OrdersTable = ({
 
   const toggleSelectAll = () => {
     setSelectedIds(allSelected ? [] : data.map((row) => row.id));
+  };
+
+  const handlePrintInvoices = () => {
+    if (selectedIds.length === 0) return;
+    setActionError(null);
+
+    const buyerIds = getUniqueBuyerIds(data, selectedIds);
+    if (buyerIds.length > 1) {
+      setActionError(MULTI_BUYER_INVOICE_ERROR);
+      return;
+    }
+
+    setDeliveryChargeInput('0');
+    setDeliveryChargeModal(true);
+  };
+
+  const handleConfirmDeliveryCharge = () => {
+    const deliveryCharge = Number(deliveryChargeInput);
+    if (Number.isNaN(deliveryCharge) || deliveryCharge < 0) {
+      setActionError('Please enter a valid delivery charge (0 or greater).');
+      return;
+    }
+
+    const selectedRows = data.filter((row) => selectedIds.includes(row.id));
+    if (selectedRows.length === 0) return;
+
+    setDeliveryChargeModal(false);
+    setActionError(null);
+    setInvoices([buildInvoiceFromOrders(selectedRows, deliveryCharge)]);
+    setShowInvoice(true);
   };
 
   const runStatusAction = async (
@@ -345,6 +396,9 @@ const OrdersTable = ({
           {actionError ? (
             <span className="text-xs text-error-primary">{actionError}</span>
           ) : null}
+          <Button className={compactButtonClass} onClick={handlePrintInvoices}>
+            Print Invoice
+          </Button>
           {statusAction ? (
             <Button
               className={compactButtonClass}
@@ -678,6 +732,59 @@ const OrdersTable = ({
             </YesButton>
           </div>
         </ReactModal>
+      ) : null}
+
+      {deliveryChargeModal ? (
+        <ReactModal
+          isOpen
+          onRequestClose={() => setDeliveryChargeModal(false)}
+          className="flex h-auto w-1/3 flex-col items-center justify-center rounded-md bg-white p-6"
+          overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+          style={{
+            content: {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            },
+          }}
+          ariaHideApp={false}
+        >
+          <div className="mb-4 text-center text-xl">Enter Delivery Charge</div>
+          <div className="mb-4 w-3/4">
+            <InputLabel label="Delivery Charge (Rs)" />
+            <TextInput
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0"
+              onChange={(e) => setDeliveryChargeInput(e.target.value)}
+              value={deliveryChargeInput}
+            />
+          </div>
+          <div className="flex items-center justify-center">
+            <NoButton onClick={() => setDeliveryChargeModal(false)}>
+              Cancel
+            </NoButton>
+            <YesButton onClick={handleConfirmDeliveryCharge}>
+              Generate Invoice
+            </YesButton>
+          </div>
+        </ReactModal>
+      ) : null}
+
+      {showInvoice && invoices.length > 0 ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-400 bg-opacity-90 py-6">
+          <div className="relative">
+            <InvoicePDF invoices={invoices} />
+            <div
+              className="absolute -right-2 -top-2 flex cursor-pointer items-center justify-center rounded-full bg-white text-2xl"
+              onClick={() => setShowInvoice(false)}
+            >
+              <AiFillCloseCircle />
+            </div>
+          </div>
+        </div>
       ) : null}
     </div>
   );

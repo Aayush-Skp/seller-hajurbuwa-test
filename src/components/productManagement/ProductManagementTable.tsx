@@ -28,7 +28,7 @@ type BulkPriceTier = {
   price: number;
 };
 
-type ProductRow = {
+export type ProductRow = {
   id: number;
   product_id: string;
   product_name: string;

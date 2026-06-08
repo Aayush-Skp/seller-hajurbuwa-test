@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import TabsHeader from './TabsHeader';
-import ProductManagementTable from './ProductManagementTable';
+import ProductManagementTable, { type ProductRow } from './ProductManagementTable';
 import { getProductsByStatus } from '../../services/productService';
 import Pagination from '../common/Pagination';
 import Search from '../common/Search';
@@ -33,7 +33,7 @@ export default function ProductManagement() {
     label: 'Online',
   });
 
-  const [productList, setProductList] = useState<unknown[]>([]);
+  const [productList, setProductList] = useState<ProductRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusArray, setStatusArray] = useState<StatusCountItem[]>([]);
   const [pagination, setPagination] = useState<{
