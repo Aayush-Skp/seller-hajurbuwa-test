@@ -1,7 +1,7 @@
 function removeBaseUrl(url: string): string {
   const apiBase =
     process.env.NEXT_PUBLIC_API_BASE_URL ??
-    'https://dashboard.hajurbuwa.com/api';
+    'https://devdashboard.hajurbuwa.com/api';
 
   if (url.startsWith(apiBase)) {
     const path = url.slice(apiBase.length);

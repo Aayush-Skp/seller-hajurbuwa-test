@@ -1,6 +1,6 @@
 export const imageServerBaseUrl =
   process.env.NEXT_PUBLIC_IMAGE_BASE_URL ??
-  'https://dashboard.hajurbuwa.com/hajurbuwa-bucket/';
+  'https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/';
 
 export const storefrontBaseUrl =
   process.env.NEXT_PUBLIC_STOREFRONT_URL ?? 'https://www.hajurbuwa.com';
