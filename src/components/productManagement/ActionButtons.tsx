@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AiFillCaretDown } from 'react-icons/ai';
+import {
+  HiOutlineDocumentDuplicate,
+  HiOutlinePencil,
+  HiOutlineTrash,
+} from 'react-icons/hi';
+import { MdOutlineBlock, MdOutlineCheckCircleOutline } from 'react-icons/md';
 import Button from '../common/Button';
 import Modal from 'react-modal';
 import Image from 'next/image';
@@ -21,31 +27,100 @@ type ActionButtonProps = {
   getAllProducts: () => void;
 };
 
-const buttons = {
-  online: {
-    firstBtn: 'Deactivate',
-    secondBtn: 'Delete',
-  },
-  outOfStock: {
-    firstBtn: 'Deactivate',
-    secondBtn: 'Delete',
-  },
-  inActive: {
-    firstBtn: 'Activate',
-    secondBtn: 'Delete',
-  },
-  pendingQc: {
-    firstBtn: 'Deactivate',
-    secondBtn: '',
-  },
-  suspended: {
-    firstBtn: 'Delete',
-    secondBtn: '',
-  },
-  locked: {
-    firstBtn: 'Delete',
-    secondBtn: '',
-  },
+type MenuItem =
+  | {
+      type: 'link';
+      label: string;
+      href: string;
+      tone: 'neutral' | 'success' | 'warning' | 'danger';
+      icon: React.ReactNode;
+    }
+  | {
+      type: 'action';
+      label: string;
+      action: string;
+      tone: 'neutral' | 'success' | 'warning' | 'danger';
+      icon: React.ReactNode;
+    };
+
+const toneClasses: Record<MenuItem['tone'], string> = {
+  neutral: 'text-gray-700 hover:bg-gray-50',
+  success: 'text-success-primary hover:bg-success-tertiary/40',
+  warning: 'text-amber-700 hover:bg-amber-50',
+  danger: 'text-error-primary hover:bg-error-tertiary/40',
+};
+
+const getMenuItems = (tabId: string, productId: string): MenuItem[] => {
+  const duplicateItem: MenuItem = {
+    type: 'link',
+    label: 'Duplicate',
+    href: `/product/duplicate?id=${productId}`,
+    tone: 'success',
+    icon: <HiOutlineDocumentDuplicate className="text-base" />,
+  };
+
+  switch (tabId) {
+    case 'online':
+      return [
+        duplicateItem,
+        {
+          type: 'action',
+          label: 'Deactivate',
+          action: 'Deactivate',
+          tone: 'warning',
+          icon: <MdOutlineBlock className="text-base" />,
+        },
+        {
+          type: 'action',
+          label: 'Delete',
+          action: 'Delete',
+          tone: 'danger',
+          icon: <HiOutlineTrash className="text-base" />,
+        },
+      ];
+    case 'deactivated':
+      return [
+        duplicateItem,
+        {
+          type: 'action',
+          label: 'Activate',
+          action: 'Activate',
+          tone: 'success',
+          icon: <MdOutlineCheckCircleOutline className="text-base" />,
+        },
+        {
+          type: 'action',
+          label: 'Delete',
+          action: 'Delete',
+          tone: 'danger',
+          icon: <HiOutlineTrash className="text-base" />,
+        },
+      ];
+    case 'pending':
+    case 'suspended':
+      return [
+        duplicateItem,
+        {
+          type: 'action',
+          label: 'Delete',
+          action: 'Delete',
+          tone: 'danger',
+          icon: <HiOutlineTrash className="text-base" />,
+        },
+      ];
+    case 'locked':
+      return [
+        {
+          type: 'action',
+          label: 'Delete',
+          action: 'Delete',
+          tone: 'danger',
+          icon: <HiOutlineTrash className="text-base" />,
+        },
+      ];
+    default:
+      return [];
+  }
 };
 
 export default function ActionButtons({
@@ -55,16 +130,48 @@ export default function ActionButtons({
 }: ActionButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState<string | undefined>();
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const [apiResponse, setApiResponse] = useState({
     loading: false,
     message: '',
   });
 
   const { nodeRef, isNodeVisible, setIsNodeVisible } = useClickAwayListener();
+  const menuItems = useMemo(
+    () => getMenuItems(currentTab.id, productId),
+    [currentTab.id, productId]
+  );
+
+  const updateMenuPosition = useCallback(() => {
+    if (!nodeRef.current) return;
+
+    const rect = nodeRef.current.getBoundingClientRect();
+    const menuWidth = 176;
+
+    setMenuPosition({
+      top: rect.bottom + 6,
+      left: Math.max(8, rect.right - menuWidth),
+    });
+  }, [nodeRef]);
+
+  useEffect(() => {
+    if (!isNodeVisible) return;
+
+    updateMenuPosition();
+
+    window.addEventListener('scroll', updateMenuPosition, true);
+    window.addEventListener('resize', updateMenuPosition);
+
+    return () => {
+      window.removeEventListener('scroll', updateMenuPosition, true);
+      window.removeEventListener('resize', updateMenuPosition);
+    };
+  }, [isNodeVisible, updateMenuPosition]);
 
   function handleAction(type: string) {
     setActionType(type);
     setIsModalOpen(true);
+    setIsNodeVisible(false);
   }
 
   function handleProductAction() {
@@ -75,21 +182,21 @@ export default function ActionButtons({
 
     if (actionType === 'Deactivate')
       deactivateProduct(productId)
-        .then((res) => {
+        .then(() => {
           getAllProducts();
           setIsModalOpen(false);
         })
         .catch(console.log);
     if (actionType === 'Activate')
       activateProduct(productId)
-        .then((res) => {
+        .then(() => {
           getAllProducts();
           setIsModalOpen(false);
         })
         .catch(console.log);
     if (actionType === 'Delete')
       deleteProduct(productId)
-        .then((res) => {
+        .then(() => {
           getAllProducts();
           setIsModalOpen(false);
         })
@@ -103,133 +210,78 @@ export default function ActionButtons({
         });
   }
 
-  function MoreButtons() {
-    if (currentTab.id === 'online')
-      return (
-        <div className="absolute -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
-          <Link
-            href={`/product/duplicate?id=${productId}`}
-            className="text-xs border border-success-primary text-success-primary px-5 py-2">
-            
-              Duplicate
-            
-          </Link>
-          <button
-            className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Deactivate')}
-          >
-            Deactivate
-          </button>
-          <button
-            className="text-xs border border-error-primary text-error-primary px-5 py-2"
-            onClick={() => handleAction('Delete')}
-          >
-            Delete
-          </button>
-        </div>
-      );
-
-    if (currentTab.id === 'deactivated')
-      return (
-        <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
-          <Link
-            href={`/product/duplicate?id=${productId}`}
-            className="text-xs border border-success-primary text-success-primary px-5 py-2">
-            
-              Duplicate
-            
-          </Link>
-
-          <button
-            className="text-xs border border-accent-primary text-accent-primary px-5 py-2"
-            onClick={() => handleAction('Activate')}
-          >
-            Activate
-          </button>
-          <button
-            className="text-xs border border-error-primary text-error-primary px-5 py-2"
-            onClick={() => handleAction('Delete')}
-          >
-            Delete
-          </button>
-        </div>
-      );
-
-    if (currentTab.id === 'pending')
-      return (
-        <div className="absolute top-10 -left-3 z-30 flex flex-col w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
-          <Link
-            href={`/product/duplicate?id=${productId}`}
-            className="text-xs border border-success-primary text-success-primary px-5 py-2">
-            
-              Duplicate
-            
-          </Link>
-          <button
-            className="text-xs border border-error-primary text-error-primary px-5 py-2"
-            onClick={() => handleAction('Delete')}
-          >
-            Delete
-          </button>
-        </div>
-      );
-
-    if (currentTab.id === 'suspended')
-      return (
-        <div className="absolute top-10 -left-3 z-30 flex flex-col space-y-2 w-40 p-4 bg-white border border-gray-300 rounded shadow-sm">
-          <Link
-            href={`/product/duplicate?id=${productId}`}
-            className="text-xs border border-success-primary text-success-primary px-5 py-2">
-            
-              Duplicate
-            
-          </Link>
-          <button
-            className="text-xs border border-error-primary text-error-primary px-5 py-2"
-            onClick={() => handleAction('Delete')}
-          >
-            Delete
-          </button>
-        </div>
-      );
-
-    if (currentTab.id === 'locked')
-      return (
-        <div className="absolute top-10 z-30 flex flex-col space-y-2 w-32 bg-white border border-gray-300 rounded shadow-sm">
-          <button
-            className="text-xs border border-error-primary text-error-primary px-5 py-2"
-            onClick={() => handleAction('Delete')}
-          >
-            Delete
-          </button>
-        </div>
-      );
-
-    return null;
-  }
-
   return (
-    <div className="relative flex flex-col space-y-2 px-1">
+    <div className="relative flex flex-col gap-2 px-1">
       {currentTab.id !== 'locked' ? (
-        <Link href={`/product/update?id=${productId}`} className="" target="_blank">
-          
-            Edit
-          
+        <Link
+          href={`/product/update?id=${productId}`}
+          className="inline-flex items-center justify-center gap-1 rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-accent-primary hover:text-accent-primary"
+        >
+          <HiOutlinePencil className="text-sm" />
+          Edit
         </Link>
       ) : null}
-      <div
-        ref={nodeRef}
-        onClick={() => setIsNodeVisible((prev) => !prev)}
-        className="relative"
-      >
-        <Button className="w-full">
-          <div className="relative flex items-center justify-center space-x-1">
-            <span className="text-sm">More</span>
-            <AiFillCaretDown className="text-white" />
-          </div>
-        </Button>
-        {isNodeVisible ? <MoreButtons /> : null}
-      </div>
+      {menuItems.length > 0 ? (
+        <div
+          ref={nodeRef}
+          onClick={() => {
+            setIsNodeVisible((prev) => !prev);
+          }}
+          className="relative"
+        >
+          <Button className="w-full !bg-gray-800 hover:!bg-gray-900">
+            <div className="relative flex items-center justify-center gap-1">
+              <span className="text-sm">More</span>
+              <AiFillCaretDown
+                className={`text-white transition-transform ${
+                  isNodeVisible ? 'rotate-180' : ''
+                }`}
+              />
+            </div>
+          </Button>
+          {isNodeVisible ? (
+            <div
+              className="fixed z-[100] min-w-[11rem] overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-xl ring-1 ring-black/5"
+              style={{
+                top: menuPosition.top,
+                left: menuPosition.left,
+              }}
+            >
+              {menuItems.map((item, index) => {
+                const itemClassName = `flex w-full items-center gap-2 px-3 py-2 text-left text-sm font-medium transition-colors ${
+                  index > 0 ? 'border-t border-gray-100 ' : ''
+                }${toneClasses[item.tone]}`;
+
+                if (item.type === 'link') {
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className={itemClassName}
+                      onClick={() => setIsNodeVisible(false)}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </Link>
+                  );
+                }
+
+                return (
+                  <button
+                    key={item.label}
+                    type="button"
+                    className={itemClassName}
+                    onClick={() => handleAction(item.action)}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       <Modal
         isOpen={isModalOpen}

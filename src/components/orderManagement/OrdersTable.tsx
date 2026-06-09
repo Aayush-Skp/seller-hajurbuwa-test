@@ -1,414 +1,791 @@
 import React, { useState } from 'react';
-import { useTable } from 'react-table';
-import Image from 'next/image';
-import Button from '../common/Button';
 import Link from 'next/link';
-import ChangeOrderStatusModal from './ChangeOrderStatusModal';
-import PackagingSlip from './PackagingSlip';
-import cancelIcon from '../../../public/icons/cancel.svg';
-import { Tab } from '.';
-import { imageServerBaseUrl } from '../../constants/serverConstants';
-import logo from '../../../public/icons/hajurbuwa-logo.svg';
-import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
+import Image from 'next/image';
+import { AiFillCloseCircle } from 'react-icons/ai';
+import { HiOutlineMail } from 'react-icons/hi';
+import { IoCallOutline, IoLocationOutline } from 'react-icons/io5';
 import { MdContentCopy } from 'react-icons/md';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import ReactModal from 'react-modal';
+import { Tab } from '.';
+import {
+  getRetailerProductUrl,
+  imageServerBaseUrl,
+} from '../../constants/serverConstants';
+import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
+import { useClickAwayListener } from '../../hooks/useClickAwayListener';
+import { formatDate } from '../../utils/dateformat';
+import { getOrderUnitPrice } from '../../utils/orderPricing';
+import { changeOrderStatus } from '../../services/orderServices';
+import { buildInvoiceFromOrders } from './buildInvoiceFromOrders';
+import InvoicePDF, { Invoice } from './InvoicePDF';
+import Button from '../common/Button';
+import { YesButton, NoButton } from '../common/ModalButtons';
+import TextInput from '../common/TextInput';
+import InputLabel from '../common/InputLabel';
 
-type ITableData = {
-  id?: string | number;
-  product_name: string;
-  product_id: string;
-  items_included: string;
-  cover_image: string;
-  order_code: string;
-  quantity: number;
-  group_id?: number;
-  sub_total: number;
-  order_date: string;
-  order_status: string;
-  time_left: string;
-  action?: string;
+type StatusAction = {
+  label: string;
+  nextStatus: string;
 };
 
-type ProductManagementTableProps = {
-  data: ITableData[];
-  productStatus: Tab;
-  getAllOrders: () => void;
-  isLoading: boolean;
-};
+const formatRs = (amount: number) =>
+  `Rs ${Math.round(amount).toLocaleString('en-IN')}`;
 
-type TableHeader =
-  | 'Product'
-  | 'Order Details'
-  | 'Order Status'
-  | 'Time Left'
-  | 'Action';
-
-type Accessor =
-  | 'product_name'
-  | 'order_code'
-  | 'order_status'
-  | 'time_left'
-  | 'action';
-
-const columns: { Header: TableHeader; accessor: Accessor }[] = [
-  { Header: 'Product', accessor: 'product_name' },
-  { Header: 'Order Details', accessor: 'order_code' },
-  { Header: 'Order Status', accessor: 'order_status' },
-  { Header: 'Time Left', accessor: 'time_left' },
-  { Header: 'Action', accessor: 'action' },
+const showTimeLeftTabs: Tab['id'][] = [
+  'pending',
+  'unshipped',
+  'waiting_for_pickup',
 ];
 
-const OrdersTable: React.FC<ProductManagementTableProps> = ({
-  data,
-  productStatus,
-  getAllOrders,
-  isLoading,
+const parseSlaDeadline = (value?: string | null): Date | null => {
+  if (!value) return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+
+  let parsed = new Date(raw);
+  if (!Number.isNaN(parsed.getTime())) return parsed;
+
+  const mysqlMatch = raw.match(/^(\d{4}-\d{2}-\d{2})[\sT](\d{2}:\d{2}:\d{2})/);
+  if (mysqlMatch) {
+    parsed = new Date(`${mysqlMatch[1]}T${mysqlMatch[2]}`);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+
+  return null;
+};
+
+const isSlaBreached = (deadline?: string, timeLeft?: string) => {
+  const deadlineDate = parseSlaDeadline(deadline);
+  if (deadlineDate && Date.now() >= deadlineDate.getTime()) {
+    return true;
+  }
+
+  if (!timeLeft) return false;
+
+  const normalized = timeLeft.trim().toLowerCase();
+  if (normalized === 'time crossed') return true;
+
+  return /^0\s+hours?\s+0\s+minutes?$/.test(normalized);
+};
+
+const getTimeLeftDisplay = (deadline: string | undefined, timeLeft: string) =>
+  isSlaBreached(deadline, timeLeft) ? 'SLA Breached' : timeLeft;
+
+const CANCEL_TABS: Tab['id'][] = [
+  'pending',
+  'unshipped',
+  'waiting_for_pickup',
+];
+
+const compactButtonClass =
+  '!w-auto whitespace-nowrap !px-3 !py-1 !text-xs !font-medium';
+
+const MULTI_BUYER_INVOICE_ERROR =
+  'Invoice cannot be generated because selected orders belong to more than one buyer. Print invoice can only be generated for one buyer at a time.';
+
+const getUniqueBuyerIds = (
+  rows: { id: string | number; buyer_id?: string | number }[],
+  selectedIds: (string | number)[]
+) => {
+  const buyerIds = rows
+    .filter((row) => selectedIds.includes(row.id))
+    .map((row) => row.buyer_id)
+    .filter((id) => id != null && id !== '');
+  return Array.from(new Set(buyerIds));
+};
+
+const getStatusAction = (tabId: Tab['id']): StatusAction | null => {
+  switch (tabId) {
+    case 'pending':
+      return { label: 'Confirm', nextStatus: 'unshipped' };
+    case 'unshipped':
+      return { label: 'Ready for Pickup', nextStatus: 'waiting_for_pickup' };
+    default:
+      return null;
+  }
+};
+
+const ContactLine = ({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <div className="flex items-start gap-1.5 text-xs text-gray-900">
+    <span className="mt-0.5 shrink-0 text-accent-primary">{icon}</span>
+    <span className="text-left leading-relaxed">{children}</span>
+  </div>
+);
+
+const DetailLabel = ({
+  children,
+  accent = false,
+}: {
+  children: React.ReactNode;
+  accent?: boolean;
+}) => (
+  <span
+    className={`shrink-0 text-xs leading-none ${
+      accent ? 'text-accent-primary' : 'text-gray-600'
+    }`}
+  >
+    {children}
+  </span>
+);
+
+const ProductMetaRow = ({
+  label,
+  value,
+  accentLabel = false,
+  isPrice = false,
+}: {
+  label: string;
+  value: React.ReactNode;
+  accentLabel?: boolean;
+  isPrice?: boolean;
+}) => (
+  <div className="grid grid-cols-[2.75rem_minmax(0,1fr)] items-baseline gap-x-2">
+    <DetailLabel accent={accentLabel}>{label}</DetailLabel>
+    <span
+      className={`text-xs tabular-nums text-black ${
+        isPrice ? 'font-medium' : 'font-normal'
+      }`}
+    >
+      {value}
+    </span>
+  </div>
+);
+
+const AmountRow = ({
+  label,
+  value,
+  emphasized = false,
+}: {
+  label: string;
+  value: string;
+  emphasized?: boolean;
+}) => (
+  <div className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-baseline gap-x-2">
+    <DetailLabel>{label}</DetailLabel>
+    <span
+      className={`text-right text-xs tabular-nums text-black ${
+        emphasized ? 'font-semibold' : 'font-medium'
+      }`}
+    >
+      {value}
+    </span>
+  </div>
+);
+
+const MoreActionsMenu = ({
+  orderId,
+  canCancel,
+  onCancel,
+}: {
+  orderId: string | number;
+  canCancel: boolean;
+  onCancel: () => void;
 }) => {
-  const [isPrintSlip, setIsPrintSlip] = useState(false);
-
-  const [isOrderStatusModelOpen, setIsOrderStatusModelOpen] = useState(false);
-
-  const [orderStatus, setOrderStatus] = useState({
-    orderId: '',
-    status: '',
-  });
-
-  const { rows, prepareRow, headerGroups, getTableProps, getTableBodyProps } =
-    useTable({ columns, data });
-
-  const [_, copyProductId] = useCopyToClipboard();
-
-  function formatDate(date: string) {
-    return new Date(date).toLocaleTimeString('en-us', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-    });
-  }
-
-  function getRemainingTime(targetTime: string): string {
-    const now = new Date();
-    const target = new Date(targetTime);
-    let diff = target.getTime() - now.getTime();
-  
-    if (diff <= 0) {
-      return 'Time Crossed';
-    }
-  
-    const hrs = Math.floor(diff / (1000 * 60 * 60));
-    diff %= (1000 * 60 * 60);
-    const mins = Math.floor(diff / (1000 * 60));
-    diff %= (1000 * 60);
-    const secs = Math.floor(diff / 1000);
-  
-    return `${hrs} hrs ${mins} mins ${secs} secs`;
-  }
-  
-  
+  const { isNodeVisible, setIsNodeVisible, nodeRef } = useClickAwayListener();
 
   return (
-    <div className="border-3 border-gray-150">
-      {!isLoading ? (
-        data?.length === 0 ? (
-          <div className="flex justify-center mt-10">No orders available</div>
-        ) : (
-          <table {...getTableProps()} className="w-full border-x-4">
-            <thead className="border-b-2 h-5 font-bold bg-[#f5f5f5]">
-              {headerGroups.map((headerGroup: any, i: number) => (
-                <tr
-                  className="text-center"
-                  {...headerGroup.getHeaderGroupProps()}
-                  key={i}
-                >
-                  {headerGroup.headers.map((column: any, i: number) => {
-                    return (
-                      <th
-                        {...column.getHeaderProps()}
-                        className="py-2 text-base uppercase text-black opacity-50"
-                        key={i}
-                      >
-                        {column.render('Header')}
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()} className="text-center">
-              {rows.map((row: any, i: number) => {
-                prepareRow(row);
-                return (
-                  <tr
-                    {...row.getRowProps()}
-                    className="border-b-2 py-5 text-md"
-                    key={i}
-                  >
-                    {row.cells.map((cell: any, i: number) => {
-                      console.log(row.original)
-                      return (
-                        <td
-                          {...cell.getCellProps()}
-                          className="text-md text-black"
-                          key={i}
-                        >
-                          {cell.column.Header === 'Product' ? (
-                            <div className="flex space-x-2 py-1 px-2">
-                              <div>
-                                {row?.original?.product_cover_image ? (
-                                  <Image
-                                    height={80}
-                                    width={80}
-                                    src={`${imageServerBaseUrl}${row.original.product_cover_image}`}
-                                    alt=""
-                                  />
-                                ) : null}
-                              </div>
-                              <div className="flex flex-col items-start space-y-1">
-                                <div className="text-sm text-accent-primary text-start">
-                                  <p>{row.original.product_name}</p>
-                                  {/* <p>{row.original.product_included_item}</p> */}
-                                </div>
-                                <p className="text-sm space-x-2 items-center">
-                                  <span>Id: {row.original.product_id}</span>
-                                  <button
-                                    className="group"
-                                    onClick={() =>
-                                      copyProductId(row.original.product_id)
-                                    }
-                                  >
-                                    <MdContentCopy className="group-hover:scale-110 transition-transform" />
-                                  </button>
-                                </p>
-                              </div>
-                            </div>
-                          ) : cell.column.Header === 'Order Details' ? (
-                            <div className="w-full flex items-center justify-center">
-                              <div className="flex flex-col items-start justify-between space-y-1 text-xs">
-                              {/* Conditionally display Group ID if it exists */}
-                              {row.original.group_id && (
-                                <div className="space-x-1">
-                                  <span>Group ID: </span>
-                                  <span className="font-semibold">{row.original.group_id}</span>
-                                </div>
-                              )}
-                                <div className="space-x-1">
-                                  <span>Order Id: </span>
-                                  <span className="font-semibold">
-                                    {row.original.order_id}
-                                  </span>
-                                </div>
-                                <div className="space-x-1">
-                                  <span>Quantity: </span>
-                                  <span className="font-semibold">
-                                    {row.original.total_items}{' '}
-                                    {row.original.unit === 'per pc'
-                                      ? 'pcs'
-                                      : row.original.unit}
-                                  </span>
-                                </div>
-                                <div className="space-x-1">
-                                  <span>Price per {row.original.product_unit}:</span>
-                                  <span className="font-semibold">
-                                    {row.original.total_items > 0
-                                      ? (row.original.total_amount / row.original.total_items).toFixed(0)
-                                      : 'Please wait...'} NPR
-                                  </span>
-                                </div>
-                                <div className="space-x-1">
-                                  <span>Item Subtotal:</span>
-                                  <span className="font-semibold">
-                                    {row.original.total_amount} NPR
-                                  </span>
-                                </div>
-                                <div className="space-x-1">
-                                  <span>Order Date:</span>
-                                  <span className="font-semibold">
-                                    {formatDate(row.original.order_date)}
-                                  </span>
-                                </div>
-                                <Link
-                                  href={`/order?order_id=${row.original.id}`}
-                                  target="_blank"
-                                  className="text-xs text-accent-primary hover:underline">
-                                  
-                                    See order details
-                                  
-                                </Link>
-                              </div>
-                            </div>
-                          ) : cell.column.Header === 'Action' ? (
-                            <div className="flex flex-col space-y-2 px-1">
-                              {productStatus.id === 'pending' ? (
-                                <div className="flex flex-col space-y-2">
-                                  <Button
-                                    onClick={() => {
-                                      setIsOrderStatusModelOpen(true);
-                                      setOrderStatus({
-                                        orderId: row.original.id,
-                                        status: 'unshipped',
-                                      });
-                                    }}
-                                    className="text-sm"
-                                  >
-                                    Confirm Order
-                                  </Button>
-                                  <Button
-                                    className="bg-error-primary text-sm"
-                                    onClick={(e) => {
-                                      setIsOrderStatusModelOpen(true);
-                                      setOrderStatus({
-                                        orderId: row.original.id,
-                                        status: 'cancelled',
-                                      });
-                                    }}
-                                  >
-                                    Cancel Order
-                                  </Button>
-                                </div>
-                              ) : productStatus.id === 'sent' ||
-                                productStatus.id === 'picked_up' ||
-                                productStatus.id === 'waiting_for_pickup' ? (
-                                <div>
-                                  <Button
-                                    className="text-sm"
-                                    onClick={() => setIsPrintSlip(true)}
-                                  >
-                                    Print Package Slip
-                                  </Button>
-                                </div>
-                              ) : productStatus.id === 'unshipped' ? (
-                                <div className="flex flex-col space-y-2">
-                                  <Button
-                                    className="text-sm"
-                                    onClick={() => setIsPrintSlip(true)}
-                                  >
-                                    Print Package Slip
-                                  </Button>
-                                  <Button
-                                    className="text-sm"
-                                    onClick={() => {
-                                      setIsOrderStatusModelOpen(true);
-                                      setOrderStatus({
-                                        orderId: row.original.id,
-                                        status: 'waiting_for_pickup',
-                                      });
-                                    }}
-                                  >
-                                    Request Pickup
-                                  </Button>
-                                </div>
-                              ) : null}
-                              <ChangeOrderStatusModal
-                                orderStatus={orderStatus}
-                                getAllOrders={getAllOrders}
-                                setIsOrderStatusModelOpen={
-                                  setIsOrderStatusModelOpen
-                                }
-                                isOrderStatusModelOpen={isOrderStatusModelOpen}
-                              />
-                              <div className="absolute w-full flex justify-center top-0 left-0 z-50">
-                                {isPrintSlip ? (
-                                  <div className="relative w-3/4 py-10 h-full bg-gray-400 flex items-center justify-center rounded">
-                                    <div>
-                                      <PackagingSlip
-                                        packing_slip_id={
-                                          row.original.packing_slip_id
-                                        }
-                                        seller_pan_no={
-                                          row.original.seller_pan_no
-                                        }
-                                        total_amount={row.original.total_amount}
-                                        seller_company_name={
-                                          row.original.seller_company_name
-                                        }
-                                        product_included_item={
-                                          row.original.product_included_item
-                                        }
-                                        product_name={row.original.product_name}
-                                        quantity={row.original.total_items}
-                                        payment_status={row.original.payment_status}
-                                      />
-                                    </div>
-                                    <div
-                                      className="absolute flex items-center justify-center top-4 right-6 bg-white rounded-full cursor-pointer"
-                                      onClick={() => setIsPrintSlip(false)}
-                                    >
-                                      <Image src={cancelIcon} alt="cancel" />
-                                    </div>
-                                  </div>
-                                ) : null}
-                              </div>
-                            </div>
-                          ) : cell.column.Header === 'Order Status' ? (
-                            <div className="flex items-center justify-center space-x-2">
-                              <span className="text-sm capitalize">
-                                {cell.value === 'cancelled' ? (
-                                  <div>
-                                    <p className="text-error-primary">
-                                      Cancelled by {row.original.cancelled_by}
-                                    </p>
-                                    <p className="">
-                                      Cancellation Reason:
-                                      <span className="w-1/2 whitespace-pre-">
-                                        {row.original.cancel_reason}
-                                      </span>
-                                    </p>
-                                  </div>
-                                ) : cell.value === 'failed' ? (
-                                  <div>
-                                    <p className="text-error-primary">Failed</p>
-                                    <p className="">
-                                      Failed reason: {row.original.fail_reason}
-                                    </p>
-                                  </div>
-                                ) : cell.value === 'delivered' ? (
-                                  <div>
-                                    <span className="text-accent-primary">
-                                      Delivered
-                                    </span>
-                                  </div>
-                                ) : cell.value === 'unshipped' ||
-                                  cell.value === 'pending' ? (
-                                  <div className="text-red-200">
-                                    {productStatus.label}
-                                  </div>
-                                ) : (
-                                  productStatus.label
-                                )}
-                              </span>
-                            </div>
-                          ) : cell.column.Header === 'Time Left' ? (
-                            <div className="flex flex-col text-xs">
-                              {row.original.order_status === 'unshipped' ||
-                              row.original.order_status === 'pending' ? (
-                                <div>
-                                  <p className="">
-                                    For packing and scheduling for pickup
-                                  </p>
-                                  <p className={`text-red-200 ${getRemainingTime(cell.value) === 'Time Crossed' ? 'font-semibold' : ''}`}>
-                                    {getRemainingTime(cell.value)}
-                                  </p>
-                                </div>
-                              ) : null}
-                            </div>
-                          ) : (
-                            cell.render('Cell')
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )
-      ) : (
-        <div className="flex items-center justify-center mt-10 animate-ping">
-          <Image height={50} width={50} src={logo} alt="logo" />
+    <div ref={nodeRef} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => setIsNodeVisible((prev) => !prev)}
+        className="flex w-full items-center justify-between rounded border border-gray-400 bg-white px-3 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-150"
+      >
+        More Actions
+        <BsThreeDotsVertical />
+      </button>
+      {isNodeVisible ? (
+        <div className="absolute right-0 top-full z-20 mt-1 min-w-[10rem] rounded-md border border-gray-300 bg-white py-1 shadow-lg">
+          <Link
+            href={`/order-management/${orderId}`}
+            target="_blank"
+            className="block px-4 py-2 text-left text-sm text-black hover:bg-gray-150"
+            onClick={() => setIsNodeVisible(false)}
+          >
+            View Detail
+          </Link>
+          {canCancel ? (
+            <button
+              type="button"
+              className="block w-full px-4 py-2 text-left text-sm text-error-primary hover:bg-gray-150"
+              onClick={() => {
+                setIsNodeVisible(false);
+                onCancel();
+              }}
+            >
+              Cancel Order
+            </button>
+          ) : null}
         </div>
-      )}
+      ) : null}
+    </div>
+  );
+};
+
+const OrdersTable = ({
+  data,
+  currentTab,
+  onRefresh,
+}: {
+  data: any[];
+  currentTab: Tab;
+  onRefresh: () => void;
+}) => {
+  const [, copyProductId] = useCopyToClipboard();
+  const [, copyOrderId] = useCopyToClipboard();
+  const [, copyGroupId] = useCopyToClipboard();
+
+  const [selectedIds, setSelectedIds] = useState<(string | number)[]>([]);
+  const [updatingIds, setUpdatingIds] = useState<(string | number)[]>([]);
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const [cancelModal, setCancelModal] = useState<{
+    ids: (string | number)[];
+    isBulk: boolean;
+  } | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const [statusConfirmModal, setStatusConfirmModal] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [deliveryChargeModal, setDeliveryChargeModal] = useState(false);
+  const [deliveryChargeInput, setDeliveryChargeInput] = useState('0');
+
+  const statusAction = getStatusAction(currentTab.id);
+  const allSelected = data.length > 0 && selectedIds.length === data.length;
+  const showBulkCancel = CANCEL_TABS.includes(currentTab.id);
+
+  const toggleSelect = (orderId: string | number) => {
+    setSelectedIds((prev) =>
+      prev.includes(orderId)
+        ? prev.filter((id) => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds(allSelected ? [] : data.map((row) => row.id));
+  };
+
+  const handlePrintInvoices = () => {
+    if (selectedIds.length === 0) return;
+    setActionError(null);
+
+    const buyerIds = getUniqueBuyerIds(data, selectedIds);
+    if (buyerIds.length > 1) {
+      setActionError(MULTI_BUYER_INVOICE_ERROR);
+      return;
+    }
+
+    setDeliveryChargeInput('0');
+    setDeliveryChargeModal(true);
+  };
+
+  const handleConfirmDeliveryCharge = () => {
+    const deliveryCharge = Number(deliveryChargeInput);
+    if (Number.isNaN(deliveryCharge) || deliveryCharge < 0) {
+      setActionError('Please enter a valid delivery charge (0 or greater).');
+      return;
+    }
+
+    const selectedRows = data.filter((row) => selectedIds.includes(row.id));
+    if (selectedRows.length === 0) return;
+
+    setDeliveryChargeModal(false);
+    setActionError(null);
+    setInvoices([buildInvoiceFromOrders(selectedRows, deliveryCharge)]);
+    setShowInvoice(true);
+  };
+
+  const runStatusAction = async (
+    orderId: string | number,
+    action: StatusAction
+  ) => {
+    await changeOrderStatus({
+      orderId,
+      status: action.nextStatus,
+    });
+  };
+
+  const handleRowStatusUpdate = async (orderId: string | number) => {
+    if (!statusAction) return;
+
+    setUpdatingIds((prev) => [...prev, orderId]);
+    setActionError(null);
+    try {
+      await runStatusAction(orderId, statusAction);
+      onRefresh();
+    } catch {
+      setActionError('Failed to update order status. Please try again.');
+    } finally {
+      setUpdatingIds((prev) => prev.filter((id) => id !== orderId));
+    }
+  };
+
+  const handleBulkStatusUpdate = () => {
+    if (!statusAction || selectedIds.length === 0) return;
+    setStatusConfirmModal(true);
+  };
+
+  const handleConfirmBulkStatus = async () => {
+    if (!statusAction) return;
+    setStatusConfirmModal(false);
+    setIsBulkUpdating(true);
+    setActionError(null);
+    try {
+      await Promise.all(
+        selectedIds.map((id) => runStatusAction(id, statusAction))
+      );
+      setSelectedIds([]);
+      onRefresh();
+    } catch {
+      setActionError('Some orders could not be updated. Please try again.');
+    } finally {
+      setIsBulkUpdating(false);
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!cancelModal || !cancelReason.trim()) return;
+    setIsBulkUpdating(true);
+    setActionError(null);
+    try {
+      await Promise.all(
+        cancelModal.ids.map((id) =>
+          changeOrderStatus({
+            orderId: id,
+            status: 'cancelled',
+            reason: cancelReason,
+          })
+        )
+      );
+      setCancelModal(null);
+      setCancelReason('');
+      setSelectedIds([]);
+      onRefresh();
+    } catch {
+      setActionError('Failed to cancel one or more orders.');
+    } finally {
+      setIsBulkUpdating(false);
+    }
+  };
+
+  const getUnitPrice = (row: any) => getOrderUnitPrice(row);
+
+  const getCustomerAddress = (row: any) => {
+    const parts = [
+      row.shipping_address_1,
+      row.shipping_address_2,
+      row.shipping_area,
+      row.shipping_city,
+      row.shipping_state,
+    ].filter(Boolean);
+    return parts.length > 0 ? parts.join(', ') : '—';
+  };
+
+  return (
+    <div className="w-full bg-white">
+      {selectedIds.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-end gap-2 px-2 py-2">
+          {actionError ? (
+            <span className="text-xs text-error-primary">{actionError}</span>
+          ) : null}
+          <Button className={compactButtonClass} onClick={handlePrintInvoices}>
+            Print Invoice
+          </Button>
+          {statusAction ? (
+            <Button
+              className={compactButtonClass}
+              disabled={isBulkUpdating}
+              onClick={handleBulkStatusUpdate}
+            >
+              {isBulkUpdating ? 'Updating...' : 'Change status'}
+            </Button>
+          ) : null}
+          {showBulkCancel ? (
+            <Button
+              className={compactButtonClass}
+              disabled={isBulkUpdating}
+              onClick={() =>
+                setCancelModal({ ids: selectedIds, isBulk: true })
+              }
+            >
+              Cancel Order
+            </Button>
+          ) : null}
+        </div>
+      ) : actionError ? (
+        <div className="px-2 py-2 text-right text-xs text-error-primary">
+          {actionError}
+        </div>
+      ) : null}
+
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px] border-collapse">
+          <thead>
+            <tr className="border-b border-gray-300 bg-gray-150 text-left">
+              <th className="w-10 px-3 py-3">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 cursor-pointer"
+                  checked={allSelected}
+                  onChange={toggleSelectAll}
+                />
+              </th>
+              <th className="px-4 py-3 text-sm font-bold text-black">Customer</th>
+              <th className="min-w-[17rem] px-4 py-3 text-sm font-bold text-black">
+                Product Details
+              </th>
+              <th className="w-40 min-w-[9.5rem] px-4 py-3 text-sm font-bold text-black">
+                Total Amount
+              </th>
+              <th className="px-4 py-3 text-sm font-bold text-black">Order</th>
+              <th className="px-4 py-3 text-sm font-bold text-black">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row) => {
+              const orderTotal =
+                Number(row.total_amount) + Number(row.shipping_charge || 0);
+              const isUpdating = updatingIds.includes(row.id);
+              const canCancel = CANCEL_TABS.includes(currentTab.id);
+
+              return (
+                <tr
+                  key={row.id}
+                  className="border-b border-gray-300 align-top"
+                >
+                  <td className="px-3 py-5">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 cursor-pointer"
+                      checked={selectedIds.includes(row.id)}
+                      onChange={() => toggleSelect(row.id)}
+                    />
+                  </td>
+
+                  <td className="px-4 py-5">
+                    <div className="flex flex-col gap-1.5 text-left">
+                      <span className="text-sm font-bold text-black">
+                        {row.buyer_name}
+                      </span>
+                      <ContactLine icon={<HiOutlineMail className="text-sm" />}>
+                        {row.buyer_email || '—'}
+                      </ContactLine>
+                      <ContactLine icon={<IoCallOutline className="text-sm" />}>
+                        {row.buyer_phone_number || '—'}
+                      </ContactLine>
+                      <ContactLine icon={<IoLocationOutline className="text-sm" />}>
+                        {getCustomerAddress(row)}
+                      </ContactLine>
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-5 align-top">
+                    <div className="flex items-start gap-3 text-left">
+                      <div className="h-16 w-16 shrink-0 overflow-hidden rounded bg-gray-150">
+                        {row.product_cover_image ? (
+                          <Image
+                            height={64}
+                            width={64}
+                            src={`${imageServerBaseUrl}${row.product_cover_image}`}
+                            alt={row.product_name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : null}
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-col gap-2">
+                        {row.product_id ? (
+                          <a
+                            href={getRetailerProductUrl(row.product_id)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-bold leading-snug text-accent-primary hover:underline"
+                          >
+                            {row.product_name}
+                          </a>
+                        ) : (
+                          <p className="text-sm font-bold leading-snug text-black">
+                            {row.product_name}
+                          </p>
+                        )}
+                        <button
+                          type="button"
+                          className="flex w-fit items-center gap-1 text-left text-xs text-accent-primary hover:underline"
+                          onClick={() => copyProductId(row.product_id)}
+                        >
+                          {row.product_id}
+                          <MdContentCopy className="text-sm" />
+                        </button>
+                        {row.product_included_item ? (
+                          <p className="text-xs leading-relaxed text-gray-600">
+                            {row.product_included_item}
+                          </p>
+                        ) : null}
+                        <div className="flex flex-col gap-1.5 pt-0.5">
+                          <ProductMetaRow
+                            label="Unit:"
+                            value={formatRs(getUnitPrice(row))}
+                            accentLabel
+                            isPrice
+                          />
+                          <ProductMetaRow
+                            label="Qty:"
+                            value={`${row.total_items} ${
+                              row.product_unit === 'per pc'
+                                ? 'pcs'
+                                : row.product_unit
+                            }`}
+                            accentLabel
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-5 align-top">
+                    <div className="inline-flex min-w-[9rem] flex-col gap-1.5 text-left">
+                      <AmountRow
+                        label="Subtotal:"
+                        value={formatRs(row.total_amount)}
+                      />
+                      <AmountRow
+                        label="Delivery:"
+                        value={formatRs(row.shipping_charge || 0)}
+                      />
+                      <div className="border-t border-gray-300 pt-1.5">
+                        <AmountRow
+                          label="Total:"
+                          value={formatRs(orderTotal)}
+                          emphasized
+                        />
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-5">
+                    <div className="flex flex-col items-start gap-2 text-left">
+                      <div className="flex items-center gap-1">
+                        <Link
+                          href={`/order-management/${row.id}`}
+                          target="_blank"
+                          className="text-sm font-bold text-accent-primary hover:underline"
+                        >
+                          {row.order_id}
+                        </Link>
+                        <button
+                          type="button"
+                          className="text-accent-primary hover:opacity-80"
+                          onClick={() => copyOrderId(row.order_id)}
+                          aria-label="Copy order ID"
+                        >
+                          <MdContentCopy className="text-sm" />
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-900">
+                        {formatDate(row.order_date)}
+                      </p>
+                      {row.group_id ? (
+                        <button
+                          type="button"
+                          className="flex items-center gap-1 text-xs text-black hover:text-accent-primary"
+                          onClick={() => copyGroupId(row.group_id)}
+                        >
+                          Group: {row.group_id}
+                          <MdContentCopy className="text-sm" />
+                        </button>
+                      ) : null}
+                    </div>
+                  </td>
+
+                  <td className="px-4 py-5">
+                    <div className="flex min-w-[150px] flex-col gap-2">
+                      {showTimeLeftTabs.includes(currentTab.id) &&
+                      (row.time_left ||
+                        row.sla_deadline_at ||
+                        row.estimated_delivery_time) ? (
+                        <p
+                          className={`text-center text-xxs leading-snug ${
+                            isSlaBreached(
+                              row.sla_deadline_at ?? row.estimated_delivery_time,
+                              row.time_left
+                            )
+                              ? 'font-normal text-error-primary'
+                              : 'font-medium text-error-primary'
+                          }`}
+                        >
+                          {getTimeLeftDisplay(
+                            row.sla_deadline_at ?? row.estimated_delivery_time,
+                            row.time_left
+                          )}
+                        </p>
+                      ) : null}
+                      {statusAction ? (
+                        <Button
+                          disabled={isUpdating || isBulkUpdating}
+                          onClick={() => handleRowStatusUpdate(row.id)}
+                        >
+                          {isUpdating ? 'Updating...' : statusAction.label}
+                        </Button>
+                      ) : null}
+                      <MoreActionsMenu
+                        orderId={row.id}
+                        canCancel={canCancel}
+                        onCancel={() =>
+                          setCancelModal({ ids: [row.id], isBulk: false })
+                        }
+                      />
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {cancelModal ? (
+        <ReactModal
+          isOpen
+          onRequestClose={() => {
+            setCancelModal(null);
+            setCancelReason('');
+          }}
+          className="flex h-auto w-1/3 flex-col items-center justify-center rounded-md bg-white p-6"
+          overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+          style={{
+            content: {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            },
+          }}
+          ariaHideApp={false}
+        >
+          <div className="mb-4 text-center text-xl">
+            {cancelModal.isBulk
+              ? `Cancel ${cancelModal.ids.length} selected order(s)?`
+              : 'Are you sure you want to cancel this order?'}
+          </div>
+          <div className="mb-4 w-3/4">
+            <InputLabel label="Cancellation Reason" />
+            <TextInput
+              placeholder="ex: Out of stock"
+              onChange={(e) => setCancelReason(e.target.value)}
+              value={cancelReason}
+            />
+          </div>
+          <div className="flex items-center justify-center">
+            <NoButton
+              onClick={() => {
+                setCancelModal(null);
+                setCancelReason('');
+              }}
+            >
+              No, Cancel
+            </NoButton>
+            <YesButton
+              onClick={handleConfirmCancel}
+              disabled={!cancelReason.trim() || isBulkUpdating}
+            >
+              Yes, Confirm
+            </YesButton>
+          </div>
+        </ReactModal>
+      ) : null}
+
+      {statusConfirmModal && statusAction ? (
+        <ReactModal
+          isOpen
+          onRequestClose={() => setStatusConfirmModal(false)}
+          className="flex h-auto w-1/3 flex-col items-center justify-center rounded-md bg-white p-6"
+          overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+          style={{
+            content: {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            },
+          }}
+          ariaHideApp={false}
+        >
+          <div className="mb-4 text-center text-xl">
+            {`Apply "${statusAction.label}" to ${selectedIds.length} selected order(s)?`}
+          </div>
+          <div className="flex items-center justify-center">
+            <NoButton onClick={() => setStatusConfirmModal(false)}>
+              No, Cancel
+            </NoButton>
+            <YesButton
+              onClick={handleConfirmBulkStatus}
+              disabled={isBulkUpdating}
+            >
+              Yes, Confirm
+            </YesButton>
+          </div>
+        </ReactModal>
+      ) : null}
+
+      {deliveryChargeModal ? (
+        <ReactModal
+          isOpen
+          onRequestClose={() => setDeliveryChargeModal(false)}
+          className="flex h-auto w-1/3 flex-col items-center justify-center rounded-md bg-white p-6"
+          overlayClassName="fixed inset-0 z-50 bg-black bg-opacity-50"
+          style={{
+            content: {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            },
+          }}
+          ariaHideApp={false}
+        >
+          <div className="mb-4 text-center text-xl">Enter Delivery Charge</div>
+          <div className="mb-4 w-3/4">
+            <InputLabel label="Delivery Charge (Rs)" />
+            <TextInput
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0"
+              onChange={(e) => setDeliveryChargeInput(e.target.value)}
+              value={deliveryChargeInput}
+            />
+          </div>
+          <div className="flex items-center justify-center">
+            <NoButton onClick={() => setDeliveryChargeModal(false)}>
+              Cancel
+            </NoButton>
+            <YesButton onClick={handleConfirmDeliveryCharge}>
+              Generate Invoice
+            </YesButton>
+          </div>
+        </ReactModal>
+      ) : null}
+
+      {showInvoice && invoices.length > 0 ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-400 bg-opacity-90 py-6">
+          <div className="relative">
+            <InvoicePDF invoices={invoices} />
+            <div
+              className="absolute -right-2 -top-2 flex cursor-pointer items-center justify-center rounded-full bg-white text-2xl"
+              onClick={() => setShowInvoice(false)}
+            >
+              <AiFillCloseCircle />
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

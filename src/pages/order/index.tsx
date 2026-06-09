@@ -1,20 +1,17 @@
-import React from 'react';
-import OrderDetails from '../../components/orderManagement/OrderDetails';
-import PageWrapper from '../../components/PageWrapper';
-import authenticatedRoute from '../../components/WithAuth';
-import Head from 'next/head';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Loader from '../../components/common/Loader';
 
-function Orders() {
-  return (
-    <>
-      <Head>
-        <meta name="viewport" content="width=1360" />
-      </Head>
-      <PageWrapper>
-        <OrderDetails />
-      </PageWrapper>
-    </>
-  );
+function OrderRedirect() {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.query.order_id) {
+      router.replace(`/order-management/${router.query.order_id}`);
+    }
+  }, [router.query.order_id, router]);
+
+  return <Loader />;
 }
 
-export default authenticatedRoute(Orders);
+export default OrderRedirect;

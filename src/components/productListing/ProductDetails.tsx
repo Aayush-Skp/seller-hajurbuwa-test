@@ -13,6 +13,10 @@ import DiscardModal from './DiscardModal';
 export default function ProductDetails(props: any) {
   const { productDetails, decStep, incStep, setProductDetails } = props;
 
+  const featuredHighlights = Array.isArray(productDetails.featured_highlights)
+    ? productDetails.featured_highlights
+    : [''];
+
   const { errors, register, setValue, handleSubmit } =
     useFormValidation(ProductDetailsSchema);
 
@@ -31,7 +35,7 @@ export default function ProductDetails(props: any) {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number
   ) {
-    const points = [...productDetails.featured_highlights];
+    const points = [...featuredHighlights];
     points[index] = e.target.value;
     setProductDetails((prev: any) => {
       return {
@@ -49,11 +53,14 @@ export default function ProductDetails(props: any) {
     // alert(e.key);
     if (e.key === 'Enter') {
       e.preventDefault();
-      if (productDetails.featured_highlights.length <= 21) {
+      if (featuredHighlights.length <= 21) {
         setProductDetails((prev: any) => {
+          const prevHighlights = Array.isArray(prev.featured_highlights)
+            ? prev.featured_highlights
+            : [''];
           return {
             ...prev,
-            featured_highlights: [...prev.featured_highlights, ''+ '\n'],
+            featured_highlights: [...prevHighlights, '' + '\n'],
           };
         });
       }
@@ -62,7 +69,7 @@ export default function ProductDetails(props: any) {
   }
 
   function removeFeaturedHightLight(index: number) {
-    const filteredPoints = productDetails.featured_highlights.filter(
+    const filteredPoints = featuredHighlights.filter(
       (_: any, i: number) => i !== index
     );
     setProductDetails((prev: any) => {
@@ -74,7 +81,7 @@ export default function ProductDetails(props: any) {
   }
 
   function validateFeaturedHighlight() {
-    if (productDetails.featured_highlights.length < 3) {
+    if (featuredHighlights.length < 3) {
       setFeaturedHighlightValidation({
         isValid: false,
         message: 'Please add at least 3 featured highlights',
@@ -113,7 +120,7 @@ export default function ProductDetails(props: any) {
             </div>
             <div className="w-full">
               <div className="border border-gray-500 p-4 rounded">
-                {productDetails.featured_highlights.map(
+                {featuredHighlights.map(
                   (point: string, index: number) => (
                     <div
                       key={index}

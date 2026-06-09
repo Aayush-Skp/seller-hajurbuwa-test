@@ -7,7 +7,7 @@ export default function Reviews() {
   const [reviews, setReviews] = useState<any>([]);
 
   function getReviewsList() {
-    getOrdersByStatus('delivered', null)
+    getOrdersByStatus('/seller/get-orders?page=1&status=delivered')
       .then((res) => {
         setIsLoading(false);
         setReviews(res.data);

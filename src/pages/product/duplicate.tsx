@@ -4,17 +4,18 @@ import PageWrapper from '../../components/PageWrapper';
 import authenticatedRoute from '../../components/WithAuth';
 import Head from 'next/head';
 
-function ProductUpdatePage() {
+function ProductDuplicatePage() {
   return (
     <>
       <Head>
+        <title>Duplicate Product | Hajurbuwa Seller</title>
         <meta name="viewport" content="width=1360" />
       </Head>
       <PageWrapper>
-        <ProductListing />
+        <ProductListing mode="duplicate" />
       </PageWrapper>
     </>
   );
 }
 
-export default authenticatedRoute(ProductUpdatePage);
+export default authenticatedRoute(ProductDuplicatePage);

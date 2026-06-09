@@ -1,7 +1,11 @@
 import Image from 'next/image';
 import React, { useState } from 'react';
 import Info from '../../../public/icons/info.svg';
-import { addProduct, updateProduct } from '../../services/productService';
+import {
+  addProduct,
+  duplicateProduct,
+  updateProduct,
+} from '../../services/productService';
 import Button from '../common/Button';
 import ErrorMessage from '../common/ErrorMessage';
 import TextInput from '../common/TextInput';
@@ -9,8 +13,57 @@ import DiscardModal from './DiscardModal';
 import Spinner from '../loader/Spinner';
 import ProductAddSuccessModal from './ProductAddSuccessModal';
 
+function buildProductFormData(productDetails: any) {
+  const params = new FormData();
+
+  params.append('product_name', productDetails.product_name);
+  params.append('category_id', productDetails.category_id);
+  params.append('category_tree', productDetails.category_tree);
+  params.append('brand', productDetails.brand);
+  params.append('minimum_order', productDetails.minimum_order);
+  params.append('description', productDetails.description);
+  params.append('unit', productDetails.unit);
+  params.append('included_items', productDetails.included_items);
+  params.append('price_per_unit', productDetails.price_per_unit);
+  params.append('in_stock', productDetails.in_stock);
+  params.append('package_weight', productDetails.package_weight);
+  params.append('cover_image', productDetails.cover_image);
+  params.append('is_bulk_price', productDetails.is_bulk_price);
+  params.append('featured_highlights', productDetails.featured_highlights);
+
+  const bulkPricing = Array.isArray(productDetails.bulk_pricing)
+    ? productDetails.bulk_pricing
+    : [];
+
+  const bulkPrices = bulkPricing.map((price: any) => {
+    return [price.quantity, price.price];
+  });
+
+  for (let i = 0; i < bulkPrices.length; i++) {
+    for (let j = 0; j < bulkPrices[i].length; j++) {
+      params.append(`bulk_pricing[${i}][${j}]`, bulkPrices[i][j]);
+    }
+  }
+
+  for (const key in productDetails.images) {
+    if (typeof productDetails.images[key] === 'object') {
+      params.append(`sub_images[]`, productDetails.images[key]);
+    }
+
+    if (
+      typeof productDetails.images[key] === 'string' &&
+      productDetails.images[key] !== ''
+    ) {
+      params.append('old_sub_images[]', productDetails.images[key]);
+    }
+  }
+
+  return params;
+}
+
 export default function ServicesAndDelivery(props: any) {
-  const { productDetails, setProductDetails, decStep, isUpdate } = props;
+  const { productDetails, setProductDetails, decStep, isUpdate, isDuplicate } =
+    props;
 
   const [packageWeightValidation, setPackageWeightValidation] = useState({
     isValid: true,
@@ -70,49 +123,15 @@ export default function ServicesAndDelivery(props: any) {
       errorMsg: '',
     });
 
-    if (isUpdate) {
-      const params = new FormData();
+    if (isUpdate || isDuplicate) {
+      const params = buildProductFormData(productDetails);
+      if (isUpdate) params.append('_method', 'PUT');
 
-      params.append('product_name', productDetails.product_name);
-      params.append('category_id', productDetails.category_id);
-      params.append('category_tree', productDetails.category_tree);
-      params.append('brand', productDetails.brand);
-      params.append('minimum_order', productDetails.minimum_order);
-      params.append('description', productDetails.description);
-      params.append('unit', productDetails.unit);
-      params.append('included_items', productDetails.included_items);
-      params.append('price_per_unit', productDetails.price_per_unit);
-      params.append('in_stock', productDetails.in_stock);
-      params.append('package_weight', productDetails.package_weight);
-      params.append('cover_image', productDetails.cover_image);
-      params.append('is_bulk_price', productDetails.is_bulk_price);
-      params.append('featured_highlights', productDetails.featured_highlights);
+      const request = isUpdate
+        ? updateProduct(productDetails.productId, params)
+        : duplicateProduct(productDetails.productId, params);
 
-      let bulkPrices = productDetails.bulk_pricing.map((price: any) => {
-        return [price.quantity, price.price];
-      });
-
-      for (let i = 0; i < bulkPrices.length; i++) {
-        for (let j = 0; j < bulkPrices[i].length; j++) {
-          params.append(`bulk_pricing[${i}][${j}]`, bulkPrices[i][j]);
-        }
-      }
-
-      for (const key in productDetails.images) {
-        if (typeof productDetails.images[key] === 'object') {
-          params.append(`sub_images[]`, productDetails.images[key]);
-        }
-        
-        if (
-          typeof productDetails.images[key] === 'string' &&
-          productDetails.images[key] !== ''
-        )
-          params.append('old_sub_images[]', productDetails.images[key]);
-      }
-
-      params.append('_method', 'PUT');
-
-      updateProduct(productDetails.productId, params)
+      request
         .then((res) => {
           setApiResponse({
             isLoading: false,
@@ -157,6 +176,7 @@ export default function ServicesAndDelivery(props: any) {
       {isProductAddSuccessModalOpen ? (
         <ProductAddSuccessModal
           isUpdate={isUpdate}
+          isDuplicate={isDuplicate}
           isProductAddSuccessModalOpen={isProductAddSuccessModalOpen}
           setIsProductAddSuccessModalOpen={setIsProductAddSuccessModalOpen}
         />
@@ -200,7 +220,11 @@ export default function ServicesAndDelivery(props: any) {
                   <Spinner />
                 </div>
               ) : (
-                'Submit'
+                isUpdate
+                  ? 'Update Product'
+                  : isDuplicate
+                  ? 'Duplicate Product'
+                  : 'Submit'
               )}
             </Button>
           </div>

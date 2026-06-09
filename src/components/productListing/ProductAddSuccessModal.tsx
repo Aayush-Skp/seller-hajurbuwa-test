@@ -9,6 +9,7 @@ type ProductAddSuccessModalProps = {
   isProductAddSuccessModalOpen: boolean;
   setIsProductAddSuccessModalOpen: (value: boolean) => void;
   isUpdate: boolean;
+  isDuplicate?: boolean;
 };
 
 export default function ProductAddSuccessModal(
@@ -18,9 +19,11 @@ export default function ProductAddSuccessModal(
     isProductAddSuccessModalOpen,
     setIsProductAddSuccessModalOpen,
     isUpdate,
+    isDuplicate,
   } = props;
 
   const router = useRouter();
+  const successAction = isUpdate ? 'updated' : isDuplicate ? 'duplicated' : 'added';
 
   return (
     <div>
@@ -56,8 +59,7 @@ export default function ProductAddSuccessModal(
             <div className="flex items-center space-x-1">
               <Image src={checkMark} alt="" />
               <span>
-                Your product has been {isUpdate ? 'updated' : 'added'}{' '}
-                successfully.
+                Your product has been {successAction} successfully.
               </span>
             </div>
             <div className="flex justify-center">

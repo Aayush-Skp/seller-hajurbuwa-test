@@ -16,6 +16,10 @@ export default function PriceAndStock(props: any) {
   const { productDetails, decStep, incStep, defaultValues, setProductDetails } =
     props;
 
+  const selectedUnitValue = productDetails.unit
+    ? `${productDetails.unit},${productDetails.unitName ?? ''}`
+    : '';
+
   const [minOrderValidation, setMinOrderValidation] = useState({
     isValid: true,
     message: '',
@@ -340,6 +344,7 @@ export default function PriceAndStock(props: any) {
             </div>
             <div className="flex flex-col">
               <select
+                value={selectedUnitValue}
                 onChange={handleUnitChange}
                 className="w-56 h-10 outline-none border border-gray-600 rounded cursor-pointer"
               >
@@ -348,7 +353,6 @@ export default function PriceAndStock(props: any) {
                   <option
                     key={unit.id}
                     value={`${unit.id},${unit.name}`}
-                    selected={unit.id === productDetails.unit}
                   >
                     {unit?.name}
                   </option>

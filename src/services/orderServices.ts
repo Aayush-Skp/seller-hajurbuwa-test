@@ -1,21 +1,24 @@
 import { httpClient } from '../config/httpClient';
 
-export function searchOrdersWithStatusAndKeyword(
-  status: string,
-  keyword: string
-) {
-  return httpClient
-    .get(`/seller/orders/search?status=${status}&keyword=${keyword}&page=1`)
-    .then((res) => res.data);
-}
+export function getOrdersByStatus(url: string) {
+  if (url.includes('/orders/search')) {
+    return httpClient.get(url).then((res) => res.data);
+  }
 
-export function getOrdersByStatus(
-  status: string,
-  currentPageUrl: string | null
-) {
+  const queryString = url.includes('?') ? url.split('?')[1] : 'page=1';
+  const params = new URLSearchParams(queryString);
+  const status = params.get('status') || 'pending';
+  const path = url.startsWith('/seller/')
+    ? url.split('?')[0] + (queryString ? `?${queryString}` : '')
+    : `/seller/get-orders?${queryString}`;
+
   return httpClient
-    .post(`${currentPageUrl ?? '/seller/get-orders?page=1'}&status=${status}`, {
+    .post(path, {
       status,
+      date_from: params.get('date_from') || undefined,
+      date_to: params.get('date_to') || undefined,
+      payment_mode: params.get('payment_mode') || undefined,
+      payment_status: params.get('payment_status') || undefined,
     })
     .then((res) => res.data);
 }
@@ -36,11 +39,11 @@ export function changeOrderStatus({
   reason?: string;
 }) {
   return httpClient
-    .post(`seller/set-order-status/${orderId}`, {
+    .post(`/seller/set-order-status/${orderId}`, {
       status,
       reason,
     })
-    .then((res) => res.data.data);
+    .then((res) => res.data);
 }
 
 export function replyToAnOrder(orderId: string | number, message: string) {

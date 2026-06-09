@@ -8,11 +8,12 @@ function ProductAddPage() {
   return (
     <>
       <Head>
+        <title>Add Product | Hajurbuwa Seller</title>
         <meta name="viewport" content="width=1360" />
       </Head>
       <div className="w-full h-full">
         <PageWrapper>
-          <ProductListing />
+          <ProductListing mode="add" />
         </PageWrapper>
       </div>
     </>
