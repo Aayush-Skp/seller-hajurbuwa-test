@@ -81,8 +81,12 @@ const CANCEL_TABS: Tab['id'][] = [
 const compactButtonClass =
   '!w-auto whitespace-nowrap !px-3 !py-1 !text-xs !font-medium';
 
+/** Sits below sticky status tabs (top-28 + tab row height). */
+const stickyBulkBarClass =
+  'sticky top-[10rem] z-[2] flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-white px-4 py-2 shadow-sm';
+
 const MULTI_BUYER_INVOICE_ERROR =
-  'Invoice cannot be generated because selected orders belong to more than one buyer. Print invoice can only be generated for one buyer at a time.';
+  'Print invoice can only be generated for one buyer at a time.';
 
 const getUniqueBuyerIds = (
   rows: { id: string | number; buyer_id?: string | number }[],
@@ -255,7 +259,7 @@ const OrdersTable = ({
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [showInvoice, setShowInvoice] = useState(false);
   const [deliveryChargeModal, setDeliveryChargeModal] = useState(false);
-  const [deliveryChargeInput, setDeliveryChargeInput] = useState('0');
+  const [deliveryChargeInput, setDeliveryChargeInput] = useState('');
 
   const statusAction = getStatusAction(currentTab.id);
   const allSelected = data.length > 0 && selectedIds.length === data.length;
@@ -283,12 +287,13 @@ const OrdersTable = ({
       return;
     }
 
-    setDeliveryChargeInput('0');
+    setDeliveryChargeInput('');
     setDeliveryChargeModal(true);
   };
 
   const handleConfirmDeliveryCharge = () => {
-    const deliveryCharge = Number(deliveryChargeInput);
+    const deliveryCharge =
+      deliveryChargeInput.trim() === '' ? 0 : Number(deliveryChargeInput);
     if (Number.isNaN(deliveryCharge) || deliveryCharge < 0) {
       setActionError('Please enter a valid delivery charge (0 or greater).');
       return;
@@ -392,33 +397,38 @@ const OrdersTable = ({
   return (
     <div className="w-full bg-white">
       {selectedIds.length > 0 ? (
-        <div className="flex flex-wrap items-center justify-end gap-2 px-2 py-2">
-          {actionError ? (
-            <span className="text-xs text-error-primary">{actionError}</span>
-          ) : null}
-          <Button className={compactButtonClass} onClick={handlePrintInvoices}>
-            Print Invoice
-          </Button>
-          {statusAction ? (
-            <Button
-              className={compactButtonClass}
-              disabled={isBulkUpdating}
-              onClick={handleBulkStatusUpdate}
-            >
-              {isBulkUpdating ? 'Updating...' : 'Change status'}
+        <div className={stickyBulkBarClass}>
+          <span className="text-xs font-medium text-gray-600 tabular-nums">
+            {selectedIds.length} selected
+          </span>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {actionError ? (
+              <span className="text-xs text-error-primary">{actionError}</span>
+            ) : null}
+            <Button className={compactButtonClass} onClick={handlePrintInvoices}>
+              Print Invoice
             </Button>
-          ) : null}
-          {showBulkCancel ? (
-            <Button
-              className={compactButtonClass}
-              disabled={isBulkUpdating}
-              onClick={() =>
-                setCancelModal({ ids: selectedIds, isBulk: true })
-              }
-            >
-              Cancel Order
-            </Button>
-          ) : null}
+            {statusAction ? (
+              <Button
+                className={compactButtonClass}
+                disabled={isBulkUpdating}
+                onClick={handleBulkStatusUpdate}
+              >
+                {isBulkUpdating ? 'Updating...' : 'Change status'}
+              </Button>
+            ) : null}
+            {showBulkCancel ? (
+              <Button
+                className={compactButtonClass}
+                disabled={isBulkUpdating}
+                onClick={() =>
+                  setCancelModal({ ids: selectedIds, isBulk: true })
+                }
+              >
+                Cancel Order
+              </Button>
+            ) : null}
+          </div>
         </div>
       ) : actionError ? (
         <div className="px-2 py-2 text-right text-xs text-error-primary">
@@ -757,7 +767,6 @@ const OrdersTable = ({
               type="number"
               min="0"
               step="0.01"
-              placeholder="0"
               onChange={(e) => setDeliveryChargeInput(e.target.value)}
               value={deliveryChargeInput}
             />

@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { httpClient } from '../config/httpClient';
 import { FaCopy } from 'react-icons/fa';
 import useCopyToClipBoard from '../hooks/useCopyToClipBoard';
+import { getRetailerProductUrl } from '../constants/serverConstants';
 
 
 
@@ -325,7 +326,14 @@ with Near Deadline`;
                         )}
                       </div>
                       <div>
-                        <div className="font-bold text-black">{order.product_name}</div>
+                        <a
+                          href={getRetailerProductUrl(String(order.product_id))}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-bold text-black hover:text-accent-primary hover:underline"
+                        >
+                          {order.product_name}
+                        </a>
                         <div className="text-black">
                           ID: {order.product_id}
                           <FaCopy

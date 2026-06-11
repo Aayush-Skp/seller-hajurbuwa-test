@@ -5,8 +5,8 @@ import ReactModal from 'react-modal';
 import { MdContentCopy } from 'react-icons/md';
 import { BsPencil } from 'react-icons/bs';
 import {
+  getRetailerProductUrl,
   resolveImageUrl,
-  storefrontBaseUrl,
 } from '../../constants/serverConstants';
 import useCopyToClipboard from '../../hooks/useCopyToClipBoard';
 import {
@@ -55,6 +55,10 @@ type BulkActionConfig = {
 
 const compactButtonClass =
   '!w-auto whitespace-nowrap !px-3 !py-1 !text-xs !font-medium';
+
+/** Sits below sticky status tabs (top-28 + tab row height). */
+const stickyBulkBarClass =
+  'sticky top-[10rem] z-[11] flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 bg-white px-4 py-2 shadow-sm';
 
 const statusAction = (
   key: string,
@@ -381,10 +385,10 @@ const ProductManagementTable = ({
   };
 
   return (
-    <div className="w-full overflow-x-auto rounded-md border border-gray-200 bg-white shadow-sm">
+    <div className="w-full rounded-md border border-gray-200 bg-white shadow-sm">
       {selectedIds.length > 0 ? (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 px-4 py-2">
-          <span className="text-xs text-gray-500">
+        <div className={stickyBulkBarClass}>
+          <span className="text-xs font-medium text-gray-600 tabular-nums">
             {selectedIds.length} selected
           </span>
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -409,6 +413,7 @@ const ProductManagementTable = ({
         </div>
       ) : null}
 
+      <div className="overflow-x-auto">
       <table className="w-full min-w-[960px] border-collapse">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50 text-left">
@@ -465,7 +470,7 @@ const ProductManagementTable = ({
                     />
                     <div className="flex min-w-0 flex-1 flex-col gap-2">
                       <a
-                        href={`${storefrontBaseUrl}/product?productId=${row.product_id}`}
+                        href={getRetailerProductUrl(row.product_id)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm font-medium leading-snug text-black hover:text-accent-primary"
@@ -531,6 +536,7 @@ const ProductManagementTable = ({
           })}
         </tbody>
       </table>
+      </div>
 
       {pricingEditRow ? (
         <PriceEditModal

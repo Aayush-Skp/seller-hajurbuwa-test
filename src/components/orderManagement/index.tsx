@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getOrdersByStatus } from '../../services/orderServices';
 import TabsHeader from './TabsHeader';
@@ -46,20 +46,35 @@ const tabs: Tab[] = [
 const getTabById = (id: string): Tab | undefined =>
   tabs.find((tab) => tab.id === id);
 
+const getTabFromParam = (
+  tabParam: string | string[] | undefined
+): Tab => {
+  const id = Array.isArray(tabParam) ? tabParam[0] : tabParam;
+  return getTabById(id || '') ?? tabs[0];
+};
+
+const getInitialTab = (): Tab => {
+  if (typeof window !== 'undefined') {
+    const params = new URLSearchParams(window.location.search);
+    return getTabFromParam(params.get('tab') ?? undefined);
+  }
+  return tabs[0];
+};
+
+const SEARCH_DEBOUNCE_MS = 400;
+const isCanceledRequest = (err: unknown) =>
+  typeof err === 'object' &&
+  err !== null &&
+  'code' in err &&
+  (err as { code?: string }).code === 'ERR_CANCELED';
+
 export default function Orders() {
   const router = useRouter();
-  const [currentTab, setCurrentTab] = useState<Tab>(tabs[0]);
+  const [currentTab, setCurrentTab] = useState<Tab>(getInitialTab);
 
   useEffect(() => {
     if (!router.isReady) return;
-
-    const tabParam = router.query.tab;
-    if (typeof tabParam !== 'string') return;
-
-    const tab = getTabById(tabParam);
-    if (tab) {
-      setCurrentTab(tab);
-    }
+    setCurrentTab(getTabFromParam(router.query.tab));
   }, [router.isReady, router.query.tab]);
 
   const [orderList, setOrderList] = useState<unknown[]>([]);
@@ -72,6 +87,8 @@ export default function Orders() {
   const [notFound, setNotFound] = useState(true);
   const [reqUrl, setReqUrl] = useState('/seller/get-orders?page=1');
   const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
+  const requestControllerRef = useRef<AbortController | null>(null);
   const [filters, setFilters] = useState<OrderFilterValues>({
     dateFrom: '',
     dateTo: '',
@@ -82,28 +99,34 @@ export default function Orders() {
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setCurrentTab(tab);
-      if (keyword === '') {
+      if (debouncedKeyword === '') {
         setReqUrl('/seller/get-orders?page=1');
       }
     },
-    [keyword]
+    [debouncedKeyword]
   );
 
-  function getAllOrders() {
+  const getAllOrders = useCallback(() => {
+    requestControllerRef.current?.abort();
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
+
     setOrderList([]);
     setIsLoading(true);
     const url = `${reqUrl}&status=${currentTab.id}`;
-    getOrdersByStatus(url)
+    getOrdersByStatus(url, controller.signal)
       .then((res) => {
+        const orders = res.data || [];
         setStatusArray(
           normalizeStatusCounts(res.status_array || res.statusCount || [])
         );
-        setOrderList(res.data);
+        setOrderList(orders);
         setPagination(res.pagination);
         setIsLoading(false);
-        setNotFound(false);
+        setNotFound(orders.length === 0);
       })
       .catch((err) => {
+        if (isCanceledRequest(err)) return;
         if (err?.response?.status === 404) {
           setOrderList([]);
           setStatusArray(
@@ -117,11 +140,23 @@ export default function Orders() {
         }
         setIsLoading(false);
       });
-  }
+  }, [currentTab.id, reqUrl]);
 
   useEffect(() => {
+    if (!router.isReady) return;
     getAllOrders();
-  }, [currentTab, reqUrl]);
+    return () => {
+      requestControllerRef.current?.abort();
+    };
+  }, [getAllOrders, router.isReady]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedKeyword(keyword.trim());
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [keyword]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -132,13 +167,16 @@ export default function Orders() {
     if (filters.paymentStatus)
       params.set('payment_status', filters.paymentStatus);
 
-    if (keyword === '') {
-      setReqUrl(`/seller/get-orders?${params.toString()}`);
+    const query = params.toString();
+
+    if (debouncedKeyword === '') {
+      setReqUrl(`/seller/get-orders?${query}`);
     } else {
-      params.set('keyword', keyword);
-      setReqUrl(`/seller/orders/search?${params.toString()}`);
+      setReqUrl(
+        `/seller/orders/search?${query}&keyword=${encodeURIComponent(debouncedKeyword)}`
+      );
     }
-  }, [keyword, filters]);
+  }, [debouncedKeyword, filters]);
 
   return (
     <section className="flex flex-col justify-center items-center w-full">
@@ -178,7 +216,7 @@ export default function Orders() {
           <Pagination
             pagination={pagination}
             setReqUrl={setReqUrl}
-            keyword={keyword}
+            keyword={debouncedKeyword}
           />
         )}
       </div>

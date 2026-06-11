@@ -3,10 +3,11 @@ export const imageServerBaseUrl =
   'https://devdashboard.hajurbuwa.com/hajurbuwa-bucket/';
 
 export const storefrontBaseUrl =
-  process.env.NEXT_PUBLIC_STOREFRONT_URL ?? 'https://www.hajurbuwa.com';
+  process.env.NEXT_PUBLIC_STOREFRONT_URL?.trim() ||
+  'https://www.hajurbuwa.com';
 
 export const getRetailerProductUrl = (productId: string) =>
-  `${storefrontBaseUrl.replace(/\/+$/, '')}/retailer?productId=${encodeURIComponent(productId)}`;
+  `${storefrontBaseUrl.replace(/\/+$/, '')}/product?productId=${encodeURIComponent(productId)}`;
 
 /** Join bucket base URL with a relative image path (avoids double slashes). */
 export function resolveImageUrl(path?: string | null): string {

@@ -1,8 +1,8 @@
 import { httpClient } from '../config/httpClient';
 
-export function getOrdersByStatus(url: string) {
+export function getOrdersByStatus(url: string, signal?: AbortSignal) {
   if (url.includes('/orders/search')) {
-    return httpClient.get(url).then((res) => res.data);
+    return httpClient.get(url, { signal }).then((res) => res.data);
   }
 
   const queryString = url.includes('?') ? url.split('?')[1] : 'page=1';
@@ -19,6 +19,8 @@ export function getOrdersByStatus(url: string) {
       date_to: params.get('date_to') || undefined,
       payment_mode: params.get('payment_mode') || undefined,
       payment_status: params.get('payment_status') || undefined,
+    }, {
+      signal,
     })
     .then((res) => res.data);
 }

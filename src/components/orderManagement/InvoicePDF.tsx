@@ -83,9 +83,8 @@ const styles = StyleSheet.create({
   },
   cell: { padding: 5, borderRightWidth: 0.5, borderRightColor: '#ccc' },
   cellNo: { width: '5%' },
-  cellDesc: { width: '37%' },
+  cellDesc: { width: '48%' },
   cellQty: { width: '11%', textAlign: 'right' },
-  cellUnit: { width: '11%' },
   cellRate: { width: '13%', textAlign: 'right' },
   cellPer: { width: '10%' },
   cellAmount: { width: '13%', textAlign: 'right', borderRightWidth: 0 },
@@ -127,7 +126,6 @@ function InvoicePage({
   const total = subTotal + delivery;
   const paid = items.reduce((sum, it) => sum + Number(it.amount_received || 0), 0);
   const balance = total - paid;
-  const totalQty = items.reduce((sum, it) => sum + Number(it.quantity || 0), 0);
   const dated = orderDate ? formatDate(orderDate) : '';
 
   return (
@@ -168,7 +166,6 @@ function InvoicePage({
           <Text style={[styles.cell, styles.cellNo, styles.bold]}>#</Text>
           <Text style={[styles.cell, styles.cellDesc, styles.bold]}>Description</Text>
           <Text style={[styles.cell, styles.cellQty, styles.bold]}>QTY</Text>
-          <Text style={[styles.cell, styles.cellUnit, styles.bold]}>Units</Text>
           <Text style={[styles.cell, styles.cellRate, styles.bold]}>Rate</Text>
           <Text style={[styles.cell, styles.cellPer, styles.bold]}>Per</Text>
           <Text style={[styles.cell, styles.cellAmount, styles.bold]}>Amount</Text>
@@ -178,7 +175,6 @@ function InvoicePage({
             <Text style={[styles.cell, styles.cellNo]}>{idx + 1}</Text>
             <Text style={[styles.cell, styles.cellDesc]}>{it.product_name}</Text>
             <Text style={[styles.cell, styles.cellQty]}>{Number(it.quantity).toFixed(2)}</Text>
-            <Text style={[styles.cell, styles.cellUnit]}>{it.unit}</Text>
             <Text style={[styles.cell, styles.cellRate]}>{Number(it.rate).toFixed(2)}</Text>
             <Text style={[styles.cell, styles.cellPer]}>{it.unit}</Text>
             <Text style={[styles.cell, styles.cellAmount]}>{Number(it.amount).toFixed(2)}</Text>
@@ -188,28 +184,17 @@ function InvoicePage({
           <Text style={[styles.cell, styles.cellNo]}></Text>
           <Text style={[styles.cell, styles.cellDesc]}></Text>
           <Text style={[styles.cell, styles.cellQty]}></Text>
-          <Text style={[styles.cell, styles.cellUnit]}></Text>
           <Text style={[styles.cell, styles.cellRate]}></Text>
           <Text style={[styles.cell, styles.cellPer, styles.bold]}>Sub Total</Text>
           <Text style={[styles.cell, styles.cellAmount, styles.bold]}>{subTotal.toFixed(2)}</Text>
         </View>
-        <View style={styles.tableRow}>
+        <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
           <Text style={[styles.cell, styles.cellNo]}></Text>
           <Text style={[styles.cell, styles.cellDesc]}></Text>
           <Text style={[styles.cell, styles.cellQty]}></Text>
-          <Text style={[styles.cell, styles.cellUnit]}></Text>
           <Text style={[styles.cell, styles.cellRate]}></Text>
           <Text style={[styles.cell, styles.cellPer, styles.bold]}>Delivery Charge</Text>
           <Text style={[styles.cell, styles.cellAmount, styles.bold]}>{delivery.toFixed(2)}</Text>
-        </View>
-        <View style={[styles.tableRow, { borderBottomWidth: 0 }]}>
-          <Text style={[styles.cell, styles.cellNo, styles.bold]}>Total</Text>
-          <Text style={[styles.cell, styles.cellDesc]}></Text>
-          <Text style={[styles.cell, styles.cellQty, styles.bold]}>{totalQty.toFixed(2)}</Text>
-          <Text style={[styles.cell, styles.cellUnit]}></Text>
-          <Text style={[styles.cell, styles.cellRate]}></Text>
-          <Text style={[styles.cell, styles.cellPer]}></Text>
-          <Text style={[styles.cell, styles.cellAmount, styles.bold]}>{money(total)}</Text>
         </View>
       </View>
 

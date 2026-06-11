@@ -43,11 +43,11 @@ export default function PriceAndStock(props: any) {
       setValue('price_per_unit', '');
       setError('price_per_unit', { message: '' });
     }
-  }, [productDetails.is_bulk_price]);
+  }, [productDetails.is_bulk_price, setError, setValue]);
 
   useEffect(() => {
     setValue('price_per_unit', productDetails.price_per_unit);
-  }, []);
+  }, [productDetails.price_per_unit, setValue]);
 
   useEffect(() => {
     if (productDetails.unit === '') {
@@ -61,7 +61,7 @@ export default function PriceAndStock(props: any) {
         message: 'Please select a unit',
       });
     }
-  }, [productDetails.unit]);
+  }, [productDetails.unit, setProductDetails]);
 
   function handleUnitChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const value = e.target.value.split(',');
@@ -171,11 +171,20 @@ export default function PriceAndStock(props: any) {
   }
 
   function handleMinimumOrderChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const minimumOrder = e.target.valueAsNumber;
     setProductDetails((prev: any) => {
+      const existingBulkPricing = Array.isArray(prev.bulk_pricing)
+        ? prev.bulk_pricing
+        : [];
+      const firstTier = existingBulkPricing[0] ?? { price: 0 };
+
       return {
         ...prev,
-        minimum_order: e.target.valueAsNumber,
-        bulk_pricing: [{ quantity: e.target.valueAsNumber, price: 0 }],
+        minimum_order: minimumOrder,
+        bulk_pricing: [
+          { ...firstTier, quantity: minimumOrder },
+          ...existingBulkPricing.slice(1),
+        ],
       };
     });
     setBulkValidation({

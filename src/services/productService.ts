@@ -3,8 +3,8 @@ import { imageServerBaseUrl } from '../constants/serverConstants';
 
 const productUrl = '/seller/product';
 
-export function getProductsByStatus(url: string) {
-  return httpClient.get(url).then((res) => res.data);
+export function getProductsByStatus(url: string, signal?: AbortSignal) {
+  return httpClient.get(url, { signal }).then((res) => res.data);
 }
 
 type ProductStatus =
@@ -72,6 +72,29 @@ function normalizeFeaturedHighlights(
     return value.map(String);
   }
   return fallback;
+}
+
+function toNumericString(...values: unknown[]): string {
+  const value = values.find((item) => item !== null && item !== undefined && item !== '');
+  return value === undefined ? '' : String(value);
+}
+
+function normalizeBulkPricing(
+  value: unknown,
+  minimumOrder: number,
+  pricePerUnit: string
+): ProductBulkTier[] {
+  if (!Array.isArray(value) || value.length === 0) {
+    return [{ quantity: minimumOrder, price: Number(pricePerUnit) || 0 }];
+  }
+
+  return value.map((tier: any, index) => ({
+    quantity:
+      index === 0
+        ? minimumOrder
+        : Number(tier.quantity ?? tier[0]) || minimumOrder + index,
+    price: Number(tier.price ?? tier.price_per_piece ?? tier[1]) || 0,
+  }));
 }
 
 export function updateProductStock(
@@ -212,26 +235,33 @@ export function getProductById(productId: string | number) {
     
     productDetails.product_name = res.data.data[0].product_name;
     productDetails.included_items = res.data.data[0].included_items;
-    productDetails.minimum_order = res.data.data[0].minimum_order;
-    productDetails.package_weight = res.data.data[0].package_weight;
-    productDetails.price_per_unit = !res.data.data[0].price_per_unit
+    const minimumOrder = Number(res.data.data[0].minimum_order) || 1;
+    const pricePerUnit = !res.data.data[0].price_per_unit
       ? ''
       : res.data.data[0].price_per_unit.toString();
-    productDetails.category_id = res.data.data[0].product_type ?? null;
+
+    productDetails.minimum_order = minimumOrder;
+    productDetails.package_weight = res.data.data[0].package_weight;
+    productDetails.price_per_unit = pricePerUnit;
+    productDetails.category_id =
+      Number(res.data.data[0].category_id ?? res.data.data[0].product_type) ||
+      null;
     productDetails.in_stock = res.data.data[0].stock_availability;
-    productDetails.unit =
-      res.data.data[0].unit_selection != null
-        ? String(res.data.data[0].unit_selection)
-        : '';
+    productDetails.unit = toNumericString(
+      res.data.data[0].unit_id,
+      res.data.data[0].unit_selection
+    );
     productDetails.unitName = res.data.data[0].unit_name ?? '';
-    productDetails.is_bulk_price = Boolean(res.data.data[0].is_bulk_price);
-    productDetails.bulk_pricing = res.data.data[0].is_bulk_price
-      ? res.data.data[0].bulk_pricing ?? []
-      : [{ quantity: res.data.data[0].minimum_order, price: 0 }];
-    productDetails.brand =
-      res.data.data[0].brand_specification != null
-        ? String(res.data.data[0].brand_specification)
-        : '';
+    productDetails.is_bulk_price = Number(res.data.data[0].is_bulk_price) === 1;
+    productDetails.bulk_pricing = normalizeBulkPricing(
+      res.data.data[0].bulk_pricing,
+      minimumOrder,
+      pricePerUnit
+    );
+    productDetails.brand = toNumericString(
+      res.data.data[0].brand_id,
+      res.data.data[0].brand_specification
+    );
     productDetails.description = res.data.data[0].description ?? '';
     productDetails.featured_highlights = normalizeFeaturedHighlights(
       res.data.data[0].featured_highlights

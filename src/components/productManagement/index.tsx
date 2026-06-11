@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import TabsHeader from './TabsHeader';
 import ProductManagementTable, { type ProductRow } from './ProductManagementTable';
 import { getProductsByStatus } from '../../services/productService';
@@ -27,6 +27,13 @@ const tabs: Tab[] = [
   { id: 'locked', label: 'Locked' },
 ];
 
+const SEARCH_DEBOUNCE_MS = 400;
+const isCanceledRequest = (err: unknown) =>
+  typeof err === 'object' &&
+  err !== null &&
+  'code' in err &&
+  (err as { code?: string }).code === 'ERR_CANCELED';
+
 export default function ProductManagement() {
   const [currentTab, setCurrentTab] = useState<Tab>({
     id: 'online',
@@ -43,36 +50,44 @@ export default function ProductManagement() {
   const [reqUrl, setReqUrl] = useState('/seller/product?page=1');
   const [notFound, setNotFound] = useState(true);
   const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
+  const requestControllerRef = useRef<AbortController | null>(null);
 
   const handleTabChange = useCallback(
     (tab: Tab) => {
       setCurrentTab(tab);
-      if (keyword === '') {
+      if (debouncedKeyword === '') {
         setReqUrl('/seller/product?page=1');
       } else {
         setReqUrl(
-          `/seller/products/search?keyword=${encodeURIComponent(keyword)}&page=1`
+          `/seller/products/search?keyword=${encodeURIComponent(debouncedKeyword)}&page=1`
         );
       }
     },
-    [keyword]
+    [debouncedKeyword]
   );
 
-  function getAllProducts() {
+  const getAllProducts = useCallback(() => {
+    requestControllerRef.current?.abort();
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
+
     setProductList([]);
     setIsLoading(true);
     const url = `${reqUrl}&status=${currentTab.id}`;
-    getProductsByStatus(url)
+    getProductsByStatus(url, controller.signal)
       .then((res) => {
-        setProductList(res.data);
+        const products = res.data || [];
+        setProductList(products);
         setStatusArray(
           normalizeStatusCounts(res.statusCount || res.status_array || [])
         );
         setPagination(res.pagination);
         setIsLoading(false);
-        setNotFound(false);
+        setNotFound(products.length === 0);
       })
       .catch((err) => {
+        if (isCanceledRequest(err)) return;
         err?.response?.status === 404 && setProductList([]);
         err?.response?.status === 404 &&
           setStatusArray(
@@ -85,21 +100,32 @@ export default function ProductManagement() {
         err?.response?.status === 404 && setNotFound(true);
         setIsLoading(false);
       });
-  }
+  }, [currentTab.id, reqUrl]);
 
   useEffect(() => {
     getAllProducts();
-  }, [currentTab, reqUrl]);
+    return () => {
+      requestControllerRef.current?.abort();
+    };
+  }, [getAllProducts]);
 
   useEffect(() => {
-    if (keyword === '') {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedKeyword(keyword.trim());
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [keyword]);
+
+  useEffect(() => {
+    if (debouncedKeyword === '') {
       setReqUrl('/seller/product?page=1');
     } else {
       setReqUrl(
-        `/seller/products/search?keyword=${encodeURIComponent(keyword)}&page=1`
+        `/seller/products/search?keyword=${encodeURIComponent(debouncedKeyword)}&page=1`
       );
     }
-  }, [keyword]);
+  }, [debouncedKeyword]);
 
   return (
     <section className="flex flex-col justify-center items-center w-full">
@@ -136,7 +162,7 @@ export default function ProductManagement() {
         <Pagination
           pagination={pagination}
           setReqUrl={setReqUrl}
-          keyword={keyword}
+          keyword={debouncedKeyword}
         />
       </div>
     </section>

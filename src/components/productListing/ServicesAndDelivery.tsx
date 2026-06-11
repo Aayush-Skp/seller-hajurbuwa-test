@@ -25,10 +25,10 @@ function buildProductFormData(productDetails: any) {
   params.append('unit', productDetails.unit);
   params.append('included_items', productDetails.included_items);
   params.append('price_per_unit', productDetails.price_per_unit);
-  params.append('in_stock', productDetails.in_stock);
+  params.append('in_stock', String(Number(productDetails.in_stock)));
   params.append('package_weight', productDetails.package_weight);
   params.append('cover_image', productDetails.cover_image);
-  params.append('is_bulk_price', productDetails.is_bulk_price);
+  params.append('is_bulk_price', String(Number(productDetails.is_bulk_price)));
   params.append('featured_highlights', productDetails.featured_highlights);
 
   const bulkPricing = Array.isArray(productDetails.bulk_pricing)
